@@ -1,11 +1,11 @@
 {
   "actions": {
     "crowdtune": {
-      "desc": "crowtune compiler flags"
+      "desc": "crowd-tune compiler flags (on-going)"
     }
   }, 
   "copyright": "See CK Copyright.txt for copyright details", 
-  "desc": "collective scenario: compiler flag tuning", 
+  "desc": "collective experiment: compiler flag tuning", 
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://cTuning.org/lab/people/gfursin", 
