@@ -14,3 +14,24 @@ Publications
 * http://hal.inria.fr/hal-01054763
 * https://hal.inria.fr/inria-00436029
 * http://arxiv.org/abs/1407.4075
+
+Authors
+=======
+
+* Grigori Fursin, cTuning foundation (France) / dividiti (UK)
+
+License
+=======
+* BSD, 3-clause
+
+Installation
+============
+
+> ck pull repo:ck-crowdtuning
+
+Modules with actions
+====================
+
+scenario.compiler.flags - collective experiment: compiler flag tuning
+
+  * crowdtune - crowd-tune compiler flags (on-going)
