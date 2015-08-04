@@ -1,11 +1,15 @@
 {
-  "data_uid": "c7e5332641d8922a", 
   "data_name": "CK crowdtuning (crowdsourcing machine learning based multi-objective autotuning)", 
+  "data_alias": "ck-crowdtuning", 
+  "data_uid": "c7e5332641d8922a", 
+  "data_uoa": "ck-crowdtuning", 
   "dict": {
+    "repo_deps": [
+      {
+        "repo_uoa": "ctuning-programs"
+      }
+    ], 
     "url": "https://github.com/ctuning/ck-crowdtuning", 
     "shared": "git"
-  }, 
-  "data_alias": "ck-crowdtuning", 
-  "data_uoa": "ck-crowdtuning",
-  "repo_deps":[{"repo_uoa":"ck-autotuning"}, {"repo_uoa":"ctuning-programs"}, {"repo_uoa":"ctuning-datasets-min"}]
+  }
 }
