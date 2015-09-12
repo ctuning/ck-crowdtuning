@@ -24,6 +24,10 @@ License
 =======
 * BSD, 3-clause
 
+Prerequisites
+=============
+* Collective Knowledge Framework: http://github.com/ctuning/ck
+
 Installation
 ============
 
