@@ -1,5 +1,5 @@
 #
-# Collective Knowledge (collective scenario: compiler flag tuning)
+# Collective Knowledge (compiler flags crowdtuning (crowdsource autotuning via spare computers such as mobile devices))
 #
 # See CK LICENSE.txt for licensing details
 # See CK COPYRIGHT.txt for copyright details
@@ -31,7 +31,7 @@ def init(i):
     return {'return':0}
 
 ##############################################################################
-# crowtune compiler flags
+# Crowd-tune compiler flags
 
 def crowdtune(i):
     """
@@ -98,5 +98,34 @@ def crowdtune(i):
     btosx=tosd.get('base_uoa','')
     if btosx=='': btosx=tosx
 
+
+    return {'return':0}
+
+##############################################################################
+# prune compiler flags
+
+def prune(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    print ('prune compiler flags')
+
+    ck.out('')
+    ck.out('Command line: ')
+    ck.out('')
+
+    import json
+    cmd=json.dumps(i, indent=2)
+
+    ck.out(cmd)
 
     return {'return':0}

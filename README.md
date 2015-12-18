@@ -11,13 +11,13 @@ large and representative training set.
 
 Publications
 ============
+* http://bit.ly/ck-date16
 * http://hal.inria.fr/hal-01054763
 * https://hal.inria.fr/inria-00436029
 * http://arxiv.org/abs/1407.4075
 
 Authors
 =======
-
 * Grigori Fursin, cTuning foundation (France) / dividiti (UK)
 
 License
