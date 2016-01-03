@@ -14,7 +14,7 @@
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
   "env_key_crowdsource_path":"CK_CROWDSOURCE_PATH",
   "crowdsource_path":"CK-CROWDSOURCING",
-  "log_file_test":"test.txt",
+  "log_file_test":"log.test.txt",
   "desc": "program optimization", 
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
