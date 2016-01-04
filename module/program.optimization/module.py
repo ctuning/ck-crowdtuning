@@ -273,7 +273,7 @@ def generate_for_remote(i):
                         'bin_file1':bf1,
                         'calibrate':calibrate,
                         'calibrate_max_iters':10,
-                        'calibrate_time':5.0,
+                        'calibrate_time':10.0,
                         'repeat':5,
                         'ct_repeat':1
            }
