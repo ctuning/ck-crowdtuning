@@ -30,6 +30,49 @@ def init(i):
     """
     return {'return':0}
 
+##############################################################################
+# test remote access
+
+def log(i):
+    """
+    Input:  {
+              file_name - file name
+              text      - text
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    fn=i['file_name']
+    txt=i.get('text','')
+
+    r=ck.get_current_date_time({})
+    if r['return']>0: return r
+
+    s=r['iso_datetime']+'; '+txt
+
+    # Prepare logging
+    r=get_path({})
+    if r['return']>0: return r
+
+    px=r['path']
+
+    path=os.path.join(px, cfg['log_file_test'])
+
+    try:
+       with open(path, "a") as f:
+          f.write(s+'\n')
+       f.close()
+    except Exception as e: 
+       return {'return':1, 'error':'problem logging ('+format(e)+')'}
+
+
+    return {'return':0}
 
 ##############################################################################
 # test remote access
@@ -58,27 +101,8 @@ def test(i):
 
     email=i.get('email','')
 
-    r=ck.get_current_date_time({})
+    r=log({'file_name':cfg['log_file_test'], 'text':email})
     if r['return']>0: return r
-
-    s=r['iso_datetime']
-
-    if email!='': s+='; '+email
-
-    # Prepare logging
-    r=get_path({})
-    if r['return']>0: return r
-
-    px=r['path']
-
-    path=os.path.join(px, cfg['log_file_test'])
-
-    try:
-       with open(path, "a") as f:
-          f.write(s+'\n')
-       f.close()
-    except Exception as e: 
-       return {'return':1, 'error':'problem logging ('+format(e)+')'}
 
     if o=='con':
        ck.out(status)
@@ -184,6 +208,8 @@ def explore(i):
 def generate_for_remote(i):
     """
     Input:  {
+              (email)    - email or person UOA
+              (features) - remote device features
             }
 
     Output: {
@@ -194,9 +220,21 @@ def generate_for_remote(i):
 
     """
 
-
     import os
 
+    email=i.get('email','')
+    ft=i.get('features','')
+
+    # Logging
+    r=dumps_json({'dict':ft, 'skip_indent':'yes', 'sort_keys':'yes'})
+    if r['return']>0: return r
+
+    x=r['string']
+
+    r=log({'file_name':cfg['log_file_generate'], 'text':email+'; '+x})
+    if r['return']>0: return r
+
+    # Prepare dummy pack
     p=os.path.join(work['path'],'ck-crowdsource-experiment-pack.zip')
 
     if not os.path.isfile(p):
