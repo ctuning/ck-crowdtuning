@@ -228,7 +228,7 @@ def generate_for_remote(i):
     ft=i.get('features','')
 
     # Logging
-    r=dumps_json({'dict':ft, 'skip_indent':'yes', 'sort_keys':'yes'})
+    r=ck.dumps_json({'dict':ft, 'skip_indent':'yes', 'sort_keys':'yes'})
     if r['return']>0: return r
 
     x=r['string']
