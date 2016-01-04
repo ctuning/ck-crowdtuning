@@ -202,6 +202,8 @@ def generate_for_remote(i):
     if not os.path.isfile(p):
        return {'return':1, 'error':'experiment pack file not found'}
 
+    size=os.path.getsize(p) 
+
     r=ck.convert_file_to_upload_string({'filename':p})
     if r['return']>0: return r
 
@@ -211,4 +213,4 @@ def generate_for_remote(i):
     import hashlib
     md5=hashlib.md5(fx).hexdigest()
 
-    return {'return':0, 'file_content_base64':fx, 'md5sum':md5}
+    return {'return':0, 'file_content_base64':fx, 'size':size, 'md5sum':md5}
