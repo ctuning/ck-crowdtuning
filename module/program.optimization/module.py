@@ -177,3 +177,38 @@ def explore(i):
     ck.out(cmd)
 
     return {'return':0}
+
+##############################################################################
+# generate experiment pack for crowdsourcing in remote hardware (mobile phones or tablets)
+
+def generate_for_remote(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+
+    import os
+
+    p=os.path.join(work['path'],'ck-crowdsource-experiment-pack.zip')
+
+    if not os.path.isfile(p):
+       return {'return':1, 'error':'experiment pack file not found'}
+
+    r=ck.convert_file_to_upload_string({'filename':p})
+    if r['return']>0: return r
+
+    fx=r['file_content_base64']
+
+    #MD5
+    import hashlib
+    md5=hashlib.md5(fx).hexdigest()
+
+    return {'return':0, 'file_content_base64':fx, 'md5sum':md5}
