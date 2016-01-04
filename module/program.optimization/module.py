@@ -243,6 +243,7 @@ def generate_for_remote(i):
 
     # Prepare dummy pack
     desc='*** GCC compiler flag crowdtuning test for ARM ***'
+    rcm='./a0.out data.pgm tmp-output.pgm -c'
 
     p=os.path.join(work['path'],'ck-crowdsource-experiment-pack.zip')
 
@@ -263,5 +264,6 @@ def generate_for_remote(i):
     return {'return':0, 'file_content_base64':fx, 
                         'size':size, 
                         'md5sum':md5,
-                        'desc':desc
-            }
+                        'desc':desc,
+                        'run_cmd_main':rcm
+           }
