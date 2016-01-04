@@ -213,6 +213,4 @@ def generate_for_remote(i):
     import hashlib
     md5=hashlib.md5(fx.encode()).hexdigest()
 
-    print fx
-
     return {'return':0, 'file_content_base64':fx, 'size':size, 'md5sum':md5}
