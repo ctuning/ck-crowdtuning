@@ -48,6 +48,8 @@ def log(i):
 
     """
 
+    import os
+
     fn=i['file_name']
     txt=i.get('text','')
 
@@ -62,7 +64,7 @@ def log(i):
 
     px=r['path']
 
-    path=os.path.join(px, cfg['log_file_test'])
+    path=os.path.join(px, fn)
 
     try:
        with open(path, "a") as f:
