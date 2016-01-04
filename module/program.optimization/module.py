@@ -56,7 +56,7 @@ def log(i):
     r=ck.get_current_date_time({})
     if r['return']>0: return r
 
-    s=r['iso_datetime']+'; '+txt
+    s='======\n'+r['iso_datetime']+'\n'+txt
 
     # Prepare logging
     r=get_path({})
@@ -238,7 +238,7 @@ def generate_for_remote(i):
     if r['return']>0: return r
     x=r['string']
 
-    r=log({'file_name':cfg['log_file_generate'], 'text':'======\n'+email+'\n'+x+'\n'})
+    r=log({'file_name':cfg['log_file_generate'], 'text':email+'\n'+x+'\n'})
     if r['return']>0: return r
 
     # Prepare dummy pack
@@ -312,7 +312,7 @@ def submit_from_remote(i):
     if r['return']>0: return r
     y=r['string']
 
-    r=log({'file_name':cfg['log_file_results'], 'text':'======\n'+email+'\n'+x+'\n'+y+'\n'})
+    r=log({'file_name':cfg['log_file_results'], 'text':email+'\n'+x+'\n'+y+'\n'})
     if r['return']>0: return r
 
     status='Successfully recorded!'
