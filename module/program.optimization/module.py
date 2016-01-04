@@ -231,19 +231,22 @@ def generate_for_remote(i):
 
     email=i.get('email','')
     ft=i.get('features','')
+    if ft=='': ft={}
 
     # Logging
     r=ck.dumps_json({'dict':ft, 'skip_indent':'yes', 'sort_keys':'yes'})
     if r['return']>0: return r
-
     x=r['string']
 
-    r=log({'file_name':cfg['log_file_generate'], 'text':email+'; '+x})
+    r=log({'file_name':cfg['log_file_generate'], 'text':'======\n'+email+'\n'+x+'\n'})
     if r['return']>0: return r
 
     # Prepare dummy pack
     desc='*** GCC compiler flag crowdtuning test for ARM ***'
     rcm='data.pgm tmp-output.pgm -c'
+    calibrate='yes'
+    bf0='a0.out'
+    bf1='a1.out'
 
     p=os.path.join(work['path'],'ck-crowdsource-experiment-pack.zip')
 
@@ -266,6 +269,53 @@ def generate_for_remote(i):
                         'md5sum':md5,
                         'desc':desc,
                         'run_cmd_main':rcm,
-                        'bin_file0':'a0.out',
-                        'bin_file1':'a1.out'
+                        'bin_file0':bf0,
+                        'bin_file1':bf1,
+                        'calibrate':calibrate,
+                        'calibrate_max_iters':10,
+                        'calibrate_time':5.0,
+                        'repeat':5,
+                        'ct_repeat':1
+           }
+
+##############################################################################
+# submit results from remote device (for example, mobile phone)
+
+def submit_from_remote(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+
+    import os
+
+    email=i.get('email','')
+    ft=i.get('features','')
+    if ft=='': ft={}
+    results=i.get('results','')
+    if results=='': results={}
+
+    # Logging
+    r=ck.dumps_json({'dict':results, 'skip_indent':'yes', 'sort_keys':'yes'})
+    if r['return']>0: return r
+    x=r['string']
+
+    r=ck.dumps_json({'dict':ft, 'skip_indent':'yes', 'sort_keys':'yes'})
+    if r['return']>0: return r
+    y=r['string']
+
+    r=log({'file_name':cfg['log_file_results'], 'text':'======\n'+email+'\n'+x+'\n'+y+'\n'})
+    if r['return']>0: return r
+
+    status='Successfully recorded!'
+
+    return {'return':0, 'status':status 
            }

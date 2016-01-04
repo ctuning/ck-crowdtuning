@@ -1,3 +1,5 @@
+* 2016.01.04 * adding submit function from mobile device during crowd-tuning
+
 * 2016.01.02 * adding test function to check CK server from remote (for example from mobile phones when crowdsourcing SW/HW optimization)
 
 * 2015.12.18 * adding dummy modules for compiler flag crowdtuning/pruning and crowdsourcing OpenCL algorithm tuning
