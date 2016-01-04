@@ -210,8 +210,13 @@ def explore(i):
 def generate_for_remote(i):
     """
     Input:  {
-              (email)    - email or person UOA
-              (features) - remote device features
+              (email)             - email or person UOA
+              (features)          - remote device features
+              (features_uoa_list) - remote device features UOA list:
+                                       * platform_uoa
+                                       * platform_os_uoa
+                                       * platform_cpu_uoa
+                                       * platform_accelerator_uoa
             }
 
     Output: {
@@ -237,6 +242,8 @@ def generate_for_remote(i):
     if r['return']>0: return r
 
     # Prepare dummy pack
+    desc='*** GCC compiler flag crowdtuning test for ARM ***'
+
     p=os.path.join(work['path'],'ck-crowdsource-experiment-pack.zip')
 
     if not os.path.isfile(p):
@@ -253,4 +260,8 @@ def generate_for_remote(i):
     import hashlib
     md5=hashlib.md5(fx.encode()).hexdigest()
 
-    return {'return':0, 'file_content_base64':fx, 'size':size, 'md5sum':md5}
+    return {'return':0, 'file_content_base64':fx, 
+                        'size':size, 
+                        'md5sum':md5,
+                        'desc':desc
+            }
