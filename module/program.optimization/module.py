@@ -56,7 +56,7 @@ def log(i):
     r=ck.get_current_date_time({})
     if r['return']>0: return r
 
-    s='======\n'+r['iso_datetime']+'\n'+txt
+    s='======\n'+r['iso_datetime']+' ; '+txt
 
     # Prepare logging
     r=get_path({})
