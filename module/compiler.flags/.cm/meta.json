@@ -13,5 +13,8 @@
   "license": "See CK LICENSE.txt for licensing details", 
   "module_deps": {
     "platform.os": "41e31cc4496b8a8e"
-  }
+  },
+  "tags":["program optimization", "crowdsource"],
+  "priority":-5,
+  "crowd_desc":"Crowdsource compiler flag autotuning"
 }

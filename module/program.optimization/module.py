@@ -316,19 +316,21 @@ def submit_from_remote(i):
 def crowdsource(i):
     """
     Input:  {
-              (host_os)              - host OS (detect, if omitted)
-              (target_os)            - OS module to check (if omitted, analyze host)
-              (device_id)            - device id if remote (such as adb)
+              (host_os)                    - host OS (detect, if omitted)
+              (target_os)                  - OS module to check (if omitted, analyze host)
+              (device_id)                  - device id if remote (such as adb)
 
-              (quiet)                - do not ask questions, but select random ...
+              (quiet)                      - do not ask questions, but select random ...
               
-              (skip_exchange)        - if 'yes', do not exchange platform info
-                                       (development mode)
+              (skip_exchange)              - if 'yes', do not exchange platform info
+                                            (development mode)
 
-              (exchange_repo)        - which repo to record/update info (remote-ck by default)
-              (exchange_subrepo)     - if remote, remote repo UOA
+              (exchange_repo)              - which repo to record/update info (remote-ck by default)
+              (exchange_subrepo)           - if remote, remote repo UOA
 
-              (force_platform_name)  - if !='', use this for platform name
+              (force_platform_name)        - if !='', use this for platform name
+
+              (scenario)                   - module UOA of crowdsourcing scenario
 
             }
 
@@ -360,13 +362,16 @@ def crowdsource(i):
 
     quiet=i.get('quiet','')
 
+    scenario=i.get('crowdsourcing_scenario_uoa','')
+
     #**************************************************************************************************************
     # Welcome info
     if o=='con':
        ck.out(line)
        ck.out(welcome)
 
-       r=ck.inp({'text':'Press Enter to continue'})
+       if quiet!='yes':
+          r=ck.inp({'text':'Press Enter to continue'})
 
     #**************************************************************************************************************
     # Detecting platforms and exchanging info with public Server
@@ -405,13 +410,110 @@ def crowdsource(i):
     tdid=rpp['device_id']
 
     if hos=='':
-       return {'return':1, 'error':'host_os is not defined'}
+       return {'return':1, 'error':'"host_os" is not defined or detected'}
 
     if tos=='':
-       return {'return':1, 'error':'target_os is not defined'}
+       return {'return':1, 'error':'"target_os" is not defined or detected'}
 
     #**************************************************************************************************************
-    # 
+    finish=False
+    sit=0
+
+    while not finish:
+       sit+=1
+
+       # Selecting scenario
+       if o=='con':
+          ck.out(line)
+          ck.out('Scenario iteration: '+str(sit))
+
+          if scenario=='':
+             ck.out('')
+             ck.out('Detecting available crowdsourcing scenarios ...')
+
+             ii={'action':'search',
+                 'module_uoa':cfg['module_deps']['module'],
+                 'add_meta':'yes',
+                 'scenario':scenario,
+                 'tags':'program optimization, crowdsource'}
+             r=ck.access(ii)
+             if r['return']>0: return r
+
+             lst=r['lst']
+
+             if len(lst)==0:
+                return {'return':1, 'error':'no local crowdsourcing scenarios related to program optimization found'}  
+             elif len(lst)==1:
+                sc=lst[0].get('data_uid','')
+             else:
+                zss=sorted(lst, key=lambda v: (int(v.get('meta',{}).get('priority',0)), v['data_uoa']))
+
+                if quiet=='yes':
+                   scenario=zss[0]['data_uid']
+                else:
+                   ck.out('')
+                   ck.out('More than one scenario found for program optimization:')
+                   ck.out('')
+                   zz={}
+                   iz=0
+                   for z1 in zss:
+                       z=z1['data_uid']
+                       zu=z1['data_uoa']
+
+                       zux=z1.get('meta',{}).get('crowd_desc','')
+                       if zux!='': zu=zux
+
+                       zs=str(iz)
+                       zz[zs]=z
+
+                       ck.out(zs+') '+zu+' ('+z+')')
+
+                       iz+=1
+
+                   ck.out('')
+                   rx=ck.inp({'text':'Select scenario UOA (or Enter to select 0): '})
+                   x=rx['string'].strip()
+                   if x=='': x='0'
+
+                   if x not in zz:
+                      return {'return':1, 'error':'scenario number is not recognized'}
+
+                   scenario=zz[x]
+             
+          # Print selected scenario
+          ii={'action':'load',
+              'module_uoa':cfg['module_deps']['module'],
+              'data_uoa':scenario}
+          rs=ck.access(ii)
+          if rs['return']>0: return rs
+          ds=rs['dict']
+          s_duoa=rs['data_uoa']
+
+          ck.out('')
+          ck.out('Experiment crowdsourcing scenario: '+s_duoa) 
+
+          #**************************************************************************************************************
+          # Resolving needed deps for this scenario
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
