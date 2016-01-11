@@ -445,7 +445,7 @@ def crowdsource(i):
              if len(lst)==0:
                 return {'return':1, 'error':'no local crowdsourcing scenarios related to program optimization found'}  
              elif len(lst)==1:
-                sc=lst[0].get('data_uid','')
+                scenario=lst[0].get('data_uid','')
              else:
                 zss=sorted(lst, key=lambda v: (int(v.get('meta',{}).get('priority',0)), v['data_uoa']))
 

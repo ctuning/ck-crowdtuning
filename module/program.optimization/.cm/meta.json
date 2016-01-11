@@ -34,5 +34,8 @@
     "env": "9b9b3208ac44b891", 
     "module": "032630d041b4fd8a", 
     "platform": "707ccdfe444cafac"
-  }
+  },
+  "tags": [
+    "crowdsource experiments"
+  ]
 }
