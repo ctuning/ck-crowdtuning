@@ -29,10 +29,10 @@
   "license": "See CK LICENSE.txt for licensing details", 
   "log_file_generate": "log.generate.txt", 
   "log_file_results": "log.results.txt", 
-  "log_file_test": "log.test.txt",
+  "log_file_test": "log.test.txt", 
   "module_deps": {
-    "platform": "707ccdfe444cafac",
-    "module":"032630d041b4fd8a",
-    "env":"9b9b3208ac44b891"
+    "env": "9b9b3208ac44b891", 
+    "module": "032630d041b4fd8a", 
+    "platform": "707ccdfe444cafac"
   }
 }

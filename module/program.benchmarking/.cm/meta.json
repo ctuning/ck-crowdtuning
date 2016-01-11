@@ -1,10 +1,13 @@
 {
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
+  "crowd_desc": "Crowdsource program benchmarking", 
   "desc": "crowdsource program benchmarking", 
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 
-  "license": "See CK LICENSE.txt for licensing details",
-  "tags":["program optimization", "crowdsource"],
-  "crowd_desc":"Crowdsource program benchmarking"
+  "license": "See CK LICENSE.txt for licensing details", 
+  "tags": [
+    "program optimization", 
+    "crowdsource"
+  ]
 }

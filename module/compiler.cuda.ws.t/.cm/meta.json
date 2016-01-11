@@ -1,11 +1,31 @@
 {
   "actions": {}, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
+  "crowd_desc": "Crowdsource CUDA compiler work size (time)", 
+  "deps": {
+    "compiler": {
+      "local": "yes", 
+      "sort": 20, 
+      "tags": "compiler,lang-c-cuda"
+    }, 
+    "compiler_cl": {
+      "local": "yes", 
+      "sort": 10, 
+      "tags": "compiler,lang-c"
+    }, 
+    "xopenme": {
+      "local": "yes", 
+      "sort": 30, 
+      "tags": "lib,xopenme"
+    }
+  }, 
   "desc": "crowdsourcing CUDA compiler optimization", 
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 
-  "license": "See CK LICENSE.txt for licensing details",
-  "tags":["program optimization", "crowdsource"],
-  "crowd_desc":"Crowdsource CUDA compiler work size (time)"
+  "license": "See CK LICENSE.txt for licensing details", 
+  "tags": [
+    "program optimization", 
+    "crowdsource"
+  ]
 }

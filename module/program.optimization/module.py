@@ -418,6 +418,7 @@ def crowdsource(i):
     #**************************************************************************************************************
     finish=False
     sit=0
+    sdeps={}
 
     while not finish:
        sit+=1
@@ -494,28 +495,28 @@ def crowdsource(i):
 
           #**************************************************************************************************************
           # Resolving needed deps for this scenario
-          deps=ds.get('deps',{})
+          if len(sdeps)==0:
+             sdeps=ds.get('deps',{})
 
-          if len(deps)>0:
-             if o=='con':
-                ck.out(line)
-                ck.out('Resovling software dependencies required for this scenario ...')
-                ck.out('')
+             if len(sdeps)>0:
+                if o=='con':
+                   ck.out(line)
+                   ck.out('Resolving software dependencies required for this scenario ...')
+                   ck.out('')
 
-             ii={'action':'resolve',
-                 'module_uoa':cfg['module_deps']['env'],
-                 'host_os':hos,
-                 'target_os':tos,
-                 'device_id':tdid,
-                 'deps':deps,
-                 'add_customize':'yes', 
-                 'out':oo}
-             rx=ck.access(ii)
-             if rx['return']>0: return rx
+                ii={'action':'resolve',
+                    'module_uoa':cfg['module_deps']['env'],
+                    'host_os':hos,
+                    'target_os':tos,
+                    'device_id':tdid,
+                    'deps':sdeps,
+                    'add_customize':'yes'}
+                if quiet!='yes': ii['out']=oo
 
-             deps=rx['deps'] # Update deps (add UOA)
+                rx=ck.access(ii)
+                if rx['return']>0: return rx
 
-
+                sdeps=rx['deps'] # Update deps (add UOA)
 
 
 
