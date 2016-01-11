@@ -518,8 +518,8 @@ def crowdsource(i):
 
                 sdeps=rx['deps'] # Update deps (add UOA)
 
-
-
+          #**************************************************************************************************************
+          # Preparing pipeline with a temporary directory and random selection
 
 
 

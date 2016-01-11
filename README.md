@@ -6,8 +6,16 @@ please, do not use it until official announcement.
 Description
 ===========
 This repository is based on CK machine-learning based autotuning.
-It crowdsources experiments across many machines to build realistic,
-large and representative training set.
+It crowdsources experiments (using optimization knobs exposed
+via CK such as OpenCL, compiler flag, CUDA, etc)
+across many machines while building a realistic,
+large and representative training set. 
+
+This is a continuation of Grigori Fursin's original postdoctoral
+proposal for the MILEPOST project in 2005, i.e. crowdsource
+training of a machine-learning based compiler across
+any shared computational resource such as mobile phones
+(supported by the non-profit cTuning foundation since 2008).
 
 Publications
 ============
