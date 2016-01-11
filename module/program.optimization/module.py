@@ -26,14 +26,8 @@ welcome   = "Dear friends!\n\n" \
             "NOTE: this program will send some anonymized info about your hardware and OS features" \
             " to the public Collective Knowledge Server to select unexplored optimization points" \
             " or validate previously found optimizations!\n\n" \
-            "You can find more info about CK and CK-based initiatives here:\n" \
-            " * http://github.com/ctuning/ck\n" \
-            " * http://bit.ly/ck-date16\n" \
-            " * http://cknowledge.org\n" \
-            " * http://cTuning.org/ae\n" \
-            " * http://adapt-workshop.org\n" \
-            " * http://arxiv.org/abs/1506.06256\n" \
-            " * http://hal.inria.fr/hal-01054763\n\n" \
+            "You can find more info about optimization crowdsourcing including results here:\n" \
+            " * http://cTuning.org/crowdsource-optimization\n" \
             "We would like to sincerely thank you for participating in this community effort" \
             " and help us optimize computer systems to accelerate knowledge discovery and boost innovation " \
             " in science and technology while making our planet greener!\n" \
@@ -326,6 +320,11 @@ def crowdsource(i):
               (target_os)            - OS module to check (if omitted, analyze host)
               (device_id)            - device id if remote (such as adb)
 
+              (quiet)                - do not ask questions, but select random ...
+              
+              (skip_exchange)        - if 'yes', do not exchange platform info
+                                       (development mode)
+
               (exchange_repo)        - which repo to record/update info (remote-ck by default)
               (exchange_subrepo)     - if remote, remote repo UOA
 
@@ -351,9 +350,15 @@ def crowdsource(i):
     tos=i.get('target_os', '')
     tdid=i.get('device_id', '')
 
+    exc='yes'
+    se=i.get('skip_exchange','')
+    if se=='yes': exc='no'
+
     er=i.get('exchange_repo','')
     esr=i.get('exchange_subrepo','')
     fpn=i.get('force_platform_name','')
+
+    quiet=i.get('quiet','')
 
     #**************************************************************************************************************
     # Welcome info
@@ -376,10 +381,10 @@ def crowdsource(i):
         'host_os':hos,
         'target_os':tos,
         'target_device_id':tdid,
+        'exchange':exc,
         'exchange_repo':er,
         'exchange_subrepo':esr,
-        'force_platform_name':fpn,
-        'share':'yes'}
+        'force_platform_name':fpn}
     rpp=ck.access(ii)
     if rpp['return']>0: return rpp
 
