@@ -7,5 +7,5 @@
   "developer_webpage": "http://fursin.net", 
   "license": "See CK LICENSE.txt for licensing details",
   "tags":["program optimization", "crowdsource"],
-  "crowd_desc":"Crowdsource CUDA compiler work size"
+  "crowd_desc":"Crowdsource CUDA compiler work size (time)"
 }

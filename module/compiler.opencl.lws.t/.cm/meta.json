@@ -10,5 +10,6 @@
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 
   "license": "See CK LICENSE.txt for licensing details",
-  "tags":["program optimization", "crowdsource"]
+  "tags":["program optimization", "crowdsource"],
+  "crowd_desc":"Crowdsource OpenCL compiler local work size autotuning (time)"
 }

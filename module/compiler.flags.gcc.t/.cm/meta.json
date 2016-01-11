@@ -16,5 +16,5 @@
   },
   "tags":["program optimization", "crowdsource"],
   "priority":-5,
-  "crowd_desc":"Crowdsource compiler flag autotuning"
+  "crowd_desc":"Crowdsource GCC compiler flag autotuning (time)"
 }
