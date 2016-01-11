@@ -16,6 +16,11 @@
       "local": "yes", 
       "sort": 20, 
       "tags": "lib,opencl"
+    },
+    "xopenme": {
+      "local": "yes", 
+      "sort": 30, 
+      "tags": "lib,xopenme"
     }
   }, 
   "desc": "crowdtune OpenCL algorithms", 
