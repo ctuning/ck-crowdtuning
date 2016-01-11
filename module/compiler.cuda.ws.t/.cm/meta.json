@@ -27,5 +27,8 @@
   "tags": [
     "program optimization", 
     "crowdsource"
-  ]
+  ],
+  "experiment_0_pipeline_update":{
+    "speed":"yes"
+  }
 }

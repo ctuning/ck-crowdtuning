@@ -339,6 +339,10 @@ def crowdsource(i):
               (dataset_uoa)                - dataset UOA
               (dataset_file)               - dataset filename (if more than one inside one entry - suggest to have a UID in name)
 
+              (iterations)                 - limit number of iterations, otherwise infinite (default=30)
+                                             if -1, infinite (or until all choices are explored)
+
+              (keep_tmp)                   - if 'yes', do not remove run batch
             }
 
     Output: {
@@ -350,11 +354,14 @@ def crowdsource(i):
     """
 
     import copy
+    import os
 
     # Setting output
     o=i.get('out','')
     oo=''
     if o=='con': oo='con'
+
+    curdir=os.getcwd()
 
     # Params
     hos=i.get('host_os','')
@@ -371,7 +378,11 @@ def crowdsource(i):
 
     quiet=i.get('quiet','')
 
+    kt=i.get('keep_tmp','')
+
     scenario=i.get('crowdsourcing_scenario_uoa','')
+
+    iterations=i.get('iterations',3)
 
     #**************************************************************************************************************
     # Welcome info
@@ -550,6 +561,7 @@ def crowdsource(i):
               'target_os':tos,
               'target_device_id':tdid,
               'dependencies':sdeps,
+              'force_resolve_deps':'yes',
               'program_tags':program_tags,
               'program_uoa':program_uoa,
               'cmd_key':cmd_key,
@@ -558,8 +570,8 @@ def crowdsource(i):
               'random':'yes',
               'skip_local':'yes',
               'generate_rnd_tmp_dir':'yes', # to be able to run crowdtuning in parallel on the same machine ...
-              'prepare':'yes'}
-          if quiet!='yes': ii['out']=oo
+              'prepare':'yes',
+              'out':oo}
           r=ck.access(ii)
           if r['return']>0: return r
 
@@ -568,6 +580,7 @@ def crowdsource(i):
              ck.out('WARNING: didn\'t manage to prepare program optimization workflow')
           else:
              del(r['return'])
+
              pipeline=r
 
              state=r['state']
@@ -600,12 +613,112 @@ def crowdsource(i):
 
 
 
+             ################################################################################
+             # Prepare tmp experiment entry
+             r=ck.gen_uid({})
+             if r['return']>0: return r
+             euoa0='tmp-'+r['data_uid'] # Where to keep experiment
+
              # Run with default optimization
+             if o=='con':
+                ck.out(line)
+                ck.out('Running first experiment with default optimization:')
+                ck.out('')
+
+             pipeline=copy.deepcopy(pipeline_copy)
+             pup0=ds.get('experiment_0_pipeline_update',{})
+
+             ii={'action':'autotune',
+                 'module_uoa':cfg['module_deps']['pipeline'],
+                 'data_uoa':cfg['module_deps']['program'],
+                 'host_os':hos,
+                 'target_os':tos,
+                 'target_device_id':tdid,
+
+                 "pipeline":pipeline,
+
+                 "iterations":1,
+
+                 "choices_order":[
+                   [
+                   ]
+                 ],
+
+                 "tmp_dir":tmp_dir,
+
+                 "record":"yes",
+                 "record_uoa":euoa0,
+
+                  'out':oo
+                }
+
+             r=ck.merge_dicts({'dict1':ii, 'dict2':pup0})
+             if r['return']>0: return r
+             ii=r['dict1']
+
+             r=ck.access(ii)
+             if r['return']>0: return r
+
+             lio=r['last_iteration_output']
+             fail=lio.get('fail','')
+             if fail=='yes':
+                ck.out('')
+                ck.out('WARNING: pipeline execution failed ('+lio.get('fail_reason','')+') ...')
+                ck.out('         will try another experiment ...')
+             else:
+                state=lio.get('state',{})
+                repeat=state.get('repeat','')
+                ftmp_dir=state.get('cur_dir','')
+
+                
 
 
 
 
-             # Run auto-tuning
+                ################################################################################
+                # Run auto-tuning
+                if o=='con':
+                   ck.out(line)
+                   ck.out('Running program auto-tuning ...')
+                   ck.out('')
+
+                pipeline=copy.deepcopy(pipeline_copy)
+                pup1=ds.get('experiment_1_pipeline_update',{})
+
+                ii={'action':'autotune',
+
+                    'module_uoa':cfg['module_deps']['pipeline'],
+                    'data_uoa':cfg['module_deps']['program'],
+                    'host_os':hos,
+                    'target_os':tos,
+                    'target_device_id':tdid,
+
+                    "pipeline":pipeline,
+
+                    "iterations":iterations,
+
+                    "choices_order":[
+                      [
+                      ]
+                    ],
+
+                    "tmp_dir":tmp_dir,
+
+                    "record":"yes",
+                    "record_uoa":euoa0,
+
+                    'out':oo
+                   }
+
+                r=ck.merge_dicts({'dict1':ii, 'dict2':pup1})
+                if r['return']>0: return r
+                ii=r['dict1']
+
+                if 'pipeline_update' not in ii: ii['pipeline_update']={}
+                ii['pipeline_update']['repeat']=repeat
+
+                r=ck.access(ii)
+                if r['return']>0: return r
 
 
 
@@ -614,6 +727,33 @@ def crowdsource(i):
 
 
 
+                ################################################################################
+                # Clean temporal directory and entry
+                if kt!='yes':
+                   if o=='con':
+                      ck.out('')
+                      ck.out('Removing temporal directory '+ftmp_dir+' ...')
+                   import shutil
+                   os.chdir(curdir)
+                   try:
+                      shutil.rmtree(ftmp_dir, ignore_errors=True)
+                   except Exception as e: 
+                      if o=='con':
+                         ck.out('')
+                         ck.out('WARNING: can\'t fully erase tmp dir')
+                         ck.out('')
+                      pass
+
+                   if o=='con':
+                      ck.out('')
+                      ck.out('Removing experiment entry '+euoa0+' ...')
+
+                   ii={'action':'rm',
+                       'module_uoa':cfg['module_deps']['experiment'],
+                       'data_uoa':euoa0,
+                       'force':'yes'}
+                   r=ck.access(ii)
+                   # Skip return code
 
           raw_input('xyz')
 

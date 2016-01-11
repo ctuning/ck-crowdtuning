@@ -22,5 +22,8 @@
       "tags": "lib,xopenme"
     }
   },
-  "program_tags":"crowd-tuning,small"
+  "program_tags":"crowd-tuning,small",
+  "experiment_0_pipeline_update":{
+    "speed":"yes"
+  }
 }

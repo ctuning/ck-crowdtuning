@@ -32,5 +32,15 @@
   "tags": [
     "program optimization", 
     "crowdsource"
-  ]
+  ],
+  "experiment_0_pipeline_update":{
+    "pipeline_update": {
+      "speed":"yes"
+    }
+  },
+  "experiment_1_pipeline_update":{
+    "pipeline_update": {
+     "best_base_flag":"yes"
+   }
+  }
 }
