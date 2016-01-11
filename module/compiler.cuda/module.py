@@ -1,5 +1,5 @@
 #
-# Collective Knowledge (optimizing opencl)
+# Collective Knowledge (crowdsourcing CUDA compiler optimization)
 #
 # See CK LICENSE.txt for licensing details
 # See CK COPYRIGHT.txt for copyright details
@@ -28,33 +28,4 @@ def init(i):
             }
 
     """
-    return {'return':0}
-
-##############################################################################
-# run opencl tuning
-
-def run(i):
-    """
-    Input:  {
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-            }
-
-    """
-
-    print ('run opencl tuning')
-
-    ck.out('')
-    ck.out('Command line: ')
-    ck.out('')
-
-    import json
-    cmd=json.dumps(i, indent=2)
-
-    ck.out(cmd)
-
     return {'return':0}

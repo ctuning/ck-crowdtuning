@@ -1,11 +1,7 @@
 {
-  "actions": {
-    "run": {
-      "desc": "run opencl tuning"
-    }
-  }, 
+  "actions": {}, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
-  "desc": "optimizing opencl", 
+  "desc": "crowdsourcing CUDA compiler optimization", 
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 
