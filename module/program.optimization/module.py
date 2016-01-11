@@ -12,6 +12,23 @@ work={} # Will be updated by CK (temporal data)
 ck=None # Will be updated by CK (initialized CK kernel) 
 
 # Local settings
+line='****************************************************************'
+
+welcome   = "Dear friends!\n\n" \
+            "Computer systems become very inefficient" \
+            " due to too many design and optimization choices available - " \
+            " optimizing compilers are simply not keeping pace with all this complexity and rapidly evolving hardware and software." \
+            " It is possible to speed up code from 15% to more than 10x while considerably reducing energy usage and code size" \
+            " for many popular algorithms (DNN, vision processing, BLAS) using multi-objective autotuning." \
+            " Unfortunately, it can be untolerably slow.\n\n" \
+            "Therefore, we have developed this CK-based experimental workflow to crowdsource program and compiler autotuning"  \
+            " across multiple hardware and environments kindly provided by volunteers.\n\n" \
+            "NOTE: this program will send some anonymized info about your hardware and OS features" \
+            " to the public Collective Knowledge Server to select unexplored optimization points" \
+            " or validate previously found optimizations!\n\n" \
+            "We would like to sincerely thank you for helping our community optimize computer systems" \
+            " to accelerate knowledge discovery, boost innovation in science and technology, and make" \
+            " our planet greener!\n"
 
 ##############################################################################
 # Initialize module
@@ -145,35 +162,6 @@ def get_path(i):
        os.makedirs(rps)
 
     return {'return':0, 'path':rps}
-
-##############################################################################
-# crowdsource program optimization
-
-def crowdsource(i):
-    """
-    Input:  {
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-            }
-
-    """
-
-    print ('crowdsource program optimization')
-
-    ck.out('')
-    ck.out('Command line: ')
-    ck.out('')
-
-    import json
-    cmd=json.dumps(i, indent=2)
-
-    ck.out(cmd)
-
-    return {'return':0}
 
 ##############################################################################
 # explore program optimizations
@@ -319,3 +307,96 @@ def submit_from_remote(i):
 
     return {'return':0, 'status':status 
            }
+
+##############################################################################
+# crowdsource program optimization
+
+def crowdsource(i):
+    """
+    Input:  {
+              (host_os)              - host OS (detect, if omitted)
+              (target_os)            - OS module to check (if omitted, analyze host)
+              (device_id)            - device id if remote (such as adb)
+
+              (exchange_repo)        - which repo to record/update info (remote-ck by default)
+              (exchange_subrepo)     - if remote, remote repo UOA
+
+              (force_platform_name)  - if !='', use this for platform name
+
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    # Setting output
+    o=i.get('out','')
+    oo=''
+    if o=='con': oo='con'
+
+    # Params
+    hos=i.get('host_os','')
+    tos=i.get('target_os', '')
+    tdid=i.get('device_id', '')
+
+    er=i.get('exchange_repo','')
+    esr=i.get('exchange_subrepo','')
+    fpn=i.get('force_platform_name','')
+
+    # Welcome info
+    if o=='con':
+       ck.out(line)
+       ck.out(welcome)
+
+       r=ck.inp({'text':'Press Enter to continue'})
+
+    # Detecting platforms and exchanging info with public Server
+    if o=='con':
+       ck.out(line)
+       ck.out('Detecting your platform info and query public CK server and get latest optimization points ...')
+       ck.out('')
+
+    ii={'action':'detect',
+        'module_uoa':cfg['module_deps']['platform'],
+        'out':oo,
+        'host_os':hos,
+        'target_os':tos,
+        'target_device_id':tdid,
+        'exchange_repo':er,
+        'exchange_subrepo':esr,
+        'force_platform_name':fpn,
+        'share':'yes'}
+    rpp=ck.access(ii)
+    if rpp['return']>0: return rpp
+
+    hos=rpp['host_os_uoa']
+    hosd=rpp['host_os_dict']
+
+    tos=rpp['os_uoa']
+    tosd=rpp['os_dict']
+    tbits=tosd.get('bits','')
+
+    hosz=hosd.get('base_uoa','')
+    if hosz=='': hosz=hos
+    tosz=tosd.get('base_uoa','')
+    if tosz=='': tosz=tos
+
+    remote=tosd.get('remote','')
+
+    tdid=rpp['device_id']
+
+    if hos=='':
+       return {'return':1, 'error':'host_os is not defined'}
+
+    if tos=='':
+       return {'return':1, 'error':'target_os is not defined'}
+
+
+
+
+
+    return {'return':0}

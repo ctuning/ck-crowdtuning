@@ -29,5 +29,8 @@
   "license": "See CK LICENSE.txt for licensing details", 
   "log_file_generate": "log.generate.txt", 
   "log_file_results": "log.results.txt", 
-  "log_file_test": "log.test.txt"
+  "log_file_test": "log.test.txt",
+  "module_deps": {
+    "platform": "707ccdfe444cafac"
+  }
 }
