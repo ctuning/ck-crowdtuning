@@ -26,9 +26,17 @@ welcome   = "Dear friends!\n\n" \
             "NOTE: this program will send some anonymized info about your hardware and OS features" \
             " to the public Collective Knowledge Server to select unexplored optimization points" \
             " or validate previously found optimizations!\n\n" \
-            "We would like to sincerely thank you for helping our community optimize computer systems" \
-            " to accelerate knowledge discovery, boost innovation in science and technology, and make" \
-            " our planet greener!\n"
+            "You can find more info about CK and CK-based initiatives here:\n" \
+            " * http://github.com/ctuning/ck\n" \
+            " * http://bit.ly/ck-date16\n" \
+            " * http://cknowledge.org\n" \
+            " * http://cTuning.org/ae\n" \
+            " * http://adapt-workshop.org\n" \
+            " * http://arxiv.org/abs/1506.06256\n" \
+            " * http://hal.inria.fr/hal-01054763\n\n" \
+            "We would like to sincerely thank you for participating in this community effort" \
+            " and help us optimize computer systems to accelerate knowledge discovery and boost innovation " \
+            " in science and technology while making our planet greener!\n" \
 
 ##############################################################################
 # Initialize module
@@ -347,6 +355,7 @@ def crowdsource(i):
     esr=i.get('exchange_subrepo','')
     fpn=i.get('force_platform_name','')
 
+    #**************************************************************************************************************
     # Welcome info
     if o=='con':
        ck.out(line)
@@ -354,6 +363,7 @@ def crowdsource(i):
 
        r=ck.inp({'text':'Press Enter to continue'})
 
+    #**************************************************************************************************************
     # Detecting platforms and exchanging info with public Server
     if o=='con':
        ck.out(line)
@@ -395,6 +405,8 @@ def crowdsource(i):
     if tos=='':
        return {'return':1, 'error':'target_os is not defined'}
 
+    #**************************************************************************************************************
+    # 
 
 
 
