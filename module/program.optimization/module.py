@@ -332,6 +332,13 @@ def crowdsource(i):
 
               (scenario)                   - module UOA of crowdsourcing scenario
 
+              (program_tags)               - force selection of programs by tags
+
+              (program_uoa)                - force program UOA
+              (cmd_key)                    - CMD key
+              (dataset_uoa)                - dataset UOA
+              (dataset_file)               - dataset filename (if more than one inside one entry - suggest to have a UID in name)
+
             }
 
     Output: {
@@ -341,6 +348,8 @@ def crowdsource(i):
             }
 
     """
+
+    import copy
 
     # Setting output
     o=i.get('out','')
@@ -490,6 +499,18 @@ def crowdsource(i):
           ds=rs['dict']
           sdesc=ds.get('crowd_desc','')
 
+          if i.get('program_tags','')!='':
+             program_tags=i['program_tags']
+          else:
+             program_tags=ds.get('program_tags','')
+
+          program_uoa=i.get('program_uoa','')
+          if program_uoa=='':
+             program_uoa=i.get('data_uoa','')
+          cmd_key=i.get('cmd_key','')
+          dataset_uoa=i.get('dataset_uoa','')
+          dataset_file=i.get('dataset_file','')
+
           ck.out('')
           ck.out('Experiment crowdsourcing scenario: '+sdesc) 
 
@@ -512,14 +533,79 @@ def crowdsource(i):
                     'deps':sdeps,
                     'add_customize':'yes'}
                 if quiet!='yes': ii['out']=oo
-
                 rx=ck.access(ii)
                 if rx['return']>0: return rx
 
                 sdeps=rx['deps'] # Update deps (add UOA)
 
+
+
+
+
           #**************************************************************************************************************
           # Preparing pipeline with a temporary directory and random selection
+          ii={'action':'pipeline',
+              'module_uoa':cfg['module_deps']['program'],
+              'host_os':hos,
+              'target_os':tos,
+              'target_device_id':tdid,
+              'dependencies':sdeps,
+              'program_tags':program_tags,
+              'program_uoa':program_uoa,
+              'cmd_key':cmd_key,
+              'dataset_uoa':dataset_uoa,
+              'dataset_file':dataset_file,
+              'random':'yes',
+              'skip_local':'yes',
+              'generate_rnd_tmp_dir':'yes', # to be able to run crowdtuning in parallel on the same machine ...
+              'prepare':'yes'}
+          if quiet!='yes': ii['out']=oo
+          r=ck.access(ii)
+          if r['return']>0: return r
+
+          ready=r['ready']
+          if ready!='yes':
+             ck.out('WARNING: didn\'t manage to prepare program optimization workflow')
+          else:
+             del(r['return'])
+             pipeline=r
+
+             state=r['state']
+             tmp_dir=state['tmp_dir']
+
+             choices=r['choices']
+             ft=r['features']
+
+             prog_uoa=choices['data_uoa']
+             cmd_key=choices.get('cmd_key','')
+             dataset_uoa=choices.get('dataset_uoa','')
+             dataset_file=choices.get('dataset_file','')
+
+             cver=ft.get('compiler_version',{}).get('str','')
+
+             if o=='con':
+                ck.out(line)
+                ck.out('Prepared experiment:')
+                ck.out('')
+                ck.out(' * Program:                  '+prog_uoa)
+                ck.out(' * CMD:                      '+cmd_key)
+                ck.out(' * Dataset:                  '+dataset_uoa)
+                ck.out(' * Dataset file:             '+dataset_file)
+                ck.out(' * Default compiler version: '+cver)
+
+             # Saving pipeline
+             pipeline_copy=copy.deepcopy(pipeline)
+
+
+
+
+
+             # Run with default optimization
+
+
+
+
+             # Run auto-tuning
 
 
 
@@ -529,13 +615,7 @@ def crowdsource(i):
 
 
 
-
-
-
-
-
-
-
+          raw_input('xyz')
 
 
     return {'return':0}

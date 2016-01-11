@@ -30,10 +30,12 @@
   "log_file_generate": "log.generate.txt", 
   "log_file_results": "log.results.txt", 
   "log_file_test": "log.test.txt", 
+  "crowd_desc":"Crowdsource multi-dimensional and multi-objective optimization (performance, energy, size, reliability and other costs)",
   "module_deps": {
     "env": "9b9b3208ac44b891", 
     "module": "032630d041b4fd8a", 
-    "platform": "707ccdfe444cafac"
+    "platform": "707ccdfe444cafac",
+    "program":"b0ac08fe1d3c2615"
   },
   "tags": [
     "crowdsource experiments"

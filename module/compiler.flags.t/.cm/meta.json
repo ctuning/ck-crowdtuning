@@ -24,6 +24,7 @@
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 
   "license": "See CK LICENSE.txt for licensing details", 
+  "program_tags":"crowd-tuning,small",
   "module_deps": {}, 
   "tags": [
     "program optimization", 

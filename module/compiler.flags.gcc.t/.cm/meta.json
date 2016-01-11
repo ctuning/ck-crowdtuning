@@ -27,6 +27,7 @@
   "module_deps": {
     "platform.os": "41e31cc4496b8a8e"
   }, 
+  "program_tags":"crowd-tuning,small",
   "priority": -100, 
   "tags": [
     "program optimization", 
