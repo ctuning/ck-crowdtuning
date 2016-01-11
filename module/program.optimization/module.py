@@ -487,14 +487,33 @@ def crowdsource(i):
           rs=ck.access(ii)
           if rs['return']>0: return rs
           ds=rs['dict']
-          s_duoa=rs['data_uoa']
+          sdesc=ds.get('crowd_desc','')
 
           ck.out('')
-          ck.out('Experiment crowdsourcing scenario: '+s_duoa) 
+          ck.out('Experiment crowdsourcing scenario: '+sdesc) 
 
           #**************************************************************************************************************
           # Resolving needed deps for this scenario
+          deps=ds.get('deps',{})
 
+          if len(deps)>0:
+             if o=='con':
+                ck.out(line)
+                ck.out('Resovling software dependencies required for this scenario ...')
+                ck.out('')
+
+             ii={'action':'resolve',
+                 'module_uoa':cfg['module_deps']['env'],
+                 'host_os':hos,
+                 'target_os':tos,
+                 'device_id':tdid,
+                 'deps':deps,
+                 'add_customize':'yes', 
+                 'out':oo}
+             rx=ck.access(ii)
+             if rx['return']>0: return rx
+
+             deps=rx['deps'] # Update deps (add UOA)
 
 
 

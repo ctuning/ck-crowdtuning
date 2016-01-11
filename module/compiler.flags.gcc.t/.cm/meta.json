@@ -15,6 +15,18 @@
     "platform.os": "41e31cc4496b8a8e"
   },
   "tags":["program optimization", "crowdsource"],
-  "priority":-5,
-  "crowd_desc":"Crowdsource GCC compiler flag autotuning (time)"
+  "priority":-100,
+  "crowd_desc":"Crowdsource GCC compiler flag autotuning (time)",
+  "deps": {
+    "compiler": {
+      "local": "yes", 
+      "sort": 10, 
+      "tags": "compiler,lang-c,gcc"
+    }, 
+    "xopenme": {
+      "local": "yes", 
+      "sort": 20, 
+      "tags": "lib,xopenme"
+    }
+  } 
 }

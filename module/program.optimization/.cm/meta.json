@@ -32,6 +32,7 @@
   "log_file_test": "log.test.txt",
   "module_deps": {
     "platform": "707ccdfe444cafac",
-    "module":"032630d041b4fd8a"
+    "module":"032630d041b4fd8a",
+    "env":"9b9b3208ac44b891"
   }
 }

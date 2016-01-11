@@ -11,5 +11,6 @@
   "developer_webpage": "http://fursin.net", 
   "license": "See CK LICENSE.txt for licensing details",
   "tags":["program optimization", "crowdsource"],
-  "crowd_desc":"Crowdsource OpenCL compiler local work size autotuning (time)"
+  "crowd_desc":"Crowdsource OpenCL compiler LWS autotuning (time)",
+  "priority":-50
 }
