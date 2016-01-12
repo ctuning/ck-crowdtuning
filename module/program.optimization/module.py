@@ -382,7 +382,7 @@ def crowdsource(i):
 
     scenario=i.get('crowdsourcing_scenario_uoa','')
 
-    iterations=i.get('iterations',3)
+    iterations=i.get('iterations',30)
 
     #**************************************************************************************************************
     # Welcome info
@@ -755,7 +755,7 @@ def crowdsource(i):
                    r=ck.access(ii)
                    # Skip return code
 
-          raw_input('xyz')
+#          raw_input('xyz')
 
 
     return {'return':0}
