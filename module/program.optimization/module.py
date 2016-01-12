@@ -382,8 +382,9 @@ def crowdsource(i):
 
     er=i.get('exchange_repo','')
     if er=='': er='remote-ck'
-
     esr=i.get('exchange_subrepo','')
+    if esr=='': esr='upload'
+
     fpn=i.get('force_platform_name','')
 
     quiet=i.get('quiet','')
