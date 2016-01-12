@@ -325,6 +325,8 @@ def crowdsource(i):
               (skip_exchange)              - if 'yes', do not exchange platform info
                                             (development mode)
 
+              (change_user)                - if yes', change user
+
               (exchange_repo)              - which repo to record/update info (remote-ck by default)
               (exchange_subrepo)           - if remote, remote repo UOA
 
@@ -341,6 +343,8 @@ def crowdsource(i):
 
               (iterations)                 - limit number of iterations, otherwise infinite (default=30)
                                              if -1, infinite (or until all choices are explored)
+
+              (calibration_time)           - change calibration time (deafult 10 sec.)
 
               (keep_tmp)                   - if 'yes', do not remove run batch
             }
@@ -363,6 +367,8 @@ def crowdsource(i):
 
     curdir=os.getcwd()
 
+    user=''
+
     # Params
     hos=i.get('host_os','')
     tos=i.get('target_os', '')
@@ -372,7 +378,11 @@ def crowdsource(i):
     se=i.get('skip_exchange','')
     if se=='yes': exc='no'
 
+    cu=i.get('change_user','')
+
     er=i.get('exchange_repo','')
+    if er=='': er='remote-ck'
+
     esr=i.get('exchange_subrepo','')
     fpn=i.get('force_platform_name','')
 
@@ -382,16 +392,73 @@ def crowdsource(i):
 
     scenario=i.get('crowdsourcing_scenario_uoa','')
 
-    iterations=i.get('iterations',30)
+    iterations=i.get('iterations','')
+    if iterations=='': iterations=30
 
+    cat=i.get('calibration_time','')
+    if cat=='': cat=10.0
+    
     #**************************************************************************************************************
     # Welcome info
-    if o=='con':
+    if o=='con' and quiet!='yes':
        ck.out(line)
        ck.out(welcome)
 
        if quiet!='yes':
           r=ck.inp({'text':'Press Enter to continue'})
+
+    #**************************************************************************************************************
+    # Check if there is program crowdtuning configuration
+    dcfg={}
+    ii={'action':'load',
+        'module_uoa':cfg['module_deps']['cfg'],
+        'data_uoa':cfg['cfg_uoa']}
+    r=ck.access(ii)
+    if r['return']>0 and r['return']!=16: return r
+    if r['return']!=16:
+       dcfg=r['dict']
+
+    user=dcfg.get('user_email','')
+
+    if (user=='' and o=='con' and quiet!='yes') or cu!='':
+       if cu=='':
+          ck.out(line)
+          r=ck.inp({'text':'If you would like to identify your contributions (and also participate in our monthly prize draws), please enter your email: '})
+          xuser=r['string'].strip()
+       else:
+          xuser=cu.strip()
+
+       if xuser!=user:
+          user=xuser
+          dcfg['user_email']=user
+
+          ii={'action':'update',
+              'module_uoa':cfg['module_deps']['cfg'],
+              'data_uoa':cfg['cfg_uoa'],
+              'dict':dcfg}
+          r=ck.access(ii)
+          if r['return']>0: return r
+
+    if user!='' and o=='con' and quiet!='yes':
+       ck.out(line)
+       ck.out('Your crowsourcing ID : '+user)
+
+    #**************************************************************************************************************
+    # Testing remote platform
+    if se!='yes':
+       ck.out(line)
+       ck.out('Testing public crowdsourcing server ...')
+       ck.out('')
+
+       ii={'action':'test',
+           'module_uoa':work['self_module_uid'],
+           'out':'',
+           'email':user,
+           'repo_uoa':er}
+       r=ck.access(ii)
+       if r['return']>0: return r
+
+       ck.out('  SUCCESS!')
 
     #**************************************************************************************************************
     # Detecting platforms and exchanging info with public Server
@@ -569,6 +636,7 @@ def crowdsource(i):
               'dataset_file':dataset_file,
               'random':'yes',
               'skip_local':'yes',
+              'calibration_time':cat,
               'generate_rnd_tmp_dir':'yes', # to be able to run crowdtuning in parallel on the same machine ...
               'prepare':'yes',
               'out':oo}
