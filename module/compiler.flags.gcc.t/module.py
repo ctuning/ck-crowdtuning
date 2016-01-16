@@ -421,7 +421,7 @@ def add_solution(i):
     sd['cmd2']=cmd2
 
     sd['misc_features']={}
-    sd['misc_features']['platform_name']=
+    sd['misc_features']['platform_name']=platform_name
     sd['misc_features']['os_name']=os_name
     sd['misc_features']['cpu_name']=cpu_name
     sd['misc_features']['acc_name']=acc_name
