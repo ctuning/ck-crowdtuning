@@ -1,7 +1,6 @@
 {
   "actions": {}, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
-  "crowd_desc": "Crowdsource CUDA compiler work size (time)", 
   "deps": {
     "compiler": {
       "local": "yes", 

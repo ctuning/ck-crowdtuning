@@ -1,4 +1,5 @@
 * 2016.01.15 * GCC crowd-tuning (up to speed up with margins)
+             * Adding repo dependency on ck-web (to visualize results)
 
 * 2016.01.04 * adding submit function from mobile device during crowd-tuning
 

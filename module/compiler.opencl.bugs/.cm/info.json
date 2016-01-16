@@ -16,5 +16,5 @@
       "12x"
     ]
   }, 
-  "data_name": "compiler.opencl.bugs"
+  "data_name": "Crowdsource OpenCL compiler bug detection"
 }

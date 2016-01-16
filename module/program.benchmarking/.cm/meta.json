@@ -1,6 +1,5 @@
 {
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
-  "crowd_desc": "Crowdsource program benchmarking", 
   "desc": "crowdsource program benchmarking", 
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
@@ -25,5 +24,6 @@
   "program_tags":"crowd-tuning,small",
   "experiment_0_pipeline_update":{
     "speed":"yes"
-  }
+  },
+  "skip_experiment_1":"yes"
 }

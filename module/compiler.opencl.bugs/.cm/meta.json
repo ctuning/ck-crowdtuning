@@ -1,7 +1,6 @@
 {
   "actions": {}, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
-  "crowd_desc": "Crowdsource OpenCL compiler bug detection", 
   "deps": {
     "compiler": {
       "local": "yes", 
@@ -29,5 +28,6 @@
   "tags": [
     "program optimization", 
     "crowdsource"
-  ]
+  ],
+  "skip_experiment_1":"yes"
 }

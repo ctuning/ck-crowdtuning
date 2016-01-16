@@ -16,5 +16,5 @@
       "12x"
     ]
   }, 
-  "data_name": "compiler.flags.gcc.t"
+  "data_name": "Crowdsource GCC compiler flag autotuning (time)"
 }

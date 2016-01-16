@@ -1,6 +1,5 @@
 {
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
-  "crowd_desc": "Crowdsource program benchmarking", 
   "deps": {
   }, 
   "desc": "crowdsource optimal algorithm selection", 

@@ -7,6 +7,9 @@
     "repo_deps": [
       {
         "repo_uoa": "ctuning-programs"
+      },
+      {
+        "repo_uoa": "ck-web"
       }
     ], 
     "url": "https://github.com/ctuning/ck-crowdtuning", 

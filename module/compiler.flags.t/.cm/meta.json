@@ -6,7 +6,6 @@
     }
   }, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
-  "crowd_desc": "Crowdsource compiler flag autotuning (time)", 
   "deps": {
     "compiler": {
       "local": "yes", 
