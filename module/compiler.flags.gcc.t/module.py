@@ -193,8 +193,12 @@ def process(i):
               break
 
     # Process solution
+    print 'xyz1'
+    new=True
     if new:
+       print 'xyz2'
        if len(result1)>0 and len(result2)>0 and len(fk)>0:
+          print 'xyz3'
           kt=fk[0]
 
           r1=result1[0]
@@ -237,6 +241,9 @@ def process(i):
                 '   Better solution FOUND (Speedup = '+('%.2f' % speedup)+')\n' \
                 '    * Opt1:    '+cmd1+'\n' \
                 '    * Opt2:    '+cmd2+'\n' \
+
+             print 'xxx=',rp
+
 
              # Add new solution (possibly remotely)
              ruoa=i.get('repo_uoa','')

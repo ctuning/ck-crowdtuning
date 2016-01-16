@@ -6,7 +6,8 @@
     }, 
     "crowdtune": {}, 
     "process": {
-      "desc": "process crowdtuning results"
+      "desc": "process crowdtuning results",
+      "for_web": "yes"
     }, 
     "prune": {
       "desc": "prune compiler flags"
