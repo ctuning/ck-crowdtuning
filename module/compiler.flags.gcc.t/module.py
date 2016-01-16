@@ -193,7 +193,6 @@ def process(i):
               break
 
     # Process solution
-#    new=True
     if new:
        if len(result1)>0 and len(result2)>0 and len(fk)>0:
           kt=fk[0]
