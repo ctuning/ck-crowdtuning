@@ -146,8 +146,8 @@ def process(i):
               result1
               points2
               result2
-              repo_uoa
-              subrepo_uoa
+              record_repo_uoa
+              record_subrepo_uoa
               (iterations)
             }
 
@@ -240,8 +240,8 @@ def process(i):
                 '    * Opt2:    '+cmd2+'\n' \
 
              # Add new solution (possibly remotely)
-             ruoa=i.get('repo_uoa','')
-             rruoa=i.get('subrepo_uoa','')
+             ruoa=i.get('record_repo_uoa','')
+             rruoa=i.get('record_subrepo_uoa','')
 
              r=ck.access({'action':'add_solution',
                           'module_uoa':work['self_module_uoa'],
@@ -457,7 +457,7 @@ def show(i):
 
     import os
 
-    h='<table class="ck_table" border="0">\n'
+    h='<table class="ck_table" border="1">\n'
 
     # Check host URL prefix and default module/action
     url0=ck.cfg.get('wfe_url_prefix','')
@@ -657,6 +657,6 @@ def show(i):
 
                       h+=' </tr>\n'
 
-    h+='</table><br><br>\n'
+    h+='</table>\n'
 
     return {'return':0, 'html':h}

@@ -477,7 +477,7 @@ def crowdsource(i):
     # Testing remote platform
     if se!='yes':
        ck.out(line)
-       ck.out('Testing public crowdsourcing server ...')
+       ck.out('Testing experiment crowdsourcing server ...')
        ck.out('')
 
        ii={'action':'test',
@@ -893,8 +893,8 @@ def crowdsource(i):
                        'result1':result1,
                        'points2':points2,
                        'result2':result2,
-                       'repo_uoa':er,
-                       'subrepo_uoa':esr,
+                       'record_repo_uoa':er,
+                       'record_subrepo_uoa':esr,
                        'iterations':iterations,
                        'out':oo}
                    r=ck.access(ii)
@@ -1063,8 +1063,8 @@ def show(i):
        else:
           h+=r['html']
 
-       h+='</center>\n'
        h+='</div>\n'
+       h+='</center>\n'
 
     h+='<p><center><a href="https://github.com/ctuning/ck/wiki/Advanced_usage_crowdsourcing">Related links</a></center>'
 
