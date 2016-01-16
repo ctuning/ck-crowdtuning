@@ -343,6 +343,11 @@ def add_solution(i):
     choices=i.get('choices','')
     pif=i.get('platform_features',{})
 
+    platform_name=pif.get('platform',{}).get('name','')
+    os_name=pif.get('os',{}).get('name_short','')
+    cpu_name=pif.get('cpu',{}).get('name','')
+    acc_name=pif.get('acc',{}).get('name','')
+
     cpu_uid=pif.get('cpu_uid','')
     
     # Check if exists (with lock)
@@ -414,6 +419,12 @@ def add_solution(i):
     sd['choices2']=pchoices2
     sd['cmd1']=cmd1
     sd['cmd2']=cmd2
+
+    sd['misc_features']={}
+    sd['misc_features']['platform_name']=
+    sd['misc_features']['os_name']=os_name
+    sd['misc_features']['cpu_name']=cpu_name
+    sd['misc_features']['acc_name']=acc_name
 
     r=ck.save_json_to_file({'json_file':sp, 'dict':sd})
     if r['return']>0: return r
