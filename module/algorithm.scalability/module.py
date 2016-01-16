@@ -29,3 +29,23 @@ def init(i):
 
     """
     return {'return':0}
+
+##############################################################################
+# show results
+
+def show(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    h='Under development ...'
+
+    return {'return':0, 'html':h}

@@ -1,5 +1,10 @@
 {
-  "actions": {}, 
+  "actions": {
+    "show": {
+      "desc": "show results", 
+      "for_web": "yes"
+    }
+  }, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
   "desc": "TBD: checking program scalability and report back to author unexpected behavior", 
   "developer": "Grigori Fursin", 

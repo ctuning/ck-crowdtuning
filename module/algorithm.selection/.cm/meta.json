@@ -1,7 +1,12 @@
 {
-  "copyright": "See CK COPYRIGHT.txt for copyright details", 
-  "deps": {
+  "actions": {
+    "show": {
+      "desc": "show results", 
+      "for_web": "yes"
+    }
   }, 
+  "copyright": "See CK COPYRIGHT.txt for copyright details", 
+  "deps": {}, 
   "desc": "crowdsource optimal algorithm selection", 
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 

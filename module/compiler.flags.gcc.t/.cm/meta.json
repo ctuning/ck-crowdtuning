@@ -1,5 +1,9 @@
 {
   "actions": {
+    "add_solution": {
+      "desc": "add new solution", 
+      "for_web": "yes"
+    }, 
     "crowdtune": {}, 
     "process": {
       "desc": "process crowdtuning results"
@@ -9,6 +13,10 @@
     }, 
     "rebuild_cmd": {
       "desc": "rebuild compiler cmd from choices"
+    }, 
+    "show": {
+      "desc": "show results", 
+      "for_web": "yes"
     }
   }, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
@@ -72,6 +80,7 @@
   ], 
   "license": "See CK LICENSE.txt for licensing details", 
   "module_deps": {
+    "platform.cpu": "aa6b542a420b8db9",
     "platform.os": "41e31cc4496b8a8e"
   }, 
   "priority": -100, 

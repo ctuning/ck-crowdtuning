@@ -885,13 +885,18 @@ def crowdsource(i):
                    # Process results by scenario
                    ii={'action':'process',
                        'module_uoa':scenario,
+                       'platform_info':rpp,
                        'pipeline':pipeline_copy,
                        'experiment_uoa':ruid,
                        'frontier_keys':fk,
                        'points1':points1,
                        'result1':result1,
                        'points2':points2,
-                       'result2':result2}
+                       'result2':result2,
+                       'repo_uoa':er,
+                       'subrepo_uoa':esr,
+                       'iterations':iterations,
+                       'out':oo}
                    r=ck.access(ii)
                    if r['return']>0: return r
                    
@@ -929,15 +934,15 @@ def crowdsource(i):
                          ck.out('')
                       pass
 
-#                   if o=='con':
-#                      ck.out('')
-#                      ck.out('Removing experiment entry '+euoa0+' ...')
+                   if o=='con':
+                      ck.out('')
+                      ck.out('Removing experiment entry '+euoa0+' ...')
 #
-#                   ii={'action':'rm',
-#                       'module_uoa':cfg['module_deps']['experiment'],
-#                       'data_uoa':euoa0,
-#                       'force':'yes'}
-#                   r=ck.access(ii)
+                   ii={'action':'rm',
+                       'module_uoa':cfg['module_deps']['experiment'],
+                       'data_uoa':euoa0,
+                       'force':'yes'}
+                   r=ck.access(ii)
                    # Skip return code
 
           raw_input('xyz')
@@ -1046,9 +1051,21 @@ def show(i):
     # Check scenario
     if scenario!='':
        h+='<p>\n'
+       h+='<center>\n'
        h+='<div id="ck_box_with_shadow">\n'
 
+       # Get from scenario
+       i['action']='show'
+       i['module_uoa']=scenario
+       r=ck.access(i)
+       if r['return']>0:
+          h+='<b>Error processing scenario results</b>: '+r['error']+'!'
+       else:
+          h+=r['html']
 
+       h+='</center>\n'
        h+='</div>\n'
+
+    h+='<p><center><a href="https://github.com/ctuning/ck/wiki/Advanced_usage_crowdsourcing">Related links</a></center>'
 
     return {'return':0, 'html':h}

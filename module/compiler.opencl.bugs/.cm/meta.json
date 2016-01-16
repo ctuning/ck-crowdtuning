@@ -1,5 +1,9 @@
 {
-  "actions": {}, 
+  "actions": {
+    "show": {
+      "desc": "show results"
+    }
+  }, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
   "deps": {
     "compiler": {
@@ -11,7 +15,7 @@
       "local": "yes", 
       "sort": 20, 
       "tags": "lib,opencl"
-    },
+    }, 
     "xopenme": {
       "local": "yes", 
       "sort": 30, 
@@ -23,11 +27,11 @@
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 
   "license": "See CK LICENSE.txt for licensing details", 
-  "program_tags":"opencl",
   "priority": -30, 
+  "program_tags": "opencl", 
+  "skip_experiment_1": "yes", 
   "tags": [
     "program optimization", 
     "crowdsource"
-  ],
-  "skip_experiment_1":"yes"
+  ]
 }

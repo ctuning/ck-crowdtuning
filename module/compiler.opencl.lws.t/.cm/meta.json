@@ -2,6 +2,10 @@
   "actions": {
     "crowdtune": {
       "desc": "crowdtune OpenCL algorithms"
+    }, 
+    "show": {
+      "desc": "show results", 
+      "for_web": "yes"
     }
   }, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
@@ -15,7 +19,7 @@
       "local": "yes", 
       "sort": 20, 
       "tags": "lib,opencl"
-    },
+    }, 
     "xopenme": {
       "local": "yes", 
       "sort": 30, 
@@ -27,8 +31,8 @@
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 
   "license": "See CK LICENSE.txt for licensing details", 
-  "program_tags":"cuda",
   "priority": -50, 
+  "program_tags": "cuda", 
   "tags": [
     "program optimization", 
     "crowdsource"

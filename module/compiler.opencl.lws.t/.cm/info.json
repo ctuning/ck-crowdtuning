@@ -16,5 +16,5 @@
       "12x"
     ]
   }, 
-  "data_name": "Crowdsource OpenCL compiler LWS autotuning (time)"
+  "data_name": "compiler.opencl.lws.t"
 }
