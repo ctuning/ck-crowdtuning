@@ -193,7 +193,7 @@ def process(i):
               break
 
     # Process solution
-    new=True
+#    new=True
     if new:
        if len(result1)>0 and len(result2)>0 and len(fk)>0:
           kt=fk[0]
@@ -457,7 +457,7 @@ def show(i):
 
     import os
 
-    h='<table class="ck_table" border="1">\n'
+    h='<table class="ck_table" border="0">\n'
 
     # Check host URL prefix and default module/action
     url0=ck.cfg.get('wfe_url_prefix','')

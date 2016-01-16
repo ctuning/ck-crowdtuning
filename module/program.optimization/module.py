@@ -945,7 +945,7 @@ def crowdsource(i):
                    r=ck.access(ii)
                    # Skip return code
 
-          raw_input('xyz')
+#          raw_input('xyz')
 
 
     return {'return':0}
