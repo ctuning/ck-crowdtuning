@@ -36,7 +36,8 @@
   "experiment_0_pipeline_update":{
     "pipeline_update": {
       "speed":"yes"
-    }
+    },
+    "features_keys_to_process":["##choices#*"]
   },
   "experiment_1_pipeline_update":{
     "choices_order":[
@@ -58,10 +59,9 @@
    },
 
    "features_keys_to_process":["##choices#*"],
-   "frontier_features_keys_to_ignore":["##choices#compiler_flags#*", "##choices#no_state_check"],
 
-   "frontier_keys":["##characteristics#run#execution_time_kernel_0#min",
-                    "##characteristics#compile#binary_size#min"]
-
+   "frontier_keys":["##characteristics#run#execution_time_kernel_0"],
+   "frontier_margins":[1.08],
+   "frontier_features_keys_to_ignore":["##choices#compiler_flags#*", "##choices#no_state_check"]
   }
 }

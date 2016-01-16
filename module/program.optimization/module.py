@@ -55,14 +55,17 @@ def init(i):
 def log(i):
     """
     Input:  {
-              file_name - file name
-              text      - text
+              file_name     - file name
+              text          - text
+              (skip_header) - if 'yes', do not add header
             }
 
     Output: {
               return       - return code =  0, if successful
                                          >  0, if error
               (error)      - error text if return > 0
+
+              (path)       - path to log file
             }
 
     """
@@ -71,11 +74,14 @@ def log(i):
 
     fn=i['file_name']
     txt=i.get('text','')
+    sh=i.get('skip_header','')
 
     r=ck.get_current_date_time({})
     if r['return']>0: return r
 
-    s='======\n'+r['iso_datetime']+' ; '+txt
+    s=''
+    if sh!='yes': s+='======\n'+r['iso_datetime']+' ; '
+    s+=txt
 
     # Prepare logging
     r=get_path({})
@@ -92,8 +98,7 @@ def log(i):
     except Exception as e: 
        return {'return':1, 'error':'problem logging ('+format(e)+')'}
 
-
-    return {'return':0}
+    return {'return':0, 'path':path}
 
 ##############################################################################
 # test remote access
@@ -180,8 +185,6 @@ def explore(i):
             }
 
     """
-
-    print ('explore program optimizations')
 
     ck.out('')
     ck.out('Command line: ')
@@ -307,8 +310,7 @@ def submit_from_remote(i):
 
     status='Successfully recorded!'
 
-    return {'return':0, 'status':status 
-           }
+    return {'return':0, 'status':status}
 
 ##############################################################################
 # crowdsource program optimization
@@ -345,6 +347,9 @@ def crowdsource(i):
                                              if -1, infinite (or until all choices are explored)
 
               (calibration_time)           - change calibration time (deafult 10 sec.)
+
+              (objective)                  - extension to flat characteristics (min,max,exp) to tune on Pareto
+                                             (default: min - to see what we can squeeze from a given architecture)
 
               (keep_tmp)                   - if 'yes', do not remove run batch
             }
@@ -394,16 +399,31 @@ def crowdsource(i):
     scenario=i.get('crowdsourcing_scenario_uoa','')
 
     iterations=i.get('iterations','')
-    if iterations=='': iterations=30
+    if iterations=='': iterations=3
 
     cat=i.get('calibration_time','')
     if cat=='': cat=10.0
     
+    objective=i.get('objective','')
+    if objective=='': objective='min'
+
     #**************************************************************************************************************
     # Welcome info
     if o=='con' and quiet!='yes':
        ck.out(line)
        ck.out(welcome)
+
+       if quiet!='yes':
+          r=ck.inp({'text':'Press Enter to continue'})
+
+    # Prepare log
+    r=log({'file_name':cfg['log_file_own'], 'text':'initialization'})
+    if r['return']>0: return r
+    p=r['path']
+
+    if o=='con':
+       ck.out(line)
+       ck.out('Info and results of crowdsourced experiments will be appeneded to a local log file: '+p)
 
        if quiet!='yes':
           r=ck.inp({'text':'Press Enter to continue'})
@@ -424,7 +444,7 @@ def crowdsource(i):
     if (user=='' and o=='con' and quiet!='yes') or cu!='':
        if cu=='':
           ck.out(line)
-          r=ck.inp({'text':'If you would like to identify your contributions (and also participate in our monthly prize draws), please enter your email: '})
+          r=ck.inp({'text':'If you would like to identify your contributions as well as participate in monthly prize draws, please enter your email: '})
           xuser=r['string'].strip()
        else:
           xuser=cu.strip()
@@ -560,7 +580,7 @@ def crowdsource(i):
                        iz+=1
 
                    ck.out('')
-                   rx=ck.inp({'text':'Select scenario UOA (or Enter to select 0): '})
+                   rx=ck.inp({'text':'Select scenario number you want to participate in (or Enter to select 0): '})
                    x=rx['string'].strip()
                    if x=='': x='0'
 
@@ -593,6 +613,9 @@ def crowdsource(i):
           ck.out('')
           ck.out('Experiment crowdsourcing scenario: '+sdesc) 
 
+          r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'  Experiment crowdsourcing scenario: '+sdesc+'\n'})
+          if r['return']>0: return r
+
           #**************************************************************************************************************
           # Resolving needed deps for this scenario
           if len(sdeps)==0:
@@ -616,6 +639,13 @@ def crowdsource(i):
                 if rx['return']>0: return rx
 
                 sdeps=rx['deps'] # Update deps (add UOA)
+
+
+
+
+
+
+
 
 
 
@@ -664,16 +694,21 @@ def crowdsource(i):
              dataset_file=choices.get('dataset_file','')
 
              cver=ft.get('compiler_version',{}).get('str','')
+             
+             lx=' * Program:                  '+prog_uoa+'\n' \
+                ' * CMD:                      '+cmd_key+'\n' \
+                ' * Dataset:                  '+dataset_uoa+'\n' \
+                ' * Dataset file:             '+dataset_file+'\n' \
+                ' * Default compiler version: '+cver+'\n' \
 
              if o=='con':
                 ck.out(line)
                 ck.out('Prepared experiment:')
                 ck.out('')
-                ck.out(' * Program:                  '+prog_uoa)
-                ck.out(' * CMD:                      '+cmd_key)
-                ck.out(' * Dataset:                  '+dataset_uoa)
-                ck.out(' * Dataset file:             '+dataset_file)
-                ck.out(' * Default compiler version: '+cver)
+                ck.out(lx)
+
+             r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':lx})
+             if r['return']>0: return r
 
              # Saving pipeline
              pipeline_copy=copy.deepcopy(pipeline)
@@ -686,7 +721,7 @@ def crowdsource(i):
              # Prepare tmp experiment entry
              r=ck.gen_uid({})
              if r['return']>0: return r
-             euoa0='tmp-'+r['data_uid'] # Where to keep experiment
+             euoa0=r['data_uid'] # Where to keep experiment
 
              # Run with default optimization
              if o=='con':
@@ -718,12 +753,17 @@ def crowdsource(i):
                  "record":"yes",
                  "record_uoa":euoa0,
 
+                 "tags":"crowdtuning,tmp",
+
                   'out':oo
                 }
 
              r=ck.merge_dicts({'dict1':ii, 'dict2':pup0})
              if r['return']>0: return r
              ii=r['dict1']
+
+             # Decide how to check characteristics 
+             # (min, max, exp)
 
              r=ck.access(ii)
              if r['return']>0: return r
@@ -733,64 +773,135 @@ def crowdsource(i):
              if fail=='yes':
                 ck.out('')
                 ck.out('WARNING: pipeline execution failed ('+lio.get('fail_reason','')+') ...')
-                ck.out('         will try another experiment ...')
+                ck.out('         Will try another experiment ...')
              else:
                 state=lio.get('state',{})
                 repeat=state.get('repeat','')
                 ftmp_dir=state.get('cur_dir','')
 
-                
+                ri=r['recorded_info']
+                points1=ri.get('points',[])
+                ruid=ri['recorded_uid']
 
-
-
-
-                ################################################################################
-                # Run auto-tuning
-                if o=='con':
-                   ck.out(line)
-                   ck.out('Running program auto-tuning ...')
+                if len(points1)==0:
                    ck.out('')
+                   ck.out('WARNING: new points were not recorded (possibly internal error ...')
+                   ck.out('         Will try another experiment ...')
+                else:
+                   ################################################################################
+                   # Prepare autotuning
+                   pup1=ds.get('experiment_1_pipeline_update',{})
 
-                pipeline=copy.deepcopy(pipeline_copy)
-                pup1=ds.get('experiment_1_pipeline_update',{})
+                   # Update objective
+                   fk=pup1.get('frontier_keys',[])
+                   for l in range(0, len(fk)):
+                        fk[l]=fk[l]+'#'+objective
 
-                ii={'action':'autotune',
+                   iii={'action':'get',
+                        'module_uoa':cfg['module_deps']['experiment'],
+                        'data_uoa':ruid,
+                        'flat_keys_list':fk,
+                        'load_json_files':['features_flat','flat']}
 
-                    'module_uoa':cfg['module_deps']['pipeline'],
-                    'data_uoa':cfg['module_deps']['program'],
-                    'host_os':hos,
-                    'target_os':tos,
-                    'target_device_id':tdid,
+                   # Load default point info
+                   r=ck.access(iii)
+                   if r['return']>0: return r
+                   result1=r.get('points',{})
 
-                    "pipeline":pipeline,
+                   ################################################################################
+                   # Run autotuning
+                   if o=='con':
+                      ck.out(line)
+                      ck.out('Running program auto-tuning ...')
+                      ck.out('')
 
-                    "iterations":iterations,
+                   pipeline=copy.deepcopy(pipeline_copy)
 
-                    "choices_order":[
-                      [
-                      ]
-                    ],
+                   ii={'action':'autotune',
 
-                    "tmp_dir":tmp_dir,
+                       'module_uoa':cfg['module_deps']['pipeline'],
+                       'data_uoa':cfg['module_deps']['program'],
+                       'host_os':hos,
+                       'target_os':tos,
+                       'target_device_id':tdid,
 
-                    "record":"yes",
-                    "record_uoa":euoa0,
+                       "pipeline":pipeline,
 
-                    'out':oo
-                   }
+                       "iterations":iterations,
 
-                r=ck.merge_dicts({'dict1':ii, 'dict2':pup1})
-                if r['return']>0: return r
-                ii=r['dict1']
+                       "choices_order":[ [] ],
 
-                if 'pipeline_update' not in ii: ii['pipeline_update']={}
-                ii['pipeline_update']['repeat']=repeat
+                       "tmp_dir":tmp_dir,
+      
+                       "tags":"crowdtuning,tmp",
 
-                r=ck.access(ii)
-                if r['return']>0: return r
+                       "record":"yes",
+                       "record_uoa":euoa0,
+
+                       'out':oo
+                      }
+
+                   r=ck.merge_dicts({'dict1':ii, 'dict2':pup1})
+                   if r['return']>0: return r
+                   ii=r['dict1']
+
+                   if 'pipeline_update' not in ii: ii['pipeline_update']={}
+                   ii['pipeline_update']['repeat']=repeat
+
+                   r=ck.access(ii)
+                   if r['return']>0: return r
+
+                   ri=r['recorded_info']
+                   points2=ri['points']
 
 
 
+
+
+                   # Should process in scenario ...
+
+                   # Check if there are new points
+                   new=False
+                   for q in points2:
+                       if q not in points1:
+                          new=True
+                          break
+
+
+                   if new:
+                      lx='\n    FOUND BETTER SOLUTION ('+ruid+')!\n'
+
+                      if o=='con':
+                         ck.out(lx)
+
+                      r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':lx})
+                      if r['return']>0: return r
+
+
+
+                      # Load default point info
+                      r=ck.access(iii)
+                      if r['return']>0: return r
+                      result2=r.get('points',{})
+
+
+                      dv1=result1[0]['flat'][fk[0]]
+                      dv2=result2[0]['flat'][fk[0]]
+
+                      if dv2!=0:
+                         speedup=dv1/dv2
+
+                         lx='\n        Speedup: '+('%.3f' % speedup)+'\n'
+                         r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':lx})
+                         if r['return']>0: return r
+
+                         if o=='con':
+                            ck.out(lx)
+
+                     
+
+#                   r=ck.save_json_to_file({'json_file':'d:\\x1.json', 'dict':result1})
+#                   r=ck.save_json_to_file({'json_file':'d:\\x2.json', 'dict':result2})
 
 
 
@@ -813,15 +924,15 @@ def crowdsource(i):
                          ck.out('')
                       pass
 
-                   if o=='con':
-                      ck.out('')
-                      ck.out('Removing experiment entry '+euoa0+' ...')
-
-                   ii={'action':'rm',
-                       'module_uoa':cfg['module_deps']['experiment'],
-                       'data_uoa':euoa0,
-                       'force':'yes'}
-                   r=ck.access(ii)
+#                   if o=='con':
+#                      ck.out('')
+#                      ck.out('Removing experiment entry '+euoa0+' ...')
+#
+#                   ii={'action':'rm',
+#                       'module_uoa':cfg['module_deps']['experiment'],
+#                       'data_uoa':euoa0,
+#                       'force':'yes'}
+#                   r=ck.access(ii)
                    # Skip return code
 
 #          raw_input('xyz')
