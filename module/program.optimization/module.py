@@ -714,7 +714,7 @@ def crowdsource(i):
                 ck.out('')
                 ck.out(lx)
 
-             lx='===============================================================================\n' \
+             lx=' ===============================================================================\n' \
                 ' * Crowdsourcing scenario:   '+sdesc+'\n' \
                 ' * Number of iterations:     '+str(iterations)+'\n'+lx
 
@@ -969,7 +969,7 @@ def show(i):
 
 
     h='<center>\n'
-    h+='<h2>Aggregated results of various crowdsourced experiments</h2>\n'
+    h+='<h2>Aggregated results of crowdsourced experiments</h2>\n'
 
     # Check host URL prefix and default module/action
     url0=ck.cfg.get('wfe_url_prefix','')
@@ -1035,7 +1035,7 @@ def show(i):
         'name':fscenario,
         'onchange':onchange, 
         'skip_sort':'yes',
-        'style':'width:500px;'}
+        'style':'width:400px;'}
     if scenario!='': ii['selected_value']=scenario
     r=ck.access(ii)
     if r['return']>0: return r
