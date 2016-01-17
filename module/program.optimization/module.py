@@ -1052,7 +1052,7 @@ def show(i):
     if scenario!='':
        h+='<p>\n'
        h+='<center>\n'
-       h+='<div id="ck_box_with_shadow">\n'
+#       h+='<div id="ck_box_with_shadow">\n'
 
        # Get from scenario
        i['action']='show'
@@ -1063,7 +1063,7 @@ def show(i):
        else:
           h+=r['html']
 
-       h+='</div>\n'
+#       h+='</div>\n'
        h+='</center>\n'
 
     h+='<p><center><a href="https://github.com/ctuning/ck/wiki/Advanced_usage_crowdsourcing">Related links</a></center>'
