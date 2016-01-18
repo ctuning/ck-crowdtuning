@@ -149,6 +149,7 @@ def process(i):
               record_repo_uoa
               record_subrepo_uoa
               (iterations)
+              (speedup_threshold)
             }
 
     Output: {
@@ -174,9 +175,12 @@ def process(i):
     points2=i.get('points2',[])
     result2=i.get('result2',[])
 
+    st=i.get('speedup_threshold','')
+    if st=='': st=cfg['speedup_threshold']
+
     iterations=i.get('iterations','')
 
-    rp='Better solution was not found ...'
+    rp='\nBetter solution was not found ...'
 
     # Prepare meta
     plat_uid=pif.get('platform_uid','')
@@ -184,7 +188,15 @@ def process(i):
     plat_os_uid=pif.get('os_uid','')
     plat_acc_uid=pif.get('acc_uid','')
 
+    import json
+
     # Check if any older solution got updated
+    if o=='con':
+       ck.out('')
+       ck.out('DEBUG info to check better solutions:')
+       ck.out('  Original points: '+json.dumps(points1))
+       ck.out('  New points:      '+json.dumps(points2))
+
     new=False
     if len(points2)>0: # check that not empty at all
        for q in points1:
@@ -211,52 +223,53 @@ def process(i):
 
           cdesc=pipeline.get('choices_desc',{})
 
-          dv1=r1['flat'].get(kt,None)
-          dv2=r2['flat'].get(kt,None)
+          dv1=behavior1.get(kt,None)
+          dv2=behavior2.get(kt,None)
 
           if dv1!=None and dv2!=None and dv2!=0:
              speedup=dv1/dv2
-          
-             r=rebuild_cmd({'choices':choices1,
-                            'choices_order':ft1.get('choices_order',[]),
-                            'choices_desc':cdesc})
-             if r['return']>0: return r
 
-             pchoices1=r['pruned_choices'] # only flags
-             cmd1=r['cmd']
+             if speedup>=st:
+                r=rebuild_cmd({'choices':choices1,
+                               'choices_order':ft1.get('choices_order',[]),
+                               'choices_desc':cdesc})
+                if r['return']>0: return r
 
-             r=rebuild_cmd({'choices':choices2,
-                            'choices_order':ft2.get('choices_order',[]),
-                            'choices_desc':cdesc})
-             if r['return']>0: return r
+                pchoices1=r['pruned_choices'] # only flags
+                cmd1=r['cmd']
 
-             pchoices2=r['pruned_choices'] # only flags
-             cmd2=r['cmd']
+                r=rebuild_cmd({'choices':choices2,
+                               'choices_order':ft2.get('choices_order',[]),
+                               'choices_desc':cdesc})
+                if r['return']>0: return r
 
-             rp='\n' \
-                '   Better solution FOUND (Speedup = '+('%.2f' % speedup)+')\n' \
-                '    * Opt1:    '+cmd1+'\n' \
-                '    * Opt2:    '+cmd2+'\n' \
+                pchoices2=r['pruned_choices'] # only flags
+                cmd2=r['cmd']
 
-             # Add new solution (possibly remotely)
-             ruoa=i.get('record_repo_uoa','')
-             rruoa=i.get('record_subrepo_uoa','')
+                rp='\n' \
+                   '   Better solution FOUND (Speedup = '+('%.2f' % speedup)+')\n' \
+                   '    * Opt1:    '+cmd1+'\n' \
+                   '    * Opt2:    '+cmd2+'\n' \
 
-             r=ck.access({'action':'add_solution',
-                          'module_uoa':work['self_module_uoa'],
-                          'repo_uoa': ruoa,
-                          'data_uoa':cver,
-                          'remote_repo_uoa': rruoa,
-                          'iterations':iterations,
-                          'speedup':speedup,
-                          'pchoices1':pchoices1,
-                          'cmd1':cmd1,
-                          'pchoices2':pchoices2,
-                          'cmd2':cmd2,
-                          'choices':choices2,
-                          'platform_features':pif,
-                          'out':oo})
-             if r['return']>0: return r
+                # Add new solution (possibly remotely)
+                ruoa=i.get('record_repo_uoa','')
+                rruoa=i.get('record_subrepo_uoa','')
+
+                r=ck.access({'action':'add_solution',
+                             'module_uoa':work['self_module_uoa'],
+                             'repo_uoa': ruoa,
+                             'data_uoa':cver,
+                             'remote_repo_uoa': rruoa,
+                             'iterations':iterations,
+                             'speedup':speedup,
+                             'pchoices1':pchoices1,
+                             'cmd1':cmd1,
+                             'pchoices2':pchoices2,
+                             'cmd2':cmd2,
+                             'choices':choices2,
+                             'platform_features':pif,
+                             'out':oo})
+                if r['return']>0: return r
 
     return {'return':0, 'report':rp}
 
@@ -355,6 +368,7 @@ def add_solution(i):
     duoa=i.get('data_uoa','')
 
     if o=='con': 
+       ck.out('')
        ck.out('  Searching solutions ('+duoa+') ...')
 
     ii={'action':'search',

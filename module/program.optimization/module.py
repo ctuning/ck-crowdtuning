@@ -327,6 +327,7 @@ def crowdsource(i):
               (device_id)                  - device id if remote (such as adb)
 
               (quiet)                      - do not ask questions, but select random ...
+              (skip_welcome)               - if 'yes', do not print welcome header
               
               (skip_exchange)              - if 'yes', do not exchange platform info
                                             (development mode)
@@ -341,6 +342,8 @@ def crowdsource(i):
 
               (scenario)                   - module UOA of crowdsourcing scenario
 
+              (seed)                       - autotuning seed
+
               (program_tags)               - force selection of programs by tags
 
               (program_uoa)                - force program UOA
@@ -353,10 +356,18 @@ def crowdsource(i):
 
               (calibration_time)           - change calibration time (deafult 10 sec.)
 
+              (repetitions)                - statistical repetitions of a given experiment
+
               (objective)                  - extension to flat characteristics (min,max,exp) to tune on Pareto
                                              (default: min - to see what we can squeeze from a given architecture)
 
               (keep_tmp)                   - if 'yes', do not remove run batch
+
+              (only_one_run)               - if 'yes', run scenario ones (useful for autotuning a given program)
+
+              (ask_pipeline_choices)       - if 'yes', ask for each pipeline choice, otherwise random selection 
+
+              (speedup_threshold)          - if > 1.0, use it to report speedup
             }
 
     Output: {
@@ -407,6 +418,10 @@ def crowdsource(i):
 
     scenario=i.get('crowdsourcing_scenario_uoa','')
 
+    apc=i.get('ask_pipeline_choices','')
+
+    rep=i.get('repetitions','')
+
     iterations=i.get('iterations','')
     if iterations=='': iterations=30
 
@@ -416,9 +431,13 @@ def crowdsource(i):
     objective=i.get('objective','')
     if objective=='': objective='min'
 
+    seed=i.get('seed','')
+
+    st=i.get('speedup_threshold','')
+
     #**************************************************************************************************************
     # Welcome info
-    if o=='con' and quiet!='yes':
+    if o=='con' and quiet!='yes' and i.get('skip_welcome','')!='yes':
        ck.out(line)
        ck.out(welcome)
 
@@ -432,9 +451,10 @@ def crowdsource(i):
 
     if o=='con':
        ck.out(line)
-       ck.out('Info and results of crowdsourced experiments will be appeneded to a local log file: '+p)
+       ck.out('Experimental results will be appeneded to a local log file: '+p)
 
        if quiet!='yes':
+          ck.out('')
           r=ck.inp({'text':'Press Enter to continue'})
 
     #**************************************************************************************************************
@@ -609,7 +629,7 @@ def crowdsource(i):
           sdesc=rs.get('data_name','')
 
           if i.get('program_tags','')!='':
-             program_tags=i['program_tags']
+             program_tags=i['program_tags'].strip()
           else:
              program_tags=ds.get('program_tags','')
 
@@ -672,12 +692,13 @@ def crowdsource(i):
               'cmd_key':cmd_key,
               'dataset_uoa':dataset_uoa,
               'dataset_file':dataset_file,
-              'random':'yes',
               'skip_local':'yes',
               'calibration_time':cat,
               'generate_rnd_tmp_dir':'yes', # to be able to run crowdtuning in parallel on the same machine ...
               'prepare':'yes',
               'out':oo}
+          if apc!='yes':
+             ii['random']='yes'
           r=ck.access(ii)
           if r['return']>0: return r
 
@@ -742,6 +763,8 @@ def crowdsource(i):
 
              pipeline=copy.deepcopy(pipeline_copy)
              pup0=ds.get('experiment_0_pipeline_update',{})
+
+             if rep!='': pup0['repetitions']=rep
 
              # Check (multi-objective) characteristics to process
              fk=ds.get('frontier_keys',[])
@@ -830,6 +853,9 @@ def crowdsource(i):
                       pup1=ds.get('experiment_1_pipeline_update',{})
                       pup1['frontier_keys']=fk
 
+                      if rep!='': pup1['repetitions']=rep
+                      if seed!='': pup1['seed']=seed
+
                       ################################################################################
                       # Run autotuning
                       if o=='con':
@@ -896,6 +922,7 @@ def crowdsource(i):
                        'record_repo_uoa':er,
                        'record_subrepo_uoa':esr,
                        'iterations':iterations,
+                       'speedup_threshold':st,
                        'out':oo}
                    r=ck.access(ii)
                    if r['return']>0: return r
@@ -947,6 +974,8 @@ def crowdsource(i):
 
 #          raw_input('xyz')
 
+       if i.get('only_one_run','')=='yes':
+          finish=True
 
     return {'return':0}
 

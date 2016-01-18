@@ -67,7 +67,7 @@
       "##choices#no_state_check"
     ], 
     "frontier_margins": [
-      1.08
+      1.0
     ], 
     "pipeline_update": {
       "best_base_flag": "yes"
@@ -89,5 +89,6 @@
   "tags": [
     "program optimization", 
     "crowdsource"
-  ]
+  ],
+  "speedup_threshold":1.08
 }
