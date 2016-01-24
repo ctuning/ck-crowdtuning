@@ -27,10 +27,12 @@ welcome   = "Dear friends!\n\n" \
             " to the public Collective Knowledge Server to select unexplored optimization points" \
             " or validate previously found optimizations!\n\n" \
             "You can find more info about optimization crowdsourcing including results here:\n" \
-            " * http://cTuning.org/crowdsource-optimization\n" \
+            " * http://cTuning.org/crowdsource-optimization\n\n" \
             "We would like to sincerely thank you for participating in this community effort" \
             " and help us optimize computer systems to accelerate knowledge discovery and boost innovation " \
-            " in science and technology while making our planet greener!\n" \
+            " in science and technology while making our planet greener!\n\n" \
+            "Finally, performance of some systems may be chaotic (due to internal adaptation such as in Intel Core processors)!\n" \
+            "  For now, we skip such results and we will later add plugins for statistical comparison of empirical results from our past R&D\n"
 
 form_name='ck_cresults_form'
 fscenario='scenario'
