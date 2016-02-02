@@ -1,5 +1,12 @@
 {
   "actions": {
+    "add_solution": {
+      "desc": "add new solution", 
+      "for_web": "yes"
+    }, 
+    "compare_results": {
+      "desc": "compare results (if similar or not)"
+    }, 
     "crowdsource": {
       "desc": "crowdsource program optimization"
     }, 
@@ -9,6 +16,12 @@
     "generate_for_remote": {
       "desc": "generate experiment pack for crowdsourcing in remote hardware (mobile phones or tablets)", 
       "for_web": "yes"
+    }, 
+    "initialize": {
+      "desc": "initialize experiment"
+    }, 
+    "run": {
+      "desc": "perform program optimization"
     }, 
     "show": {
       "desc": "show results via web service", 
@@ -32,6 +45,9 @@
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 
   "env_key_crowdsource_path": "CK_CROWDSOURCE_PATH", 
+  "file_best_solution": "best-", 
+  "file_checked_solutions": "checked-", 
+  "file_solution_extension": "s-", 
   "license": "See CK LICENSE.txt for licensing details", 
   "log_file_generate": "log.generate.txt", 
   "log_file_own": "log.crowdsourced.experiments.txt", 
@@ -41,13 +57,13 @@
     "cfg": "b34231a3467566f8", 
     "env": "9b9b3208ac44b891", 
     "experiment": "bc0409fb61f0aa82", 
+    "math.conditions": "d5ac649c14325bca", 
     "module": "032630d041b4fd8a", 
     "pipeline": "db25414b48b4ffb3", 
     "platform": "707ccdfe444cafac", 
-    "program": "b0ac08fe1d3c2615",
-    "wfe":"1e4e644996b7f2a0"
+    "program": "b0ac08fe1d3c2615", 
+    "wfe": "1e4e644996b7f2a0"
   }, 
-  "tags": [
-    "crowdsource experiments"
-  ]
+  "solutions_modules_tags": "crowdsoure,experiments,program optimization", 
+  "tags": []
 }

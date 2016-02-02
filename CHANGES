@@ -1,3 +1,6 @@
+* 2016.02.02 * Major engine update with various GCC autotuning scenarios. 
+               New crowd-tuning including LLVM/OpenCL is on the way...
+
 * 2016.01.15 * GCC crowd-tuning (up to speed up with margins)
              * Adding repo dependency on ck-web (to visualize results)
 

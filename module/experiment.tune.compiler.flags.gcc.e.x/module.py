@@ -1,5 +1,5 @@
 #
-# Collective Knowledge (crowdsource program benchmarking)
+# Collective Knowledge (compiler flags crowdtuning (crowdsource autotuning via spare computers such as mobile devices))
 #
 # See CK LICENSE.txt for licensing details
 # See CK COPYRIGHT.txt for copyright details
@@ -35,17 +35,23 @@ def init(i):
 
 def show(i):
     """
-    Input:  {
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-            }
-
+    See in module "experiment.tune.compiler.flags.gcc"
     """
 
-    h='Under development ...'
+    i['module_uoa']='experiment.tune.compiler.flags.gcc'
+    i['module_cfg']=cfg
+    i['module_work']=work
+    return ck.access(i)
 
-    return {'return':0, 'html':h}
+##############################################################################
+# crowdsource these experiments
+
+def crowdsource(i):
+    """
+    See in module "experiment.tune.compiler.flags.gcc"
+    """
+
+    i['module_uoa']='experiment.tune.compiler.flags.gcc'
+    i['module_cfg']=cfg
+    i['module_work']=work
+    return ck.access(i)
