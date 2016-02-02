@@ -123,7 +123,7 @@
   "record_keys": [
     "##characteristics#*"
   ], 
-  "reference_threshold": 0.03, 
+  "reference_threshold": 0.04, 
   "solution_conditions": [
     [
       "##characteristics#run#execution_time_kernel_0$#objective#$", 
@@ -147,7 +147,7 @@
       "##characteristics#run#execution_time_kernel_0#range_percent", 
       "", 
       "<", 
-      0.03
+      0.04
     ]
   ], 
   "tags": [
