@@ -1019,6 +1019,11 @@ def run(i):
        mmeta['scenario_desc']=sdesc
        mmeta['subscenario_desc']=ssdesc
 
+       mmeta['program_uoa']=prog_uoa
+       mmeta['cmd_key']=cmd_key
+       mmeta['dataset_uoa']=cmd_key
+       mmeta['dataset_file']=dataset_file
+
        euoa0=i.get('record_uoa','')
        puid0=''
        found=False
@@ -1027,6 +1032,8 @@ def run(i):
           if o=='con':
              ck.out('')
              ck.out('Searching if similar experiment already exists in your local repo ...')
+
+          print (mmeta)
 
           # Try to find in local experiments by meta
           jj={'action':'get',
@@ -1594,6 +1601,11 @@ def compare_results(i):
                  fine=False
                  break
               else:
+                 if v1==0:
+                    report='  Difference for "'+k+'" - v1=0'
+                    fine=False
+                    break
+
                  d=float(v0)/float(v1)
                  if d<(1-t) or d>(1+t):
                     report='  key "'+k+'" variation out of normal ('+('%2.3f'%d)+')'
