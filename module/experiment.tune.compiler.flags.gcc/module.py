@@ -520,3 +520,23 @@ def crowdsource(i):
 
 
     return {'return':0, 'platform_info':pi}
+
+##############################################################################
+# view solutions in html
+
+def html_viewer(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    h='test'
+
+    return {'return':0, 'html':h}

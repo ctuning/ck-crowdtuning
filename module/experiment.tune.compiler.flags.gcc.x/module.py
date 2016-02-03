@@ -55,3 +55,24 @@ def crowdsource(i):
     i['module_cfg']=cfg
     i['module_work']=work
     return ck.access(i)
+
+##############################################################################
+# view solutions in html
+
+def html_viewer(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    i['module_uoa']='experiment.tune.compiler.flags.gcc'
+    i['module_cfg']=cfg
+    i['module_work']=work
+    return ck.access(i)

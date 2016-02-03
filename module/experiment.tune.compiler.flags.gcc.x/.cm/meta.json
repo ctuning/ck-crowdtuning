@@ -3,6 +3,10 @@
     "crowdsource": {
       "desc": "crowdsource these experiments"
     }, 
+    "html_viewer": {
+      "desc": "view solutions in html", 
+      "for_web": "yes"
+    }, 
     "prune": {
       "desc": "prune compiler flags"
     }, 
