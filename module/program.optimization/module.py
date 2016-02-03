@@ -507,10 +507,8 @@ def show(i):
                        h+=' <tr><td>'+qd+':</td><td>'+r['html']+'</td></tr>\n'
 
                    h+='</table>\n'
-
-
-             h+='</div>\n'
-             h+='<p>\n'
+                   h+='</div>\n'
+                   h+='<p>\n'
 
           # Get from scenario
           i['action']='show'
