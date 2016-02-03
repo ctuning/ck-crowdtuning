@@ -35,13 +35,16 @@ welcome   = "Dear friends!\n\n" \
             "  For now, we skip such results and we will later add plugins for statistical comparison of empirical results from our past R&D\n"
 
 form_name='ck_cresults_form'
-fscenario='scenario'
-fprune='pruning'
 onchange='document.'+form_name+'.submit();'
+
+wscenario='scenario'
+wprune='pruning'
 
 fstats='stats.json'
 
 iuoa='index'
+
+key_prune='__web_prune__'
 
 ##############################################################################
 # Initialize module
@@ -438,7 +441,7 @@ def show(i):
        ii={'action':'create_selector',
            'module_uoa':cfg['module_deps']['wfe'],
            'data':dls,
-           'name':fscenario,
+           'name':wscenario,
            'onchange':onchange, 
            'skip_sort':'yes',
 #           'style':'width:400px;',
@@ -450,7 +453,6 @@ def show(i):
        h+='</center>\n'
 
        h+='<p>\n'
-       h+='<center>\n'
 
        # Check scenario
        if scenario!='':
@@ -462,8 +464,9 @@ def show(i):
           if r['return']>0: return r
           ds=r['dict']
 
-          pr=ds.get('prune_results',{})
-          if len(pr)>0:
+          pr=ds.get('prune_results',[])
+          ipr=len(pr)
+          if ipr>0:
              # Try to find index
              ii={'action':'load',
                  'module_uoa':scenario,
@@ -471,6 +474,8 @@ def show(i):
              rx=ck.access(ii)
              if rx['return']==0:
                 p=rx['path']
+
+                mprune={}
 
                 px=os.path.join(p, fstats)
                 if os.path.isfile(px):
@@ -480,6 +485,7 @@ def show(i):
 
                    mm=dd.get('meta',{})
 
+                   h+='<center>\n'
                    h+='<div id="ck_box_with_shadow">\n'
                    h+='<center><small><b>Prune solutions:</b></small></center>\n'
 
@@ -490,6 +496,12 @@ def show(i):
 
                        l=mm.get(qi,{})
 
+                       kk=key_prune+qi
+                       vv=i.get(kk,'')
+
+                       if vv!='':
+                          mprune[qi]=vv
+
                        dt=[{'name':'', 'value':''}]
                        for k in sorted(l):
                            dt.append({'name':k, 'value':k}) 
@@ -497,10 +509,10 @@ def show(i):
                        ii={'action':'create_selector',
                            'module_uoa':cfg['module_deps']['wfe'],
                            'data':dt,
-                           'name':fprune,
+                           'name':kk,
                            'onchange':onchange, 
                            'skip_sort':'yes',
-                           'selected_value':''}
+                           'selected_value':vv}
                        r=ck.access(ii)
                        if r['return']>0: return r
 
@@ -509,17 +521,100 @@ def show(i):
                    h+='</table>\n'
                    h+='</div>\n'
                    h+='<p>\n'
+                   h+='</center>\n'
 
-          # Get from scenario
-          i['action']='show'
-          i['module_uoa']=scenario
-          r=ck.access(i)
-          if r['return']>0:
-             h+='<b>Error processing scenario results</b>: '+r['error']+'!'
-          else:
-             h+=r['html']
+                # Prune
+                ii={'action':'search',
+                    'common_func':'yes',
+                    'module_uoa': scenario,
+                    'search_dict':{'meta':mprune},
+                    'add_meta':'yes'
+                   }
+                r=ck.access(ii)
+                if r['return']>0: return r
+                rl=r['lst']
 
-       h+='</center>\n'
+                if ipr==1:
+                   rl=sorted(rl, key=lambda a: a.get('meta',{}).get('meta',{}).get(pr[0]['id'],''))
+                elif ipr==2:
+                   rl=sorted(rl, key=lambda a: (a.get('meta',{}).get('meta',{}).get(pr[0]['id'],''), \
+                                                a.get('meta',{}).get('meta',{}).get(pr[1]['id'],'')))
+                elif ipr>2:
+                   rl=sorted(rl, key=lambda a: (a.get('meta',{}).get('meta',{}).get(pr[0]['id'],''), \
+                                                a.get('meta',{}).get('meta',{}).get(pr[1]['id'],''), \
+                                                a.get('meta',{}).get('meta',{}).get(pr[2]['id'],'')))
+
+                irl=len(rl)
+                if irl==0:
+                   h+='<b>No solutions found!</b>'
+                else:
+#                   h+=str(len(rl))+' entries found!</b>'
+
+                   if irl>100: 
+                      h+=str(irl)+' entries found - showing first 100!</b>'
+                      irl=100
+
+                  # Check host URL prefix and default module/action
+                   url0=ck.cfg.get('wfe_url_prefix','')
+   
+                   h+='<center>\n'
+                   h+='<table class="ck_table" border="0">\n'
+
+                   h+=' <tr style="background-color:#cfcfff;">\n'
+                   h+='  <td><b>\n'
+                   h+='   #\n'
+                   h+='  </b></td>\n'
+                   h+='  <td><b>\n'
+                   h+='   <a href="'+url0+'wcid='+scenario+':">Entry UID</a>\n'
+                   h+='  </b></td>\n'
+                   for k in pr:
+                       qd=k.get('desc','')
+                       qi=k.get('id','')
+
+                       h+='  <td><b>\n'
+                       h+='   '+qd+'\n'
+                       h+='  </b></td>\n'
+                   h+=' </tr>\n'
+
+                   iq=0
+                   for q in range(0, irl):
+                       iq+=1
+
+                       qq=rl[q]
+
+                       duid=qq['data_uid']
+
+                       dm=qq['meta'].get('meta',{})
+
+                       h+='<tr>'
+                       h+=' <td>'+str(iq)+'</td>'
+                       h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">'+duid+'</a>\n'
+
+                       for k in pr:
+                           qd=k.get('desc','')
+                           qi=k.get('id','')
+
+                           h+='  <td>'
+                           h+='   '+dm.get(qi,'')
+                           h+='  </td>'
+                       
+                       h+='</tr>'
+
+                   h+='</table>\n'
+                   h+='</center>\n'
+
+
+                   # Get from scenario
+                   i['action']='show'
+                   i['module_uoa']=scenario
+                   r=ck.access(i)
+                   if r['return']>0:
+                      h+='<b>Error processing scenario results</b>: '+r['error']+'!'
+                   else:
+                      h+='<center>\n'
+                      h+='<p>\n'
+#                      h+=r['html']
+                      h+='</center>\n'
 
     h+='<p><center><a href="https://github.com/ctuning/ck/wiki/Advanced_usage_crowdsourcing">Related links</a></center>'
 
