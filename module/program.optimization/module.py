@@ -565,7 +565,7 @@ def show(i):
                    h+='   #\n'
                    h+='  </b></td>\n'
                    h+='  <td><b>\n'
-                   h+='   <a href="'+url0+'wcid='+scenario+':">Entry UID</a>\n'
+                   h+='   <a href="'+url0+'wcid='+scenario+':">Solutions UID</a>\n'
                    h+='  </b></td>\n'
                    for k in pr:
                        qd=k.get('desc','')

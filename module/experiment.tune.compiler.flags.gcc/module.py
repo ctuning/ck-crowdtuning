@@ -482,6 +482,8 @@ def crowdsource(i):
 
     ii['platform_info']=pi
 
+    ii['program_tags']=program_tags
+
     ii['scenario_module_uoa']=work['self_module_uid']
 
     ii['experiment_meta']={'cpu_name':cpu_name,
