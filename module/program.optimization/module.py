@@ -1462,10 +1462,16 @@ def run(i):
                       ck.out('')
                       ck.out('       Packing solution(s) ...')
 
+                   # Add original points and remove delete ones
+                   ppoints=[]
+                   for q in points2:
+                       if q not in dpoints:
+                          ppoints.append(q)
+
                    rx=ck.access({'action':'pack',
                                  'module_uoa':cfg['module_deps']['experiment'],
                                  'data_uoa':euoa0,
-                                 'points':gpoints})
+                                 'points':ppoints})
                    if rx['return']>0: return rx
                    ps=rx['file_content_base64']
 
