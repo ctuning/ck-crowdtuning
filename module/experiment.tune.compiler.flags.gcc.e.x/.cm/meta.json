@@ -122,6 +122,16 @@
   ], 
   "priority": -110, 
   "program_tags": "crowd-tuning,small", 
+  "prune_results": [
+    {
+      "desc": "Compiler", 
+      "id": "compiler"
+    }, 
+    {
+      "desc": "CPU", 
+      "id": "cpu_name"
+    }
+  ], 
   "record_keys": [
     "##characteristics#*"
   ], 
@@ -157,9 +167,5 @@
     "experiments", 
     "program optimization", 
     "autotuning"
-  ],
-  "prune_results":[
-    {"id":"compiler", "desc":"Compiler"},
-    {"id":"cpu_name", "desc":"CPU"}
   ]
 }

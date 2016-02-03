@@ -123,6 +123,16 @@
   ], 
   "priority": -100, 
   "program_tags": "crowd-tuning,small", 
+  "prune_results": [
+    {
+      "desc": "Compiler", 
+      "id": "compiler"
+    }, 
+    {
+      "desc": "CPU", 
+      "id": "cpu_name"
+    }
+  ], 
   "record_keys": [
     "##characteristics#*"
   ], 
@@ -145,7 +155,7 @@
       "_imp", 
       "==", 
       0
-    ],
+    ], 
     [
       "##characteristics#run#execution_time_kernel_0#range_percent", 
       "", 
