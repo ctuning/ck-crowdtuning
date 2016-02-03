@@ -65,5 +65,6 @@
     "wfe": "1e4e644996b7f2a0"
   }, 
   "solutions_modules_tags": "crowdsoure,experiments,program optimization", 
-  "tags": []
+  "tags": [],
+  "min_kernel_dep":"1.6.12x"
 }

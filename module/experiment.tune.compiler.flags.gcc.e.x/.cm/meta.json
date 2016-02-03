@@ -157,5 +157,9 @@
     "experiments", 
     "program optimization", 
     "autotuning"
+  ],
+  "prune_results":[
+    {"id":"compiler", "desc":"Compiler"},
+    {"id":"cpu_name", "desc":"CPU"}
   ]
 }

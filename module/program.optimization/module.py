@@ -36,7 +36,12 @@ welcome   = "Dear friends!\n\n" \
 
 form_name='ck_cresults_form'
 fscenario='scenario'
+fprune='pruning'
 onchange='document.'+form_name+'.submit();'
+
+fstats='stats.json'
+
+iuoa='index'
 
 ##############################################################################
 # Initialize module
@@ -362,6 +367,7 @@ def show(i):
 
     """
 
+    import os
 
     h='<center>\n'
     h+='<h2>Aggregated results of crowdsourced experiments</h2>\n'
@@ -404,56 +410,117 @@ def show(i):
         'module_uoa':cfg['module_deps']['module'],
         'add_meta':'yes',
         'add_info':'yes',
-        'tags':'program optimization, crowdsource'}
+        'tags':'crowdsource,experiments,program optimization'}
     r=ck.access(ii)
     if r['return']>0: return r
 
     xls=r['lst']
-    ls=sorted(xls, key=lambda v: (int(v.get('meta',{}).get('priority',0)), v['data_uoa']))
 
-    ii={'action':'convert_ck_list_to_select_data',
-        'module_uoa':cfg['module_deps']['wfe'],
-        'lst':ls, 
-        'add_empty':'yes',
-        'sort':'no',
-        'value_uoa':scenario,
-        'ignore_remote':'yes'}
+    if len(xls)==0:
+       h+='<b>Can\'t find any local expeimrent crowdsourcing scenarios ...</b>'
+    else:
+       ls=sorted(xls, key=lambda v: (int(v.get('meta',{}).get('priority',0)), v['data_uoa']))
 
-    r=ck.access(ii)
-    if r['return']>0: return r
-    dls=r['data']
-    if r.get('value_uid','')!='': scenario=r['value_uid']
+       ii={'action':'convert_ck_list_to_select_data',
+           'module_uoa':cfg['module_deps']['wfe'],
+           'lst':ls, 
+           'add_empty':'yes',
+           'sort':'no',
+           'value_uoa':scenario,
+           'ignore_remote':'yes'}
+       r=ck.access(ii)
+       if r['return']>0: return r
+       dls=r['data']
+       if r.get('value_uid','')!='': scenario=r['value_uid']
 
-    ii={'action':'create_selector',
-        'module_uoa':cfg['module_deps']['wfe'],
-        'data':dls,
-        'name':fscenario,
-        'onchange':onchange, 
-        'skip_sort':'yes',
-        'style':'width:400px;'}
-    if scenario!='': ii['selected_value']=scenario
-    r=ck.access(ii)
-    if r['return']>0: return r
-    h+='Select crowdsourcing scenario: '+r['html']
+       if scenario=='': scenario=ls[0]['data_uid']
 
-    h+='</center>\n'
+       ii={'action':'create_selector',
+           'module_uoa':cfg['module_deps']['wfe'],
+           'data':dls,
+           'name':fscenario,
+           'onchange':onchange, 
+           'skip_sort':'yes',
+#           'style':'width:400px;',
+           'selected_value':scenario}
+       r=ck.access(ii)
+       if r['return']>0: return r
+       h+='Select crowdsourcing scenario: '+r['html']
 
-    # Check scenario
-    if scenario!='':
+       h+='</center>\n'
+
        h+='<p>\n'
        h+='<center>\n'
-#       h+='<div id="ck_box_with_shadow">\n'
 
-       # Get from scenario
-       i['action']='show'
-       i['module_uoa']=scenario
-       r=ck.access(i)
-       if r['return']>0:
-          h+='<b>Error processing scenario results</b>: '+r['error']+'!'
-       else:
-          h+=r['html']
+       # Check scenario
+       if scenario!='':
+          # Load scenario
+          ii={'action':'load',
+              'module_uoa':cfg['module_deps']['module'],
+              'data_uoa':scenario}
+          r=ck.access(ii)
+          if r['return']>0: return r
+          ds=r['dict']
 
-#       h+='</div>\n'
+          pr=ds.get('prune_results',{})
+          if len(pr)>0:
+             # Try to find index
+             ii={'action':'load',
+                 'module_uoa':scenario,
+                 'data_uoa':iuoa}
+             rx=ck.access(ii)
+             if rx['return']>0: return rx
+             p=rx['path']
+
+             px=os.path.join(p, fstats)
+             if os.path.isfile(px):
+                rx=ck.load_json_file({'json_file':px})
+                if rx['return']>0: return rx
+                dd=rx['dict']
+
+                mm=dd.get('meta',{})
+
+                h+='<div id="ck_box_with_shadow">\n'
+                h+='<center><small><b>Prune solutions:</b></small></center>\n'
+
+                h+='<table border="0" cellpadding="5" cellspacing="0">\n'
+                for q in pr:
+                    qd=q.get('desc','')
+                    qi=q.get('id','')
+
+                    l=mm.get(qi,{})
+
+                    dt=[{'name':'', 'value':''}]
+                    for k in sorted(l):
+                        dt.append({'name':k, 'value':k}) 
+
+                    ii={'action':'create_selector',
+                        'module_uoa':cfg['module_deps']['wfe'],
+                        'data':dt,
+                        'name':fprune,
+                        'onchange':onchange, 
+                        'skip_sort':'yes',
+                        'selected_value':''}
+                    r=ck.access(ii)
+                    if r['return']>0: return r
+
+                    h+=' <tr><td>'+qd+':</td><td>'+r['html']+'</td></tr>\n'
+
+                h+='</table>\n'
+
+
+             h+='</div>\n'
+             h+='<p>\n'
+
+          # Get from scenario
+          i['action']='show'
+          i['module_uoa']=scenario
+          r=ck.access(i)
+          if r['return']>0:
+             h+='<b>Error processing scenario results</b>: '+r['error']+'!'
+          else:
+             h+=r['html']
+
        h+='</center>\n'
 
     h+='<p><center><a href="https://github.com/ctuning/ck/wiki/Advanced_usage_crowdsourcing">Related links</a></center>'
@@ -606,6 +673,87 @@ def add_solution(i):
        }
     r=ck.access(ii)
     if r['return']>0: return r
+
+    # *************************************************************** Adding some stats
+    # Search if exists
+    if o=='con': 
+       ck.out('')
+       ck.out('  Reloading index entry for statistics and locking ...')
+
+    ii={'action':'load',
+        'common_func':'yes',
+        'repo_uoa': ruoa,
+        'module_uoa': smuoa,
+        'data_uoa':iuoa,
+        'get_lock':'yes',
+        'create_if_not_found':'yes',
+        'lock_expire_time':120
+       }
+    r=ck.access(ii)
+
+    p=r['path']
+    d=r['dict']
+    lock_uid=r['lock_uid']
+
+    # Try to load keys.json
+    dd={}
+    px=os.path.join(p, fstats)
+    if os.path.isfile(px):
+       rx=ck.load_json_file({'json_file':px})
+       if rx['return']>0: return rx
+       dd=rx['dict']
+
+    mm=dd.get('meta',None)
+    if mm==None:
+       mm={}
+
+    for q in meta:
+        qq=meta[q]
+
+        v=mm.get(q, None)
+        if v==None:
+           v={}
+
+        v1=v.get(qq, None)
+        if v1==None:
+           v1={}
+
+        vv=v1.get('touched',None)
+        if vv==None: 
+           vv=0
+        vv=int(vv)
+        vv+=1
+
+        v1['touched']=vv
+
+        v[qq]=v1
+
+        mm[q]=v
+
+    dd['meta']=mm
+
+    # Saving stats
+    rx=ck.save_json_to_file({'json_file':px, 'dict':dd})
+    if rx['return']>0: return rx
+
+    # Updating and unlocking entry *****************************************************
+    if o=='con': 
+       ck.out('  Updating entry and unlocking ...')
+
+    ii={'action':'update',
+        'common_func':'yes',
+        'repo_uoa': ruoa,
+        'module_uoa': smuoa,
+        'data_uoa':iuoa,
+        'ignore_update':'yes',
+        'dict':d,
+        'substitute':'yes',
+        'unlock_uid':lock_uid
+       }
+    r=ck.access(ii)
+    if r['return']>0: return r
+
+
 
     return {'return':0}
 
