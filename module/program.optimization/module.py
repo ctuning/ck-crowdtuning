@@ -469,44 +469,44 @@ def show(i):
                  'module_uoa':scenario,
                  'data_uoa':iuoa}
              rx=ck.access(ii)
-             if rx['return']>0: return rx
-             p=rx['path']
+             if rx['return']==0:
+                p=rx['path']
 
-             px=os.path.join(p, fstats)
-             if os.path.isfile(px):
-                rx=ck.load_json_file({'json_file':px})
-                if rx['return']>0: return rx
-                dd=rx['dict']
+                px=os.path.join(p, fstats)
+                if os.path.isfile(px):
+                   rx=ck.load_json_file({'json_file':px})
+                   if rx['return']>0: return rx
+                   dd=rx['dict']
 
-                mm=dd.get('meta',{})
+                   mm=dd.get('meta',{})
 
-                h+='<div id="ck_box_with_shadow">\n'
-                h+='<center><small><b>Prune solutions:</b></small></center>\n'
+                   h+='<div id="ck_box_with_shadow">\n'
+                   h+='<center><small><b>Prune solutions:</b></small></center>\n'
 
-                h+='<table border="0" cellpadding="5" cellspacing="0">\n'
-                for q in pr:
-                    qd=q.get('desc','')
-                    qi=q.get('id','')
+                   h+='<table border="0" cellpadding="5" cellspacing="0">\n'
+                   for q in pr:
+                       qd=q.get('desc','')
+                       qi=q.get('id','')
 
-                    l=mm.get(qi,{})
+                       l=mm.get(qi,{})
 
-                    dt=[{'name':'', 'value':''}]
-                    for k in sorted(l):
-                        dt.append({'name':k, 'value':k}) 
+                       dt=[{'name':'', 'value':''}]
+                       for k in sorted(l):
+                           dt.append({'name':k, 'value':k}) 
 
-                    ii={'action':'create_selector',
-                        'module_uoa':cfg['module_deps']['wfe'],
-                        'data':dt,
-                        'name':fprune,
-                        'onchange':onchange, 
-                        'skip_sort':'yes',
-                        'selected_value':''}
-                    r=ck.access(ii)
-                    if r['return']>0: return r
+                       ii={'action':'create_selector',
+                           'module_uoa':cfg['module_deps']['wfe'],
+                           'data':dt,
+                           'name':fprune,
+                           'onchange':onchange, 
+                           'skip_sort':'yes',
+                           'selected_value':''}
+                       r=ck.access(ii)
+                       if r['return']>0: return r
 
-                    h+=' <tr><td>'+qd+':</td><td>'+r['html']+'</td></tr>\n'
+                       h+=' <tr><td>'+qd+':</td><td>'+r['html']+'</td></tr>\n'
 
-                h+='</table>\n'
+                   h+='</table>\n'
 
 
              h+='</div>\n'
