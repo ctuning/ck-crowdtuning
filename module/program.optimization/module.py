@@ -566,7 +566,10 @@ def show(i):
                    h+='   #\n'
                    h+='  </b></td>\n'
                    h+='  <td><b>\n'
-                   h+='   <a href="'+url0+'wcid='+scenario+':">Solutions UID</a>\n'
+                   h+='   <a href="'+url0+'wcid='+scenario+':">UID</a>\n'
+                   h+='  </b></td>\n'
+                   h+='  <td><b>\n'
+                   h+='   Number of solutions\n'
                    h+='  </b></td>\n'
                    for k in pr:
                        qd=k.get('desc','')
@@ -585,15 +588,22 @@ def show(i):
 
                        duid=qq['data_uid']
 
-                       dm=qq['meta'].get('meta',{})
+                       qqm=qq['meta']
+
+                       dm=qqm.get('meta',{})
+
+                       ns=qqm.get('solutions','')
 
                        h+='<tr>'
                        h+=' <td>'+str(iq)+'</td>'
                        h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">'+duid+'</a>\n'
+                       h+=' <td align="center">'+str(ns)+'</td>'
 
                        for k in pr:
                            qd=k.get('desc','')
                            qi=k.get('id','')
+
+                           x=
 
                            h+='  <td>'
                            h+='   '+dm.get(qi,'')
@@ -758,7 +768,8 @@ def add_solution(i):
        i+=1
        ss['touched']=i
 
-
+    # Change number of solutions in main meta
+    d['solutions']=len(sols)
 
     # Saving summary file
     rx=ck.save_json_to_file({'json_file':psum, 'dict':sols})
