@@ -16,6 +16,8 @@ compiler_choices='#choices#compiler_flags#'
 
 line='================================================================'
 
+fsummary='summary.json'
+
 ##############################################################################
 # Initialize module
 
@@ -65,8 +67,8 @@ def prune(i):
 ##############################################################################
 # show results
 
-def show(i):
-    """
+def html_viewer(i):
+    """      
     Input:  {
             }
 
@@ -88,207 +90,154 @@ def show(i):
 
     import os
 
-    h='<table class="ck_table" border="0">\n'
-
-    # Check host URL prefix and default module/action
-    url0=ck.cfg.get('wfe_url_prefix','')
-
-    h+=' <tr style="background-color:#cfcfff;">\n'
-    h+='  <td><b>\n'
-    h+='   #\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   <a href="'+url0+'wcid='+work['self_module_uoa']+':">CK UID</a>\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   Compiler\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   Version\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   Explorations\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   CPU\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   Speedup\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   Solution UID\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   Better flags\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   Default flags\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   Program\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   CMD\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   Dataset\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   Dataset file\n'
-    h+='  </b></td>\n'
-    h+='  <td><b>\n'
-    h+='   Target OS\n'
-    h+='  </b></td>\n'
-    h+=' </tr>\n'
-
-    # List
     ruoa=i.get('repo_uoa','')
-    muoa=work['self_module_uid']
+    muoa=work['self_module_uoa']
+    muid=work['self_module_uid']
     duoa=i.get('data_uoa','')
 
-    ii={'action':'search',
-        'module_uoa':muoa,
-        'repo_uoa':ruoa,
-        'data_uoa':duoa,
-        'add_meta':'yes'}
-    r=ck.access(ii)
-    if r['return']>0: return r
+    # Load Entry
+    r=ck.access({'action':'load',
+                 'repo_uoa':ruoa,
+                 'module_uoa':muoa,
+                 'data_uoa':duoa})
+    if r['return']>0: 
+       return {'return':0, 'html':'<b>CK error:</b> '+r['error']+'!'}
 
-    lst=r['lst']
+    p=r['path']
+    d=r['dict']
+    duid=r['data_uid']
 
-    ynum=''
-    yduid=''
-    ycomp=''
-    ycver=''
-    yexplored=''
-    ycpu=''
+    h='<center>\n'
+    h+='<H2>Solutions: '+cfg['desc']+'</H2>\n'
+    h+='</center>\n'
 
-    num=0
-    for q in sorted(lst, key = lambda x: (x['data_uoa'])):
+    h+='<p>\n'
 
-        num+=1
+    h+='<table border="0" cellpadding="2" cellspacing="0">\n'
+    x=muid
+    if muoa!=muid: x+=' ('+muoa+')'
+    h+='<tr><td><b>Scenario UID</b><td>'+x+'</td></tr>\n'
+    h+='<tr><td><b>Data UID</b><td>'+duid+'</td></tr>\n'
+    h+='<tr><td><td></td></tr>\n'
 
-        duoa=q['data_uoa']
-        duid=q['data_uid']
+    pr=cfg.get('prune_results',[])
+    mm=d.get('meta',{})
+    for q in pr:
+        qd=q.get('desc','')
+        qi=q.get('id','')
 
-        p=q['path']
+        v=mm.get(qi,'')
 
-        meta=q['meta']
-        ft=meta.get('features',{})
-
-        comp='GCC'
-        cver=duoa
-
-        explored=meta.get('explored_points','')
-
-        cpu=''
-        platforms=''
-
-        # List CPUs
-        for cpu in os.listdir(p):
-            p1=os.path.join(p,cpu)
-            if os.path.isdir(p1) and cpu!=ck.cfg['subdir_ck_ext']:
-               # List solutions
-               for s in os.listdir(p1):
-                   p2=os.path.join(p1,s)
-                   if os.path.isfile(p2) and s.startswith(cfg['file_solution_extension']) and s.endswith('.json'):
-                      r=ck.load_json_file({'json_file':p2})
-                      if r['return']>0: return r
-                      d=r['dict']
-
-                      suid=s[len(cfg['file_solution_extension']):-5]
-
-                      choices=d.get('features_flat',{})
-
-                      program_uoa=choices.get('##choices#data_uoa','')
-                      cmd=choices.get('##choices#cmd_key','')
-                      dataset_uoa=choices.get('##choices#dataset_uoa','')
-                      dataset_file=choices.get('##choices#dataset_file','')
-                      target_os=choices.get('##choices#target_os','')
-
-                      speedup=''
-                      xspeedup=d.get('speedup','')
-                      if xspeedup!='': speedup=('%.2f' % xspeedup)
-
-                      cmd1=d.get('cmd1','')
-                      cmd2=d.get('cmd2','')
-
-                      h+=' <tr>\n'
-                      h+='  <td valign="top">\n'
-                      if str(num)!=ynum: 
-                         ynum=str(num)
-                         h+='   '+ynum+'\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      if duid!=yduid:
-                         yduid=duid
-                         h+='   <a href="'+url0+'wcid='+work['self_module_uoa']+':'+yduid+'">'+yduid+'</a>\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      if comp!=ycomp:
-                         ycomp=comp
-                         h+='   '+ycomp+'\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      if cver!=ycver:
-                         ycver=cver
-                         h+='   '+ycver+'\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      if str(explored)!=yexplored:
-                         yexplored=str(explored)
-                         h+='   '+yexplored+'\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      if cpu!=ycpu:
-                         ycpu=cpu
-                         h+='   <a href="'+url0+'wcid='+cfg['module_deps']['platform.cpu']+':'+ycpu+'">'+ycpu+'</a>\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      h+='   '+speedup+'\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      h+='   '+suid+'\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      h+='   '+cmd2+'\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      h+='   '+cmd1+'\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      h+='   <a href="'+url0+'wcid=program:'+program_uoa+'">'+program_uoa+'</a>\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      h+='   '+cmd+'\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      h+='   <a href="'+url0+'wcid=dataset:'+dataset_uoa+'">'+dataset_uoa+'</a>\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      h+='   '+dataset_file+'\n'
-                      h+='  </td>\n'
-
-                      h+='  <td valign="top">\n'
-                      h+='   <a href="'+url0+'wcid=os:'+target_os+'">'+target_os+'</a>\n'
-                      h+='  </td>\n'
-
-                      h+=' </tr>\n'
+        h+='<tr><td><b>'+qd+'</b><td>'+v+'</td></tr>\n'
 
     h+='</table>\n'
+
+    h+='<p>\n'
+    h+='<center>\n'
+
+    # Load summary
+    sols=[]
+
+    psum=os.path.join(p, fsummary)
+    if os.path.isfile(psum):
+       rx=ck.load_json_file({'json_file':psum})
+       if rx['return']>0: return rx
+       sols=rx['dict']
+
+    # List solutions
+    if len(sols)==0:
+       h+='<h2>No solutions found!</h2>\n'
+    else:
+       # Check host URL prefix and default module/action
+       url0=ck.cfg.get('wfe_url_prefix','')
+
+       h+='<table class="ck_table" border="0">\n'
+       h+=' <tr style="background-color:#cfcfff;">\n'
+       h+='  <td><b>\n'
+       h+='   #\n'
+       h+='  </b></td>\n'
+       h+='  <td><b>\n'
+       h+='   Solution UID\n'
+       h+='  </b></td>\n'
+       h+='  <td><b>\n'
+       h+='   Explorations\n'
+       h+='  </b></td>\n'
+       h+='  <td><b>\n'
+       h+='   Program\n'
+       h+='  </b></td>\n'
+       h+='  <td><b>\n'
+       h+='   CMD\n'
+       h+='  </b></td>\n'
+       h+='  <td><b>\n'
+       h+='   Dataset\n'
+       h+='  </b></td>\n'
+       h+='  <td><b>\n'
+       h+='   Dataset file\n'
+       h+='  </b></td>\n'
+       h+='  <td><b>\n'
+       h+='   Target OS\n'
+       h+='  </b></td>\n'
+       h+=' </tr>\n'
+
+       # List
+       num=0
+       for q in sols: # already sorted by most "interesting" solutions (such as highest speedups)
+
+           num+=1
+
+           suid=q['solution_uid']
+           iterations=q['iterations']
+
+           choices=q['choices']
+
+           program_uoa=choices.get('data_uoa','')
+           cmd=choices.get('cmd_key','')
+           dataset_uoa=choices.get('dataset_uoa','')
+           dataset_file=choices.get('dataset_file','')
+           target_os=choices.get('target_os','')
+
+           speedup=''
+
+           cmd1=''
+           cmd2=''
+
+           h+=' <tr>\n'
+           h+='  <td valign="top">\n'
+           h+='   '+str(num)+'\n'
+           h+='  </td>\n'
+
+           h+='  <td valign="top">\n'
+           h+='   '+suid+'</a>\n'
+           h+='  </td>\n'
+
+           h+='  <td valign="top">\n'
+           h+='   '+str(iterations)+'\n'
+           h+='  </td>\n'
+
+           h+='  <td valign="top">\n'
+           h+='   <a href="'+url0+'wcid=program:'+program_uoa+'">'+program_uoa+'</a>\n'
+           h+='  </td>\n'
+
+           h+='  <td valign="top">\n'
+           h+='   '+cmd+'\n'
+           h+='  </td>\n'
+
+           h+='  <td valign="top">\n'
+           h+='   <a href="'+url0+'wcid=dataset:'+dataset_uoa+'">'+dataset_uoa+'</a>\n'
+           h+='  </td>\n'
+
+           h+='  <td valign="top">\n'
+           h+='   '+dataset_file+'\n'
+           h+='  </td>\n'
+
+           h+='  <td valign="top">\n'
+           h+='   <a href="'+url0+'wcid=os:'+target_os+'">'+target_os+'</a>\n'
+           h+='  </td>\n'
+
+           h+=' </tr>\n'
+
+       h+='</table>\n'
+    h+='</center>\n'
 
     return {'return':0, 'html':h}
 
@@ -384,6 +333,8 @@ def crowdsource(i):
 
     la=i.get('local_autotuning','')
 
+    user=''
+
     # Initialize local environment for program optimization ***********************************************************
     pi=i.get('platform_info',{})
     if len(pi)==0:
@@ -396,6 +347,7 @@ def crowdsource(i):
        if r['return']>0: return r
 
        pi=r['platform_info']
+       user=r.get('user','')
 
     hos=pi['host_os_uoa']
     hosd=pi['host_os_dict']
@@ -492,6 +444,8 @@ def crowdsource(i):
     ii['exchange_repo']=er
     ii['exchange_subrepo']=esr
 
+    ii['user']=user
+
     # Select sub-scenario ********************************************************************
     from random import randint
     ss=1 # num of scenarios
@@ -520,23 +474,3 @@ def crowdsource(i):
 
 
     return {'return':0, 'platform_info':pi}
-
-##############################################################################
-# view solutions in html
-
-def html_viewer(i):
-    """
-    Input:  {
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-            }
-
-    """
-
-    h='test'
-
-    return {'return':0, 'html':h}

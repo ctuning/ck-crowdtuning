@@ -9,10 +9,6 @@
     }, 
     "prune": {
       "desc": "prune compiler flags"
-    }, 
-    "show": {
-      "desc": "show results", 
-      "for_web": "yes"
     }
   }, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 

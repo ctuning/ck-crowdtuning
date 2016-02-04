@@ -41,6 +41,7 @@ wscenario='scenario'
 wprune='pruning'
 
 fstats='stats.json'
+fsummary='summary.json'
 
 iuoa='index'
 
@@ -617,11 +618,14 @@ def add_solution(i):
               scenario_module_uoa - scenario UID
               meta                - meta to search
 
-              exchange_repo
-              exchange_subrepo
+              exchange_repo       - where to record (local or remote)
+              exchange_subrepo    - where to recrod (if remote, local repo in remote machine)
 
+              choices             - original choices
+              features            - original features
 
-
+              (user)              - user email/ID to attribute found solutions (optional for privacy)          
+                                                                               
 
               data_uoa
               (repo_uoa)
@@ -657,6 +661,15 @@ def add_solution(i):
 
     er=i.get('exchange_repo','')
     esr=i.get('exchange_subrepo','')
+
+    choices=i.get('choices',{})
+    ft=i.get('features',{})
+
+    iterations=i.get('iterations','')
+    if iterations=='': iterations=1
+    iterations=int(iterations)
+
+    user=i.get('user','')
 
     # Search if exists
     if o=='con': 
@@ -703,11 +716,59 @@ def add_solution(i):
 
     d=r['dict']
     
-    # Adding solution
-    r=ck.gen_uid({})
-    if r['return']>0: return r
-    suid=r['data_uid'] # solution UID
+    # Loading summary file with solutions
+    sols=[]
 
+    psum=os.path.join(p, fsummary)
+    if os.path.isfile(psum):
+       rx=ck.load_json_file({'json_file':psum})
+       if rx['return']>0: return rx
+       sols=rx['dict']
+
+    # Check if exists by the same choices
+    found=False
+    suid=''
+    ss={}
+
+
+
+
+
+    if not found:
+       # Generate new solution UID
+       r=ck.gen_uid({})
+       if r['return']>0: return r
+       suid=r['data_uid'] # solution UID
+
+       # Add solution to summary
+       ss={'solution_uid':suid,
+           'choices':choices,
+           'iterations':iterations,
+           'touched':1}
+       if user!='' and user!='-':
+          ss['user']=user
+
+       sols.append(ss)
+    else:
+       i=int(ss['iterations'])
+       i+=iterations
+       ss['iterations']=i
+
+       i=int(ss['touched'])
+       i+=1
+       ss['touched']=i
+
+
+
+    # Saving summary file
+    rx=ck.save_json_to_file({'json_file':psum, 'dict':sols})
+    if rx['return']>0: return rx
+
+
+
+
+
+    # Adding solution
     p1=os.path.join(p, suid)
     if not os.path.isdir(p1):
        os.makedirs(p1)
@@ -868,6 +929,7 @@ def initialize(i):
               (error)          - error text if return > 0
 
               platform_info    - output of ck detect platform
+              user             - user email/ID
             }
 
     """
@@ -1019,7 +1081,7 @@ def initialize(i):
     if tos=='':
        return {'return':1, 'error':'"target_os" is not defined or detected'}
 
-    return {'return':0, 'platform_info':rpp}
+    return {'return':0, 'platform_info':rpp, 'user':user}
 
 ##############################################################################
 # perform program optimization
@@ -1037,7 +1099,7 @@ def run(i):
               (skip_exchange)              - if 'yes', do not exchange platform info
                                             (development mode)
 
-              (change_user)                - if yes', change user
+              (user)                       - user email/ID to record solutions (attribute found good solutions)
 
               (local)                      - if 'yes', use local repo for exchange (local autotuning/benchmarking)
               (exchange_repo)              - which repo to record/update info (remote-ck by default)
@@ -1112,6 +1174,8 @@ def run(i):
     scfg=i.get('scenario_cfg',{})
 
     la=i.get('local_autotuning','')
+
+    user=i.get('user','')
 
     program_tags=i.get('program_tags','').strip()
     program_uoa=i.get('program_uoa','')
@@ -1652,6 +1716,8 @@ def run(i):
                        if len(k)>il: il=len(k)
 
                    # Find point in results
+                   cdesc=pipeline.get('choices_desc',{})
+
                    for q in gpoints:
                        report+='        '+q+'\n'
 
@@ -1662,14 +1728,12 @@ def run(i):
                               break
 
                        if len(qq)>0:
+                          behavior2=qq.get('flat',{})
+                          choices2=qq.get('features_flat',{})
+                          ft=qq.get('features',{})
+
                           for k in keys:
-                              behavior=qq.get('flat',{})
-                              choices=qq.get('features_flat',{})
-                              ft=qq.get('features',{})
-
-                              cdesc=pipeline.get('choices_desc',{})
-
-                              dv=behavior.get(k,None)
+                              dv=behavior2.get(k,None)
                               if dv!=None:
                                  ix=len(k)
 
@@ -1719,6 +1783,10 @@ def run(i):
                        'scenario_module_uoa':smuoa,
                        'meta':meta,
                        'packed_solution':ps,
+                       'choices':choices,
+                       'features':ft,
+                       'iterations':iterations,
+                       'user':user,
                        'out':oo}
                    rx=ck.access(ii)
                    if rx['return']>0: return rx
