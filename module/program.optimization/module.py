@@ -603,19 +603,6 @@ def show(i):
                    h+='</table>\n'
                    h+='</center>\n'
 
-
-                   # Get from scenario
-                   i['action']='show'
-                   i['module_uoa']=scenario
-                   r=ck.access(i)
-                   if r['return']>0:
-                      h+='<b>Error processing scenario results</b>: '+r['error']+'!'
-                   else:
-                      h+='<center>\n'
-                      h+='<p>\n'
-#                      h+=r['html']
-                      h+='</center>\n'
-
     h+='<p><center><a href="https://github.com/ctuning/ck/wiki/Advanced_usage_crowdsourcing">Related links</a></center>'
 
     return {'return':0, 'html':h}
