@@ -134,7 +134,9 @@
     }, 
     {
       "desc": "CPU", 
-      "id": "cpu_name"
+      "id": "cpu_name",
+      "ref_module_uoa":"aa6b542a420b8db9",
+      "ref_uid":"cpu_uid"
     }
   ], 
   "record_keys": [

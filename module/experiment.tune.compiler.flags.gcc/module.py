@@ -80,6 +80,7 @@ def html_viewer(i):
 
     """
 
+    import os
     global cfg, work
 
     mcfg=i.get('module_cfg',{})
@@ -88,7 +89,7 @@ def html_viewer(i):
     mwork=i.get('module_work',{})
     if len(mwork)>0: work=mwork
 
-    import os
+    url0=ck.cfg.get('wfe_url_prefix','')
 
     ruoa=i.get('repo_uoa','')
     muoa=work['self_module_uoa']
@@ -108,7 +109,7 @@ def html_viewer(i):
     duid=r['data_uid']
 
     h='<center>\n'
-    h+='<H2>Solutions: '+cfg['desc']+'</H2>\n'
+    h+='<H2>Distinct solutions: '+cfg['desc']+'</H2>\n'
     h+='</center>\n'
 
     h+='<p>\n'
@@ -122,13 +123,19 @@ def html_viewer(i):
 
     pr=cfg.get('prune_results',[])
     mm=d.get('meta',{})
-    for q in pr:
-        qd=q.get('desc','')
-        qi=q.get('id','')
+    for k in pr:
+        qd=k.get('desc','')
+        qi=k.get('id','')
+        qr=k.get('ref_uid','')
+        qm=k.get('ref_module_uoa','')
 
-        v=mm.get(qi,'')
+        x=mm.get(qi,'')
+        if x!='' and qm!='' and qr!='':
+           xuid=mm.get(qr,'')
+           if xuid!='':
+              x='<a href="'+url0+'wcid='+qm+':'+xuid+'">'+x+'</a>'
 
-        h+='<tr><td><b>'+qd+'</b><td>'+v+'</td></tr>\n'
+        h+='<tr><td><b>'+qd+'</b><td>'+x+'</td></tr>\n'
 
     h+='</table>\n'
 
@@ -227,7 +234,7 @@ def html_viewer(i):
            h+='  </td>\n'
 
            h+='  <td valign="top">\n'
-           h+='   '+dataset_file+'\n'
+           h+='   <a href="'+url0+'action=pull&common_func=yes&cid=dataset:'+dataset_uoa+'&filename='+dataset_file+'">'+dataset_file+'</a>\n'
            h+='  </td>\n'
 
            h+='  <td valign="top">\n'
@@ -238,6 +245,13 @@ def html_viewer(i):
 
        h+='</table>\n'
     h+='</center>\n'
+
+    h+='<p>&nbsp;<p>\n'
+
+    rx=ck.access({'action':'links',
+                  'module_uoa':cfg['module_deps']['program.optimization']})
+    if rx['return']>0: return rx
+    h+=rx['html']
 
     return {'return':0, 'html':h}
 
@@ -396,6 +410,12 @@ def crowdsource(i):
     compiler_soft_uoa=sdeps.get('compiler',{}).get('dict',{}).get('soft_uoa','')
     compiler_env=sdeps.get('compiler',{}).get('bat','')
 
+    plat_uids={}
+    pft=pi.get('features',{})
+    for q in pft:
+        if q.endswith('_uid'):
+           plat_uids[q]=pft[q]
+
     # Detect real compiler version ***********************************************************
     if o=='con':
        ck.out(line)
@@ -440,6 +460,8 @@ def crowdsource(i):
 
     ii['experiment_meta']={'cpu_name':cpu_name,
                            'compiler':compiler}
+
+    ii['experiment_meta_extra']=plat_uids
 
     ii['exchange_repo']=er
     ii['exchange_subrepo']=esr

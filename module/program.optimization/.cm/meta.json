@@ -20,6 +20,10 @@
     "initialize": {
       "desc": "initialize experiment"
     }, 
+    "links": {
+      "desc": "prepare links", 
+      "for_web": "yes"
+    }, 
     "run": {
       "desc": "perform program optimization"
     }, 
@@ -53,6 +57,7 @@
   "log_file_own": "log.crowdsourced.experiments.txt", 
   "log_file_results": "log.results.txt", 
   "log_file_test": "log.test.txt", 
+  "min_kernel_dep": "1.6.12x", 
   "module_deps": {
     "cfg": "b34231a3467566f8", 
     "env": "9b9b3208ac44b891", 
@@ -65,6 +70,5 @@
     "wfe": "1e4e644996b7f2a0"
   }, 
   "solutions_modules_tags": "crowdsoure,experiments,program optimization", 
-  "tags": [],
-  "min_kernel_dep":"1.6.12x"
+  "tags": []
 }

@@ -19,11 +19,14 @@ welcome   = "Dear friends!\n\n" \
             " due to too many design and optimization choices available - " \
             " optimizing compilers are simply not keeping pace with all this complexity and rapidly evolving hardware and software." \
             " It is possible to speed up code from 15% to more than 10x while considerably reducing energy usage and code size" \
-            " for many popular algorithms (DNN, vision processing, BLAS) using multi-objective autotuning." \
-            " Unfortunately, it can be untolerably slow.\n\n" \
-            "Therefore, we have developed this CK-based experimental workflow to crowdsource program and compiler autotuning"  \
-            " across multiple hardware and environments kindly provided by volunteers.\n\n" \
-            "NOTE: this program will send some anonymized info about your hardware and OS features" \
+            " for many popular algorithms (DNN, vision processing, BLAS) using multi-objective autotuning (compiler optimizations, " \
+            " OpenCL/CUDA/OpenMP/MPI/algorithm parameters." \
+            " Unfortunately, it can be untolerably slow and there is a lack of realistic workloads.\n\n" \
+            "Therefore, we have developed this CK-based experimental workflow for collaborative program autotuning and machine learning"  \
+            " across diverse hardware and environments kindly provided by volunteers." \
+            " Furthermore, users can share their own realistic workloads to participate in crowd-tuning.\n" 
+
+welcome1  = "NOTE: this program will send some anonymized info about your hardware and OS features" \
             " to the public Collective Knowledge Server to select unexplored optimization points" \
             " or validate previously found optimizations!\n\n" \
             "You can find more info about optimization crowdsourcing including results here:\n" \
@@ -32,7 +35,7 @@ welcome   = "Dear friends!\n\n" \
             " and help us optimize computer systems to accelerate knowledge discovery and boost innovation " \
             " in science and technology while making our planet greener!\n\n" \
             "Finally, performance of some systems may be chaotic (due to internal adaptation such as in Intel Core processors)!\n" \
-            "  For now, we skip such results and we will later add plugins for statistical comparison of empirical results from our past R&D\n"
+            "For now, we skip such results and we will later add plugins for statistical comparison of empirical results from our past R&D!\n"
 
 form_name='ck_cresults_form'
 onchange='document.'+form_name+'.submit();'
@@ -376,6 +379,9 @@ def show(i):
     h='<center>\n'
     h+='<h2>Aggregated results of crowdsourced experiments</h2>\n'
 
+    h+='<small><i>'+welcome+'</i></small>\n'
+    h+='<p>\n'
+
     # Check host URL prefix and default module/action
     url0=ck.cfg.get('wfe_url_prefix','')
 
@@ -569,7 +575,7 @@ def show(i):
                    h+='   <a href="'+url0+'wcid='+scenario+':">UID</a>\n'
                    h+='  </b></td>\n'
                    h+='  <td><b>\n'
-                   h+='   Number of solutions\n'
+                   h+='   Number of distinct solutions\n'
                    h+='  </b></td>\n'
                    for k in pr:
                        qd=k.get('desc','')
@@ -602,9 +608,17 @@ def show(i):
                        for k in pr:
                            qd=k.get('desc','')
                            qi=k.get('id','')
+                           qr=k.get('ref_uid','')
+                           qm=k.get('ref_module_uoa','')
+
+                           x=dm.get(qi,'')
+                           if x!='' and qm!='' and qr!='':
+                              xuid=dm.get(qr,'')
+                              if xuid!='':
+                                 x='<a href="'+url0+'wcid='+qm+':'+xuid+'">'+x+'</a>'
 
                            h+='  <td>'
-                           h+='   '+dm.get(qi,'')
+                           h+='   '+x
                            h+='  </td>'
                        
                        h+='</tr>'
@@ -612,7 +626,12 @@ def show(i):
                    h+='</table>\n'
                    h+='</center>\n'
 
-    h+='<p><center><a href="https://github.com/ctuning/ck/wiki/Advanced_usage_crowdsourcing">Related links</a></center>'
+    h+='<p>\n'
+
+    rx=links({})
+    if rx['return']>0: return rx
+
+    h+=rx['html']
 
     return {'return':0, 'html':h}
 
@@ -625,6 +644,7 @@ def add_solution(i):
               packed_solution     - new packed points
               scenario_module_uoa - scenario UID
               meta                - meta to search
+              (meta_extra)        - extra meta to add
 
               exchange_repo       - where to record (local or remote)
               exchange_subrepo    - where to recrod (if remote, local repo in remote machine)
@@ -634,18 +654,7 @@ def add_solution(i):
 
               (user)              - user email/ID to attribute found solutions (optional for privacy)          
                                                                                
-
-              data_uoa
-              (repo_uoa)
-              (iterations)
-
-              speedup
-              pchoices1
-              cmd1
-              pchoices2
-              cmd2
-              choices
-              platform_features
+              (iterations)        - performed iterations
             }
 
     Output: {
@@ -657,6 +666,7 @@ def add_solution(i):
     """
 
     import os
+    import copy
 
     o=i.get('out','')
     oo=''
@@ -666,6 +676,7 @@ def add_solution(i):
     ruoa=i.get('repo_uoa','')
     smuoa=i['scenario_module_uoa']
     meta=i['meta']
+    emeta=i.get('meta_extra',{})
 
     er=i.get('exchange_repo','')
     esr=i.get('exchange_subrepo','')
@@ -699,8 +710,11 @@ def add_solution(i):
        ck.out('      Elapsed time (s) :'+str(et))
 
     if len(rl)==0:
+       metax=copy.deepcopy(meta)
+       metax.update(emeta)
+
        ii['action']='add'
-       ii['dict']={'meta':meta}
+       ii['dict']={'meta':metax}
        r=ck.access(ii)
        if r['return']>0: return r
        duoa=r['data_uid']
@@ -978,6 +992,7 @@ def initialize(i):
     if o=='con' and quiet!='yes' and sw!='yes':
        ck.out(line)
        ck.out(welcome)
+       ck.out(welcome1)
 
        if quiet!='yes':
           r=ck.inp({'text':'Press Enter to continue'})
@@ -1148,7 +1163,8 @@ def run(i):
 
               (platform_info)              - detected platform info
 
-              (experiment_meta)            - add meta when recording experiment
+              (experiment_meta)            - meta when recording experiment
+              (experiment_meta_extra)      - extra meta such as platform UIDs
 
               (record_uoa)                 - use this UOA to recrod experiments instead of randomly generated ones
 
@@ -1317,6 +1333,8 @@ def run(i):
 
        meta=i.get('experiment_meta',{})
        meta['objective']=objective
+
+       emeta=i.get('experiment_meta_extra',{})
 
        mmeta=copy.deepcopy(meta) # to add extra when recording local experiments (helper)
        mmeta['scenario_module_uoa']=smuoa
@@ -1791,6 +1809,7 @@ def run(i):
                        'remote_repo_uoa':esr,
                        'scenario_module_uoa':smuoa,
                        'meta':meta,
+                       'meta_extra':emeta,
                        'packed_solution':ps,
                        'choices':choices,
                        'features':ft,
@@ -1936,3 +1955,31 @@ def compare_results(i):
        diff='yes'
 
     return {'return':0, 'different':diff, 'report':report}
+
+##############################################################################
+# prepare links
+
+def links(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+    h ='[ <a href="https://github.com/ctuning/ck/wiki/Advanced_usage_crowdsourcing">More details about our collaborative autotuning and machine learning approach</a> ], \n'
+    h+='[ <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform">Participated Platforms</a>, \n'
+    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.os">OS</a>, \n'
+    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.cpu">CPU</a>, \n'
+    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.accelerator">Accelerators</a> ], \n'
+    h+='[ <a href="http://arxiv.org/abs/1506.06256">Vision papers CPC\'15</a> ,\n'
+    h+='  <a href="http://bit.ly/ck-date16">DATE\'16</a> ,\n'
+    h+='  <a href="http://hal.inria.fr/hal-01054763">JSP\'14</a> ,\n'
+    h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST\'14@PLDI\'14</a> ,\n'
+    h+='  <a href="https://hal.inria.fr/inria-00436029">GCC Summit\'09</a> ]\n'
+
+    return {'return':0, 'html':h}
