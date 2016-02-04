@@ -603,8 +603,6 @@ def show(i):
                            qd=k.get('desc','')
                            qi=k.get('id','')
 
-                           x=
-
                            h+='  <td>'
                            h+='   '+dm.get(qi,'')
                            h+='  </td>'
