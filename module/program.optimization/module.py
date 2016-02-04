@@ -474,6 +474,8 @@ def show(i):
           pr=ds.get('prune_results',[])
           ipr=len(pr)
           if ipr>0:
+             rl=[]
+
              # Try to find index
              ii={'action':'load',
                  'module_uoa':scenario,
@@ -551,80 +553,80 @@ def show(i):
                                                 a.get('meta',{}).get('meta',{}).get(pr[1]['id'],''), \
                                                 a.get('meta',{}).get('meta',{}).get(pr[2]['id'],'')))
 
-                irl=len(rl)
-                if irl==0:
-                   h+='<b>No solutions found!</b>'
-                else:
+             irl=len(rl)
+             if irl==0:
+                h+='<b>No solutions found!</b>'
+             else:
 #                   h+=str(len(rl))+' entries found!</b>'
 
-                   if irl>100: 
-                      h+=str(irl)+' entries found - showing first 100!</b>'
-                      irl=100
+                if irl>100: 
+                   h+=str(irl)+' entries found - showing first 100!</b>'
+                   irl=100
 
-                  # Check host URL prefix and default module/action
-                   url0=ck.cfg.get('wfe_url_prefix','')
-   
-                   h+='<center>\n'
-                   h+='<table class="ck_table" border="0">\n'
+               # Check host URL prefix and default module/action
+                url0=ck.cfg.get('wfe_url_prefix','')
 
-                   h+=' <tr style="background-color:#cfcfff;">\n'
-                   h+='  <td><b>\n'
-                   h+='   #\n'
-                   h+='  </b></td>\n'
-                   h+='  <td><b>\n'
-                   h+='   <a href="'+url0+'wcid='+scenario+':">UID</a>\n'
-                   h+='  </b></td>\n'
-                   h+='  <td><b>\n'
-                   h+='   Number of distinct solutions\n'
-                   h+='  </b></td>\n'
-                   for k in pr:
-                       qd=k.get('desc','')
-                       qi=k.get('id','')
+                h+='<center>\n'
+                h+='<table class="ck_table" border="0">\n'
 
-                       h+='  <td><b>\n'
-                       h+='   '+qd+'\n'
-                       h+='  </b></td>\n'
-                   h+=' </tr>\n'
+                h+=' <tr style="background-color:#cfcfff;">\n'
+                h+='  <td><b>\n'
+                h+='   #\n'
+                h+='  </b></td>\n'
+                h+='  <td><b>\n'
+                h+='   <a href="'+url0+'wcid='+scenario+':">UID</a>\n'
+                h+='  </b></td>\n'
+                h+='  <td><b>\n'
+                h+='   Number of distinct solutions\n'
+                h+='  </b></td>\n'
+                for k in pr:
+                    qd=k.get('desc','')
+                    qi=k.get('id','')
 
-                   iq=0
-                   for q in range(0, irl):
-                       iq+=1
+                    h+='  <td><b>\n'
+                    h+='   '+qd+'\n'
+                    h+='  </b></td>\n'
+                h+=' </tr>\n'
 
-                       qq=rl[q]
+                iq=0
+                for q in range(0, irl):
+                    iq+=1
 
-                       duid=qq['data_uid']
+                    qq=rl[q]
 
-                       qqm=qq['meta']
+                    duid=qq['data_uid']
 
-                       dm=qqm.get('meta',{})
+                    qqm=qq['meta']
 
-                       ns=qqm.get('solutions','')
+                    dm=qqm.get('meta',{})
 
-                       h+='<tr>'
-                       h+=' <td>'+str(iq)+'</td>'
-                       h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">Click to see solutions ('+duid+')</a>\n'
-                       h+=' <td align="center">'+str(ns)+'</td>'
+                    ns=qqm.get('solutions','')
 
-                       for k in pr:
-                           qd=k.get('desc','')
-                           qi=k.get('id','')
-                           qr=k.get('ref_uid','')
-                           qm=k.get('ref_module_uoa','')
+                    h+='<tr>'
+                    h+=' <td>'+str(iq)+'</td>'
+                    h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">Click to see solutions ('+duid+')</a>\n'
+                    h+=' <td align="center">'+str(ns)+'</td>'
 
-                           x=dm.get(qi,'')
-                           if x!='' and qm!='' and qr!='':
-                              xuid=dm.get(qr,'')
-                              if xuid!='':
-                                 x='<a href="'+url0+'wcid='+qm+':'+xuid+'">'+x+'</a>'
+                    for k in pr:
+                        qd=k.get('desc','')
+                        qi=k.get('id','')
+                        qr=k.get('ref_uid','')
+                        qm=k.get('ref_module_uoa','')
 
-                           h+='  <td>'
-                           h+='   '+x
-                           h+='  </td>'
-                       
-                       h+='</tr>'
+                        x=dm.get(qi,'')
+                        if x!='' and qm!='' and qr!='':
+                           xuid=dm.get(qr,'')
+                           if xuid!='':
+                              x='<a href="'+url0+'wcid='+qm+':'+xuid+'">'+x+'</a>'
 
-                   h+='</table>\n'
-                   h+='</center>\n'
+                        h+='  <td>'
+                        h+='   '+x
+                        h+='  </td>'
+                    
+                    h+='</tr>'
+
+                h+='</table>\n'
+                h+='</center>\n'
 
     h+='<p>\n'
 
