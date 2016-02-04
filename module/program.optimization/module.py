@@ -1080,7 +1080,7 @@ def run(i):
               (experiment_meta)            - add meta when recording experiment
 
               (record_uoa)                 - use this UOA to recrod experiments instead of randomly generated ones
-            
+
               (solution_conditions)        - list of conditions:
                                                ["first key", "extra key", "condition", value]
             }
@@ -1131,9 +1131,11 @@ def run(i):
     iterations=i.get('iterations','')
     if iterations=='': iterations=30
 
+    nsc=i.get('no_state_check','')
+
     cat=i.get('calibration_time','')
     if cat=='': cat=10.0
-    
+
     objective=i.get('objective','')
     if objective=='': objective='min'
 
@@ -1204,6 +1206,7 @@ def run(i):
         'out':oo}
     if apc!='yes':
        ii['random']='yes'
+    if nsc!='': ii['no_state_check']=nsc
     r=ck.access(ii)
     if r['return']>0: return r
 
@@ -1332,6 +1335,7 @@ def run(i):
        pup0=scfg.get('experiment_0_pipeline_update',{})
 
        if rep!='': pup0['repetitions']=rep
+       if nsc!='': pup0['no_state_check']=nsc
 
        # ***************************************************************** FIRST EXPERIMENT
        ii={'action':'autotune',
@@ -1818,7 +1822,7 @@ def compare_results(i):
         if q['point_uid']==puid1:
            ch1=q.get('flat',{})
            break
-       
+
     fine=True
     for k in keys:
         v0=ch0.get(k, None)
@@ -1829,8 +1833,8 @@ def compare_results(i):
            fine=False
            break
         else:
-           if type(v0)==float or type(v0)==int or type(v0)==long:
-              if not (type(v1)==float or type(v1)==int or type(v1)==long):
+           if type(v0)==float or type(v0)==int or type(v0)==ck.type_long:
+              if not (type(v1)==float or type(v1)==int or type(v1)==ck.type_long):
                  report='  Difference for "'+k+'" - types do not match'
                  fine=False
                  break

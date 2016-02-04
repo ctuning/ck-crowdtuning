@@ -1,3 +1,5 @@
+* 2016.02.03 * adding ck.type_long for Python2/3 compatibility
+
 * 2016.02.02 * Major engine update with various GCC autotuning scenarios. 
                New crowd-tuning including LLVM/OpenCL is on the way...
 
