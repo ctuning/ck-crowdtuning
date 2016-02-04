@@ -602,7 +602,7 @@ def show(i):
 
                        h+='<tr>'
                        h+=' <td>'+str(iq)+'</td>'
-                       h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">'+duid+'</a>\n'
+                       h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">Click to see solutions ('+duid+')</a>\n'
                        h+=' <td align="center">'+str(ns)+'</td>'
 
                        for k in pr:
@@ -1329,12 +1329,15 @@ def run(i):
        dataset_uoa=choices.get('dataset_uoa','')
        dataset_file=choices.get('dataset_file','')
 
+       cdu=choices.get('compiler_description_uoa','')
+
        cver=ft.get('compiler_version',{}).get('str','')
 
        meta=i.get('experiment_meta',{})
        meta['objective']=objective
 
        emeta=i.get('experiment_meta_extra',{})
+       emeta['compiler_description_uoa']=cdu
 
        mmeta=copy.deepcopy(meta) # to add extra when recording local experiments (helper)
        mmeta['scenario_module_uoa']=smuoa
@@ -1354,8 +1357,6 @@ def run(i):
           if o=='con':
              ck.out('')
              ck.out('Searching if similar experiment already exists in your local repo ...')
-
-          print (mmeta)
 
           # Try to find in local experiments by meta
           jj={'action':'get',
@@ -1397,6 +1398,7 @@ def run(i):
           lx+=' * Kernel repetitions:       '+str(repeat)+'\n'
 
        lx+=' * Default compiler version: '+cver+'\n' \
+           ' * Compiler description:     '+cdu+'\n' \
            ' * Experiment UOA:           '+euoa0+'\n' \
 
        if o=='con':

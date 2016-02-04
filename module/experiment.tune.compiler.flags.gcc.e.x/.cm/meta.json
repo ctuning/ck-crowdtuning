@@ -129,7 +129,9 @@
   "prune_results": [
     {
       "desc": "Compiler", 
-      "id": "compiler"
+      "id": "compiler",
+      "ref_module_uoa":"36ebc331048475bb",
+      "ref_uid":"compiler_description_uoa"
     }, 
     {
       "desc": "CPU", 
