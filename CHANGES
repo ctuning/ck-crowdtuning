@@ -1,3 +1,7 @@
+* 2016.02.04 * adding dependency on repo 'ck-crowdtuning-platforms' 
+               to share CPU/GPU/OS/platform feature for collaborative machine learning
+             * adding graph of speedups during crowdtuning
+
 * 2016.02.03 * adding ck.type_long for Python2/3 compatibility
 
 * 2016.02.02 * Major engine update with various GCC autotuning scenarios. 

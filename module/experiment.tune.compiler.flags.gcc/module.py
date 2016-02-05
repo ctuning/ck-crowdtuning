@@ -76,6 +76,9 @@ def html_viewer(i):
               return       - return code =  0, if successful
                                          >  0, if error
               (error)      - error text if return > 0
+
+              html
+              (style)      - styles - useful for plotting JavaScript-based graphs
             }
 
     """
@@ -89,12 +92,18 @@ def html_viewer(i):
     mwork=i.get('module_work',{})
     if len(mwork)>0: work=mwork
 
+    st=''
+
     url0=ck.cfg.get('wfe_url_prefix','')
+
+    ap=i.get('all_params',{})
 
     ruoa=i.get('repo_uoa','')
     muoa=work['self_module_uoa']
     muid=work['self_module_uid']
     duoa=i.get('data_uoa','')
+
+    ik=cfg['improvements_keys']
 
     # Load Entry
     r=ck.access({'action':'load',
@@ -109,12 +118,13 @@ def html_viewer(i):
     duid=r['data_uid']
 
     h='<center>\n'
+
     h+='<H2>Distinct solutions: '+cfg['desc']+'</H2>\n'
     h+='</center>\n'
 
     h+='<p>\n'
 
-    h+='<table border="0" cellpadding="2" cellspacing="0">\n'
+    h+='<table border="0" cellpadding="4" cellspacing="0">\n'
     x=muid
     if muoa!=muid: x+=' ('+muoa+')'
     h+='<tr><td><b>Scenario UID</b><td>'+x+'</td></tr>\n'
@@ -123,6 +133,8 @@ def html_viewer(i):
 
     pr=cfg.get('prune_results',[])
     mm=d.get('meta',{})
+    obj=mm.get('objective','')
+
     for k in pr:
         qd=k.get('desc','')
         qi=k.get('id','')
@@ -137,10 +149,27 @@ def html_viewer(i):
 
         h+='<tr><td><b>'+qd+'</b><td>'+x+'</td></tr>\n'
 
+    h+='<tr><td><td></td></tr>\n'
+
+    kk=0
+    for kx in range(0, len(ik)):
+        k=ik[kx]
+        k1=k.replace('$#obj#$',obj)
+        ik[kx]=k1
+
+        kk+=1
+
+        h+='<tr><td><b>Improvement key IK'+str(kk)+'</b><td>'+k1+'</td></tr>\n'
+
+    ik0=ik[0] # first key to sort
+
     h+='</table>\n'
 
     h+='<p>\n'
     h+='<center>\n'
+
+    # graph
+    graph={"0":[]}
 
     # Load summary
     sols=[]
@@ -150,6 +179,10 @@ def html_viewer(i):
        rx=ck.load_json_file({'json_file':psum})
        if rx['return']>0: return rx
        sols=rx['dict']
+
+    h+='<p>\n'
+    h+='$#graph#$\n'
+    h+='<p>\n'
 
     # List solutions
     if len(sols)==0:
@@ -166,6 +199,19 @@ def html_viewer(i):
        h+='  <td><b>\n'
        h+='   Solution UID\n'
        h+='  </b></td>\n'
+
+       for k in range(0, len(ik)):
+           h+='  <td><b>\n'
+           h+='   IK'+str(k+1)+'\n'
+           h+='  </b></td>\n'
+
+       h+='  <td><b>\n'
+       h+='   Solution choices\n'
+       h+='  </b></td>\n'
+       h+='  <td><b>\n'
+       h+='   Reference choices\n'
+       h+='  </b></td>\n'
+
        h+='  <td><b>\n'
        h+='   Explorations\n'
        h+='  </b></td>\n'
@@ -188,60 +234,163 @@ def html_viewer(i):
 
        # List
        num=0
-       for q in sols: # already sorted by most "interesting" solutions (such as highest speedups)
+       iq=-1
+       iq1=0
 
-           num+=1
+       res={}
+       sres=[]
+       ires=0
 
-           suid=q['solution_uid']
-           iterations=q['iterations']
+       while iq1<len(sols): # already sorted by most "interesting" solutions (such as highest speedups)
+           if iq!=iq1:
+              num+=1
 
-           choices=q['choices']
+              iq+=1
+              q=sols[iq]
 
-           program_uoa=choices.get('data_uoa','')
-           cmd=choices.get('cmd_key','')
-           dataset_uoa=choices.get('dataset_uoa','')
-           dataset_file=choices.get('dataset_file','')
-           target_os=choices.get('target_os','')
+              suid=q['solution_uid']
 
-           speedup=''
+              res={}
+              ref_res={}
+              sres=[]
+              ires=0
 
-           cmd1=''
-           cmd2=''
+              # Try to load all solutions
+              p1=os.path.join(p, suid)
 
-           h+=' <tr>\n'
-           h+='  <td valign="top">\n'
-           h+='   '+str(num)+'\n'
-           h+='  </td>\n'
+              try:
+                 dirList=os.listdir(p1)
+              except Exception as e:
+                  None
+              else:
+                  for fn in dirList:
+                      if fn.startswith('ckp-') and fn.endswith('.flat.json'):
+                         uid=fn[4:-10]
 
-           h+='  <td valign="top">\n'
-           h+='   '+suid+'</a>\n'
-           h+='  </td>\n'
+                         px=os.path.join(p1, fn)
+                         rx=ck.load_json_file({'json_file':px})
+                         if rx['return']>0: return rx
+                         d1=rx['dict']
 
-           h+='  <td valign="top">\n'
-           h+='   '+str(iterations)+'\n'
-           h+='  </td>\n'
+                         px=os.path.join(p1,'ckp-'+uid+'.features_flat.json')
+                         if rx['return']>0: return rx
+                         d2=rx['dict']
 
-           h+='  <td valign="top">\n'
-           h+='   <a href="'+url0+'wcid=program:'+program_uoa+'">'+program_uoa+'</a>\n'
-           h+='  </td>\n'
+                         x={'flat':d1, 'features_flat':d2}
 
-           h+='  <td valign="top">\n'
-           h+='   '+cmd+'\n'
-           h+='  </td>\n'
+                         px=os.path.join(p1, 'ckp-'+uid+'.features.json')
+                         rx=ck.load_json_file({'json_file':px})
+                         if rx['return']>0: return rx
+                         dx=rx['dict']
 
-           h+='  <td valign="top">\n'
-           h+='   <a href="'+url0+'wcid=dataset:'+dataset_uoa+'">'+dataset_uoa+'</a>\n'
-           h+='  </td>\n'
+                         if dx.get('permanent','')=='yes':
+                            ref_res==x
+                         else:
+                            res[uid]=x
+                         
+                  rr=list(res.keys())
+                  sres=sorted(rr, key=lambda v: (float(res[v].get('flat',{}).get(ik0,0.0))), reverse=True)
 
-           h+='  <td valign="top">\n'
-           h+='   <a href="'+url0+'action=pull&common_func=yes&cid=dataset:'+dataset_uoa+'&filename='+dataset_file+'">'+dataset_file+'</a>\n'
-           h+='  </td>\n'
+           rr={}
+           if ires<len(sres):
+              rr=res.get(sres[ires],{})
+              ires+=1
 
-           h+='  <td valign="top">\n'
-           h+='   <a href="'+url0+'wcid=os:'+target_os+'">'+target_os+'</a>\n'
-           h+='  </td>\n'
+              iterations=q['iterations']
 
-           h+=' </tr>\n'
+              choices=q['choices']
+
+              program_uoa=choices.get('data_uoa','')
+              cmd=choices.get('cmd_key','')
+              dataset_uoa=choices.get('dataset_uoa','')
+              dataset_file=choices.get('dataset_file','')
+              target_os=choices.get('target_os','')
+
+              speedup=''
+
+              cmd1=''
+              cmd2=''
+
+              ss='S'+str(num)
+              h+=' <tr>\n'
+              h+='  <td valign="top">\n'
+              if ires<2:
+
+                 h+='   '+ss+'\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top">\n'
+              if ires<2:
+                 h+='   '+suid+'\n'
+              h+='  </td>\n'
+
+              for k in range(0, len(ik)):
+                  h+='  <td>\n'
+                  dv=rr.get('flat',{}).get(ik[k],'')
+
+                  # Add to graph (first dimension and first solution)
+                  if k==0 and ires<2:
+                     graph['0'].append([ss,dv])
+
+                  y=''
+                  try:
+                     y=('%.2f' % dv)
+                  except Exception as e: 
+                     y=dv
+                     pass
+
+                  if dv!='':
+                     if dv>1.0:
+                        y='<span style="color:#bf0000">'+y+'</span>'
+                     elif dv!=0:
+                        y='<span style="color:#0000bf">'+y+'</span>'
+                  
+
+                  h+=str(y)+'\n'
+                  h+='  </td>\n'
+
+
+              h+='  <td><b>\n'
+              h+='   \n'
+              h+='  </b></td>\n'
+              h+='  <td><b>\n'
+              h+='   \n'
+              h+='  </b></td>\n'
+
+              h+='  <td valign="top">\n'
+              if ires<2:
+                 h+='   '+str(iterations)+'\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top">\n'
+              if ires<2:
+                 h+='   <a href="'+url0+'wcid=program:'+program_uoa+'">'+program_uoa+'</a>\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top">\n'
+              if ires<2:
+                 h+='   '+cmd+'\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top">\n'
+              if ires<2:
+                 h+='   <a href="'+url0+'wcid=dataset:'+dataset_uoa+'">'+dataset_uoa+'</a>\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top">\n'
+              if ires<2:
+                 h+='   <a href="'+url0+'action=pull&common_func=yes&cid=dataset:'+dataset_uoa+'&filename='+dataset_file+'">'+dataset_file+'</a>\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top">\n'
+              if ires<2:
+                 h+='   <a href="'+url0+'wcid=os:'+target_os+'">'+target_os+'</a>\n'
+              h+='  </td>\n'
+
+              h+=' </tr>\n'
+
+           else:
+              iq1+=1
 
        h+='</table>\n'
     h+='</center>\n'
@@ -253,7 +402,70 @@ def html_viewer(i):
     if rx['return']>0: return rx
     h+=rx['html']
 
-    return {'return':0, 'html':h}
+    # Plot graph
+    hg=''
+    ftmp=''
+
+    if len(graph['0'])>0:
+       ii={'action':'plot',
+           'module_uoa':cfg['module_deps']['graph'],
+
+           "table":graph,
+
+           "ymin":0,
+
+           "ignore_point_if_none":"yes",
+
+           "plot_type":"d3_2d_bars",
+
+           "display_y_error_bar":"no",
+
+           "title":"Powered by Collective Knowledge",
+
+           "axis_x_desc":"Distinct optimization solutions",
+           "axis_y_desc":"Max speedup (IK1)",
+
+           "plot_grid":"yes",
+
+           "d3_div":"ck_interactive",
+
+           "image_width":"900",
+           "image_height":"400"}
+
+       # Trick to save to file (for interactive/live articles)
+       if ap.get('fgg_save_graph_to_file','')=='yes':
+          import copy
+          iii=copy.deepcopy(ii)
+          iii["substitute_x_with_loop"]="yes"
+          iii["plot_type"]="mpl_2d_bars" 
+          if 'ymin' in iii: del(iii['ymin'])
+          if 'ymax' in iii: del(iii['ymax'])
+
+          # Prepare batch file
+          rx=ck.gen_tmp_file({'prefix':'tmp-', 'suffix':'.json'})
+          if rx['return']>0: return rx
+          ftmp=rx['file_name']
+
+          rx=ck.save_json_to_file({'json_file':ftmp, 'dict':iii, 'sort_keys':'yes'})
+          if rx['return']>0: return rx
+
+       r=ck.access(ii)
+       if r['return']==0:
+          x=r.get('html','')
+          if x!='':
+             st=r.get('style','')
+
+             hg='<div id="ck_box_with_shadow" style="width:920px;">\n'
+             if ftmp!='':
+                hg+='<center><b>Note: graph info has been saved to file '+ftmp+' for interactive publications</b></center>'
+             hg+=' <div id="ck_interactive" style="text-align:center">\n'
+             hg+=x+'\n'
+             hg+=' </div>\n'
+             hg+='</div>\n'
+
+    h=h.replace('$#graph#$', hg)
+
+    return {'return':0, 'html':h, 'style':st}
 
 ##############################################################################
 # crowdsource these experiments

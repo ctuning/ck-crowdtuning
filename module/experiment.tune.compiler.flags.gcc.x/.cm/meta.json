@@ -83,6 +83,7 @@
     "env": "9b9b3208ac44b891", 
     "platform.cpu": "aa6b542a420b8db9", 
     "platform.os": "41e31cc4496b8a8e", 
+    "graph":"2d41f89bcf32d4d4",
     "program.optimization": "27bc42ee449e880e", 
     "soft": "5e1100048ab875d7"
   }, 
@@ -127,7 +128,9 @@
   "prune_results": [
     {
       "desc": "Compiler", 
-      "id": "compiler"
+      "id": "compiler",
+      "ref_module_uoa":"36ebc331048475bb",
+      "ref_uid":"compiler_description_uoa"
     }, 
     {
       "desc": "CPU", 
