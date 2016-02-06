@@ -550,14 +550,14 @@ def show(i):
                 rl=r['lst']
 
                 if ipr==1:
-                   rl=sorted(rl, key=lambda a: a.get('meta',{}).get('meta',{}).get(pr[0]['id'],''))
+                   rl=sorted(rl, key=lambda a: a.get('meta',{}).get('meta',{}).get(pr[0]['id'],''), reverse=pr[0].get('reverse',False))
                 elif ipr==2:
                    rl=sorted(rl, key=lambda a: (a.get('meta',{}).get('meta',{}).get(pr[0]['id'],''), \
-                                                a.get('meta',{}).get('meta',{}).get(pr[1]['id'],'')))
+                                                a.get('meta',{}).get('meta',{}).get(pr[1]['id'],'')), reverse=pr[0].get('reverse',False))
                 elif ipr>2:
                    rl=sorted(rl, key=lambda a: (a.get('meta',{}).get('meta',{}).get(pr[0]['id'],''), \
                                                 a.get('meta',{}).get('meta',{}).get(pr[1]['id'],''), \
-                                                a.get('meta',{}).get('meta',{}).get(pr[2]['id'],'')))
+                                                a.get('meta',{}).get('meta',{}).get(pr[2]['id'],'')), reverse=pr[0].get('reverse',False))
 
              irl=len(rl)
              if irl==0:
@@ -697,9 +697,6 @@ def add_solution(i):
     iterations=int(iterations)
 
     user=i.get('user','')
-
-    print (meta)
-    raw_input('xyz')
 
     # Search if exists
     if o=='con': 
@@ -1426,6 +1423,14 @@ def run(i):
        r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':lx})
        if r['return']>0: return r
 
+       # Load program module to get desc keys
+       r=ck.access({'action':'load',
+                    'module_uoa':cfg['module_deps']['module'],
+                    'data_uoa':cfg['module_deps']['program']})
+       if r['return']>0: return r
+       desc=r.get('desc',{})
+       pdesc=desc.get('pipeline_desc',{})
+
        # Saving pipeline
        pipeline_copy=copy.deepcopy(pipeline)
 
@@ -1546,6 +1551,7 @@ def run(i):
                                     'point1':puid00,
                                     'results':results1,
                                     'keys':ok,
+                                    'keys_desc':pdesc,
                                     'threshold':threshold})
                 if rx['return']>0: return rx
                 diff=rx['different']
@@ -1753,11 +1759,12 @@ def run(i):
                    # Find size of keys
                    il=0
                    for k in keys:
-                       if len(k)>il: il=len(k)
+                       k1=pdesc.get(k,{}).get('desc','')
+                       if k1=='': k1=k
+
+                       if len(k1)>il: il=len(k1)
 
                    # Find point in results
-                   cdesc=pipeline.get('choices_desc',{})
-
                    for q in gpoints:
                        report+='        '+q+'\n'
 
@@ -1775,7 +1782,6 @@ def run(i):
                           for k in keys:
                               dv=behavior2.get(k,None)
                               if dv!=None:
-                                 ix=len(k)
 
                                  y=''
                                  try:
@@ -1784,7 +1790,12 @@ def run(i):
                                     y=dv
                                     pass
 
-                                 report+='          * '+ k+(' ' * (il-ix))+' : '+y+'\n' 
+                                 k1=pdesc.get(k,{}).get('desc','')
+                                 if k1=='': k1=k
+
+                                 ix=len(k1)
+
+                                 report+='          * '+k1+(' ' * (il-ix))+' : '+y+'\n' 
 
                 if o=='con':
                    ck.out('')
@@ -1896,6 +1907,7 @@ def compare_results(i):
               point0      - original point
               point1      - new point to compare
               keys        - keys to compare
+              (keys_desc) - keys description
               (threshold) - 0.03
             }
 
@@ -1914,6 +1926,7 @@ def compare_results(i):
     puid1=i['point1']
     keys=i['keys']
 
+    dkeys=i.get('keys_desc',{})
     diff='no'
 
     t=i.get('threshold','')
@@ -1934,33 +1947,36 @@ def compare_results(i):
 
     fine=True
     for k in keys:
+        k1=pdesc.get(k,{}).get('desc','')
+        if k1=='': k1=k
+
         v0=ch0.get(k, None)
         v1=ch1.get(k, None)
 
         if (v0==None and v1!=None) or (v0!=None and v1==None):
-           report='  Difference for "'+k+'" - v0!=v1'
+           report='  Difference for "'+k1+'" - v0!=v1'
            fine=False
            break
         else:
            if type(v0)==float or type(v0)==int or type(v0)==ck.type_long:
               if not (type(v1)==float or type(v1)==int or type(v1)==ck.type_long):
-                 report='  Difference for "'+k+'" - types do not match'
+                 report='  Difference for "'+k1+'" - types do not match'
                  fine=False
                  break
               else:
                  if v1==0:
-                    report='  Difference for "'+k+'" - v1=0'
+                    report='  Difference for "'+k1+'" - v1=0'
                     fine=False
                     break
 
                  d=float(v0)/float(v1)
                  if d<(1-t) or d>(1+t):
-                    report='  key "'+k+'" variation out of normal ('+('%2.3f'%d)+')'
+                    report='  key "'+k1+'" variation out of normal ('+('%2.3f'%d)+')'
                     fine=False
                     break
 
            elif v0!=v1:
-                report='  key "'+k+'" - v0!=v1'
+                report='  key "'+k1+'" - v0!=v1'
                 fine=False
                 break
 

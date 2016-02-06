@@ -117,8 +117,15 @@ def html_viewer(i):
     d=r['dict']
     duid=r['data_uid']
 
-    h='<center>\n'
+    # Load program module to get desc keys
+    r=ck.access({'action':'load',
+                 'module_uoa':cfg['module_deps']['module'],
+                 'data_uoa':cfg['module_deps']['program']})
+    if r['return']>0: return r
+    desc=r.get('desc',{})
+    pdesc=desc.get('pipeline_desc',{})
 
+    h='<center>\n'
     h+='<H2>Distinct solutions: '+cfg['desc']+'</H2>\n'
     h+='</center>\n'
 
@@ -127,8 +134,8 @@ def html_viewer(i):
     h+='<table border="0" cellpadding="4" cellspacing="0">\n'
     x=muid
     if muoa!=muid: x+=' ('+muoa+')'
-    h+='<tr><td><b>Scenario UID</b><td>'+x+'</td></tr>\n'
-    h+='<tr><td><b>Data UID</b><td>'+duid+'</td></tr>\n'
+    h+='<tr><td><b>Scenario UID</b></td><td>'+x+'</td></tr>\n'
+    h+='<tr><td><b>Data UID</b></td><td>'+duid+'</td></tr>\n'
     h+='<tr><td><td></td></tr>\n'
 
     pr=cfg.get('prune_results',[])
@@ -147,9 +154,19 @@ def html_viewer(i):
            if xuid!='':
               x='<a href="'+url0+'wcid='+qm+':'+xuid+'">'+x+'</a>'
 
-        h+='<tr><td><b>'+qd+'</b><td>'+x+'</td></tr>\n'
+        h+='<tr><td><b>'+qd+'</b></td><td>'+x+'</td></tr>\n'
 
-    h+='<tr><td><td></td></tr>\n'
+    h+='<tr>\n'
+    h+=' <td><b>Platform</b></td>\n'
+    h+=' <td>'+mm.get('platform_name','')+'</td>\n'
+    h+='</tr>\n'
+
+    h+='<tr>\n'
+    h+=' <td><b>OS</b></td>\n'
+    h+=' <td>'+mm.get('os_name','')+'</td>\n'
+    h+='</tr>\n'
+
+    h+='<tr><td></td><td></td></tr>\n'
 
     kk=0
     for kx in range(0, len(ik)):
@@ -157,9 +174,12 @@ def html_viewer(i):
         k1=k.replace('$#obj#$',obj)
         ik[kx]=k1
 
+        if pdesc.get(k1,{}).get('desc','')!='':
+           k1=pdesc[k1]['desc']
+
         kk+=1
 
-        h+='<tr><td><b>Improvement key IK'+str(kk)+'</b><td>'+k1+'</td></tr>\n'
+        h+='<tr><td><b>Improvement key IK'+str(kk)+'</b></td><td>'+k1+'</td></tr>\n'
 
     ik0=ik[0] # first key to sort
 
@@ -194,11 +214,11 @@ def html_viewer(i):
        h+='<table class="ck_table" border="0">\n'
 
        h+=' <tr style="background-color:#cfcfff;">\n'
-       h+='  <td colspan="5"></td>\n'
+       h+='  <td colspan="2"></td>\n'
+       h+='  <td colspan="'+str(len(ik))+'" align="center"><b>Improvements</b></td>\n'
        h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"><b>Choices</b></td>\n'
        h+='  <td colspan="1"></td>\n'
        h+='  <td colspan="4" align="center" style="background-color:#bfbfff;"><b>Workload</b></td>\n'
-       h+='  <td colspan="1"></td>\n'
        h+=' </tr>\n'
 
        h+=' <tr style="background-color:#cfcfff;">\n'
@@ -210,7 +230,7 @@ def html_viewer(i):
        h+='  </b></td>\n'
 
        for k in range(0, len(ik)):
-           h+='  <td><b>\n'
+           h+='  <td align="right"><b>\n'
            h+='   IK'+str(k+1)+'\n'
            h+='  </b></td>\n'
 
@@ -235,9 +255,6 @@ def html_viewer(i):
        h+='  </b></td>\n'
        h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   Dataset file\n'
-       h+='  </b></td>\n'
-       h+='  <td><b>\n'
-       h+='   Target OS\n'
        h+='  </b></td>\n'
        h+=' </tr>\n'
 
@@ -334,7 +351,7 @@ def html_viewer(i):
               h+='  </td>\n'
 
               for k in range(0, len(ik)):
-                  h+='  <td>\n'
+                  h+='  <td align="right">\n'
                   dv=rr.get('flat',{}).get(ik[k],'')
 
                   # Add to graph (first dimension and first solution)
@@ -342,11 +359,14 @@ def html_viewer(i):
                      graph['0'].append([ss,dv])
 
                   y=''
-                  try:
-                     y=('%.2f' % dv)
-                  except Exception as e: 
-                     y=dv
-                     pass
+                  if type(dv)==int or type(dv)==ck.type_long:
+                     y=str(dv)
+                  else:
+                     try:
+                        y=('%.2f' % dv)
+                     except Exception as e: 
+                        y=dv
+                        pass
 
                   if dv!='':
                      if dv>1.0:
@@ -389,11 +409,6 @@ def html_viewer(i):
               h+='  <td valign="top">\n'
               if ires<2:
                  h+='   <a href="'+url0+'action=pull&common_func=yes&cid=dataset:'+dataset_uoa+'&filename='+dataset_file+'">'+dataset_file+'</a>\n'
-              h+='  </td>\n'
-
-              h+='  <td valign="top">\n'
-              if ires<2:
-                 h+='   <a href="'+url0+'wcid=os:'+target_os+'">'+target_os+'</a>\n'
               h+='  </td>\n'
 
               h+=' </tr>\n'
