@@ -479,7 +479,7 @@ def crowdsource(i):
 
               (quiet)                      - do not ask questions, but select random ...
               (skip_welcome)               - if 'yes', do not print welcome header
-              
+
               (skip_exchange)              - if 'yes', do not exchange platform info
                                             (development mode)
 
