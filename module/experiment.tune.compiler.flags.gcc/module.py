@@ -412,7 +412,7 @@ def html_viewer(i):
 
            "table":graph,
 
-           "ymin":0,
+           "ymin":1,
 
            "ignore_point_if_none":"yes",
 
@@ -423,7 +423,7 @@ def html_viewer(i):
            "title":"Powered by Collective Knowledge",
 
            "axis_x_desc":"Distinct optimization solutions",
-           "axis_y_desc":"Max speedup (IK1)",
+           "axis_y_desc":"Max improvement ( IK1 = Ref / Solution )",
 
            "plot_grid":"yes",
 
