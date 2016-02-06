@@ -383,7 +383,7 @@ def show(i):
     import os
 
     h='<center>\n'
-    h+='<h2>Aggregated results of crowdsourced experiments</h2>\n'
+    h+='<h2>Aggregated results of crowdsourced experiments (under development)</h2>\n'
 
     h+='<small><i>'+welcome+'</i></small>\n'
     h+='<p>\n'
@@ -697,6 +697,9 @@ def add_solution(i):
     iterations=int(iterations)
 
     user=i.get('user','')
+
+    print (meta)
+    raw_input('xyz')
 
     # Search if exists
     if o=='con': 
@@ -1986,7 +1989,7 @@ def links(i):
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.os">OS</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.cpu">CPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.accelerator">Accelerators</a> ], \n'
-    h+='[ <a href="http://arxiv.org/abs/1506.06256">Vision papers CPC\'15</a> ,\n'
+    h+='[ Vision papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a> ,\n'
     h+='  <a href="http://bit.ly/ck-date16">DATE\'16</a> ,\n'
     h+='  <a href="http://hal.inria.fr/hal-01054763">JSP\'14</a> ,\n'
     h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST\'14@PLDI\'14</a> ,\n'

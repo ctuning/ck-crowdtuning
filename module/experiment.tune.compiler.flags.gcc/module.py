@@ -192,6 +192,15 @@ def html_viewer(i):
        url0=ck.cfg.get('wfe_url_prefix','')
 
        h+='<table class="ck_table" border="0">\n'
+
+       h+=' <tr style="background-color:#cfcfff;">\n'
+       h+='  <td colspan="5"></td>\n'
+       h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"><b>Choices</b></td>\n'
+       h+='  <td colspan="1"></td>\n'
+       h+='  <td colspan="4" align="center" style="background-color:#bfbfff;"><b>Workload</b></td>\n'
+       h+='  <td colspan="1"></td>\n'
+       h+=' </tr>\n'
+
        h+=' <tr style="background-color:#cfcfff;">\n'
        h+='  <td><b>\n'
        h+='   #\n'
@@ -205,26 +214,26 @@ def html_viewer(i):
            h+='   IK'+str(k+1)+'\n'
            h+='  </b></td>\n'
 
-       h+='  <td><b>\n'
-       h+='   Solution choices\n'
+       h+='  <td style="background-color:#bfbfff;"><b>\n'
+       h+='   Found\n'
        h+='  </b></td>\n'
-       h+='  <td><b>\n'
-       h+='   Reference choices\n'
+       h+='  <td style="background-color:#bfbfff;"><b>\n'
+       h+='   Reference\n'
        h+='  </b></td>\n'
 
        h+='  <td><b>\n'
        h+='   Explorations\n'
        h+='  </b></td>\n'
-       h+='  <td><b>\n'
+       h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   Program\n'
        h+='  </b></td>\n'
-       h+='  <td><b>\n'
+       h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   CMD\n'
        h+='  </b></td>\n'
-       h+='  <td><b>\n'
+       h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   Dataset\n'
        h+='  </b></td>\n'
-       h+='  <td><b>\n'
+       h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   Dataset file\n'
        h+='  </b></td>\n'
        h+='  <td><b>\n'
@@ -622,11 +631,13 @@ def crowdsource(i):
     compiler_soft_uoa=sdeps.get('compiler',{}).get('dict',{}).get('soft_uoa','')
     compiler_env=sdeps.get('compiler',{}).get('bat','')
 
-    plat_uids={}
+    plat_extra={}
     pft=pi.get('features',{})
     for q in pft:
         if q.endswith('_uid'):
-           plat_uids[q]=pft[q]
+           plat_extra[q]=pft[q]
+        elif q!='cpu' and type(pft[q])==dict and pft[q].get('name','')!='':
+           plat_extra[q+'_name']=pft[q]['name']
 
     # Detect real compiler version ***********************************************************
     if o=='con':
@@ -673,7 +684,7 @@ def crowdsource(i):
     ii['experiment_meta']={'cpu_name':cpu_name,
                            'compiler':compiler}
 
-    ii['experiment_meta_extra']=plat_uids
+    ii['experiment_meta_extra']=plat_extra
 
     ii['exchange_repo']=er
     ii['exchange_subrepo']=esr
