@@ -120,10 +120,12 @@ def html_viewer(i):
     # Load program module to get desc keys
     r=ck.access({'action':'load',
                  'module_uoa':cfg['module_deps']['module'],
-                 'data_uoa':cfg['module_deps']['program']})
+                 'data_uoa':cfg['replay_desc']['module_uoa']})
     if r['return']>0: return r
-    desc=r.get('desc',{})
-    pdesc=desc.get('pipeline_desc',{})
+    pdesc=r.get('desc',{})
+    xxkey=cfg['replay_desc'].get('desc_key','')
+    if xxkey!='':
+       pdesc=pdesc.get(xxkey,{})
 
     h='<center>\n'
     h+='<H2>Distinct solutions: '+cfg['desc']+'</H2>\n'

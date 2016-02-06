@@ -1190,6 +1190,7 @@ def run(i):
 
     import copy
     import os
+    import time
 
     curdir=os.getcwd()
 
@@ -1392,6 +1393,8 @@ def run(i):
                 ck.out('')
                 ck.out('  Found previous exploration ('+euoa0+'/'+puid0+') - restarting ...')
 
+                time.sleep(2)
+
        if euoa0=='':
           rx=ck.gen_uid({})
           if rx['return']>0: return rx
@@ -1424,12 +1427,18 @@ def run(i):
        if r['return']>0: return r
 
        # Load program module to get desc keys
-       r=ck.access({'action':'load',
-                    'module_uoa':cfg['module_deps']['module'],
-                    'data_uoa':cfg['module_deps']['program']})
-       if r['return']>0: return r
-       desc=r.get('desc',{})
-       pdesc=desc.get('pipeline_desc',{})
+       pdesc={}
+
+       xxmuoa=scfg.get('replay_desc',{}).get('module_uoa','')
+       xxkey=scfg.get('replay_desc',{}).get('desc_key','')
+
+       if xxmuoa!='':
+          r=ck.access({'action':'load',
+                       'module_uoa':cfg['module_deps']['module'],
+                       'data_uoa':xxmuoa})
+          if r['return']>0: return r
+          pdesc=r.get('desc',{})
+          if xxkey!='': pdesc=pdesc.get(xxkey,{})
 
        # Saving pipeline
        pipeline_copy=copy.deepcopy(pipeline)
@@ -1467,15 +1476,16 @@ def run(i):
            "record_repo":eruoa0,
            "record_permanent":'yes',
 
-           "skip_record_pipeline":"yes",
-           "skip_record_desc":"yes",
-
            "tags":"crowdtuning,tmp",
 
            "meta":mmeta,
 
            'out':oo
           }
+
+       if la!='yes':
+          ii["skip_record_pipeline"]="yes"
+          ii["skip_record_desc"]="yes"
 
        if len(rk)>0:
           ii['process_multi_keys']=rk
@@ -1583,7 +1593,7 @@ def run(i):
                 else:
                    if o=='con':
                       ck.out('')
-                      ck.out('Substituting reference point '+puid0+' ...')
+                      ck.out('Validating of previous points finished SUCCESSFULLY - substituting reference point '+puid0+' ...')
 
                    rx=ck.access({'action':'delete_points',
                                  'module_uoa':cfg['module_deps']['experiment'],
@@ -1599,6 +1609,8 @@ def run(i):
                        qq=q['point_uid']
                        if qq!=puid0:
                           points1.append(qq)
+
+                time.sleep(2)
 
              # Continue autotuning
 
@@ -1649,11 +1661,12 @@ def run(i):
                     "record_uoa":euoa0,
                     "record_repo":eruoa0,
 
-                    "skip_record_pipeline":"yes",
-                    "skip_record_desc":"yes",
-
                     'out':oo
                    }
+
+                if la!='yes':
+                   ii["skip_record_pipeline"]="yes"
+                   ii["skip_record_desc"]="yes"
 
                 if len(rk)>0:
                    ii['process_multi_keys']=rk
@@ -1947,7 +1960,7 @@ def compare_results(i):
 
     fine=True
     for k in keys:
-        k1=pdesc.get(k,{}).get('desc','')
+        k1=dkeys.get(k,{}).get('desc','')
         if k1=='': k1=k
 
         v0=ch0.get(k, None)

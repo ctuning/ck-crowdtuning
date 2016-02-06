@@ -1,3 +1,5 @@
+* 2016.02.05 * various small fixes and enhancements for experiment replay
+
 * 2016.02.04 * adding dependency on repo 'ck-crowdtuning-platforms' 
                to share CPU/GPU/OS/platform feature for collaborative machine learning
              * adding graph of speedups during crowdtuning
