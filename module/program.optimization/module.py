@@ -34,8 +34,14 @@ welcome1  = "NOTE: this program will send some anonymized info about your hardwa
             "We would like to sincerely thank you for participating in this community effort" \
             " and help us optimize computer systems to accelerate knowledge discovery and boost innovation " \
             " in science and technology while making our planet greener!\n\n" \
-            "Finally, performance of some systems may be chaotic (due to internal adaptation such as in Intel Core processors)!\n" \
-            "For now, we skip such results and we will later add plugins for statistical comparison of empirical results from our past R&D!\n"
+            "Also, note that we use some platform specific scripts to set/check system state (CPU/GPU freq, etc)." \
+            " You can find the most close scripts to yours by executing \"ck list platform.init\"" \
+            " and then setting environment variable CK_PLATFORM_INIT_UOA to the most close entry alias." \
+            " Alternatively, you can copy those scripts to your local bin and customize them if needed.\n\n" \
+            "Finally, performance of some systems may be chaotic (due to internal adaptation such as in Intel Core processors)!" \
+            "In such cases, you can try to add flag \"--no_state_check\" - " \
+            "if variation is high, we will skip such results. However, when running such experiments, the system may stabilize the frequency itself." \
+            "Later we will add more plugins for statistical comparison of empirical results from our past R&D!\n"
 
 form_name='ck_cresults_form'
 onchange='document.'+form_name+'.submit();'
@@ -622,7 +628,7 @@ def show(i):
                         h+='  <td>'
                         h+='   '+x
                         h+='  </td>'
-                    
+
                     h+='</tr>'
 
                 h+='</table>\n'
@@ -935,7 +941,7 @@ def initialize(i):
 
               (quiet)                      - do not ask questions, but select random ...
               (skip_welcome)               - if 'yes', do not print welcome header
-              
+
               (skip_exchange)              - if 'yes', do not exchange platform info
                                             (development mode)
 
@@ -991,7 +997,7 @@ def initialize(i):
 
     #**************************************************************************************************************
     # Welcome info
-    if o=='con' and quiet!='yes' and sw!='yes':
+    if o=='con' and (i.get('welcome','')=='yes' or (quiet!='yes' and sw!='yes')):
        ck.out(line)
        ck.out(welcome)
        ck.out(welcome1)
@@ -1121,7 +1127,7 @@ def run(i):
 
               (quiet)                      - do not ask questions, but select random ...
               (skip_welcome)               - if 'yes', do not print welcome header
-              
+
               (skip_exchange)              - if 'yes', do not exchange platform info
                                             (development mode)
 
