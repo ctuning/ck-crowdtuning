@@ -142,6 +142,7 @@ def html_viewer(i):
 
     pr=cfg.get('prune_results',[])
     mm=d.get('meta',{})
+    em=d.get('extra_meta',{})
     obj=mm.get('objective','')
 
     for k in pr:
