@@ -663,6 +663,8 @@ def add_solution(i):
               (user)              - user email/ID to attribute found solutions (optional for privacy)          
                                                                                
               (iterations)        - performed iterations
+
+              points_to_add       - list of all points to add
             }
 
     Output: {
@@ -679,6 +681,8 @@ def add_solution(i):
     o=i.get('out','')
     oo=''
     if o=='con': oo='con'
+
+    pta=i.get('points_to_add',[])
 
     ps=i.get('packed_solution','')
     ruoa=i.get('repo_uoa','')
@@ -719,7 +723,7 @@ def add_solution(i):
 
     if len(rl)==0:
        metax=copy.deepcopy(meta)
-       metax.update(emeta)
+#       metax.update(emeta)
 
        ii['action']='add'
        ii['dict']={'meta':metax}
@@ -773,7 +777,9 @@ def add_solution(i):
        # Add solution to summary
        ss={'solution_uid':suid,
            'choices':choices,
+           'points':pta,
            'iterations':iterations,
+           'extra_meta':emeta,
            'touched':1}
        if user!='' and user!='-':
           ss['user']=user
@@ -1412,6 +1418,10 @@ def run(i):
            ' * Compiler description:     '+cdu+'\n' \
            ' * Experiment UOA:           '+euoa0+'\n' \
 
+       emeta['compiler_version']=cver
+       emeta['compiler_description_uoa']=cdu
+       emeta['kernel_repetitions']=repeat
+
        if o=='con':
           ck.out(line)
           ck.out('Prepared experiment:')
@@ -1519,6 +1529,11 @@ def run(i):
           state=lio.get('state',{})
           repeat=state.get('repeat','')
           ftmp_dir=state.get('cur_dir','')
+
+          emeta['kernel_repetitions']=repeat
+          fp_cpu=state.get('features.platform.cpu',{})
+          emeta['cpu_cur_freq']=fp_cpu.get('current_freq',[])
+          emeta['cpu_num_proc']=fp_cpu.get('num_proc',1)
 
           ri=r['recorded_info']
           points1=ri.get('points',[])
@@ -1762,6 +1777,8 @@ def run(i):
              else:
                 report+='      FOUND NEW SOLUTION(S)!\n'
 
+                points_to_add=[]
+
                 if len(ik)>0:
                    keys=[]
                    for x in ik:
@@ -1779,6 +1796,8 @@ def run(i):
 
                    # Find point in results
                    for q in gpoints:
+                       ppp={}
+
                        report+='        '+q+'\n'
 
                        qq={}
@@ -1792,9 +1811,14 @@ def run(i):
                           choices2=qq.get('features_flat',{})
                           ft=qq.get('features',{})
 
+                          ppp['choices']=choices2
+                          ppp['improvements']={}
+
                           for k in keys:
                               dv=behavior2.get(k,None)
+
                               if dv!=None:
+                                 ppp['improvements'][k]=dv
 
                                  y=''
                                  try:
@@ -1809,6 +1833,8 @@ def run(i):
                                  ix=len(k1)
 
                                  report+='          * '+k1+(' ' * (il-ix))+' : '+y+'\n' 
+
+                          points_to_add.append(ppp)
 
                 if o=='con':
                    ck.out('')
@@ -1852,6 +1878,7 @@ def run(i):
                        'features':ft,
                        'iterations':iterations,
                        'user':user,
+                       'points_to_add':points_to_add,
                        'out':oo}
                    rx=ck.access(ii)
                    if rx['return']>0: return rx

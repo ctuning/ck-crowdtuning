@@ -158,16 +158,6 @@ def html_viewer(i):
 
         h+='<tr><td><b>'+qd+'</b></td><td>'+x+'</td></tr>\n'
 
-    h+='<tr>\n'
-    h+=' <td><b>Platform</b></td>\n'
-    h+=' <td>'+mm.get('platform_name','')+'</td>\n'
-    h+='</tr>\n'
-
-    h+='<tr>\n'
-    h+=' <td><b>OS</b></td>\n'
-    h+=' <td>'+mm.get('os_name','')+'</td>\n'
-    h+='</tr>\n'
-
     h+='<tr><td></td><td></td></tr>\n'
 
     kk=0
@@ -217,10 +207,11 @@ def html_viewer(i):
 
        h+=' <tr style="background-color:#cfcfff;">\n'
        h+='  <td colspan="2"></td>\n'
-       h+='  <td colspan="'+str(len(ik))+'" align="center"><b>Improvements</b></td>\n'
+       h+='  <td colspan="'+str(len(ik))+'" align="center"><b>Improvements (<4% variation)</b></td>\n'
        h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"><b>Choices</b></td>\n'
        h+='  <td colspan="1"></td>\n'
-       h+='  <td colspan="4" align="center" style="background-color:#bfbfff;"><b>Workload</b></td>\n'
+       h+='  <td colspan="5" align="center" style="background-color:#bfbfff;"><b>Workload</b></td>\n'
+       h+='  <td colspan="3"></td>\n'
        h+=' </tr>\n'
 
        h+=' <tr style="background-color:#cfcfff;">\n'
@@ -258,6 +249,18 @@ def html_viewer(i):
        h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   Dataset file\n'
        h+='  </b></td>\n'
+       h+='  <td style="background-color:#bfbfff;"><b>\n'
+       h+='   Kernel repetitions\n'
+       h+='  </b></td>\n'
+       h+='  <td><b>\n'
+       h+='   CPU freq (MHz)\n'
+       h+='  </b></td>\n'
+       h+='  <td><b>\n'
+       h+='   Platform\n'
+       h+='  </b></td>\n'
+       h+='  <td><b>\n'
+       h+='   OS\n'
+       h+='  </b></td>\n'
        h+=' </tr>\n'
 
        # List
@@ -269,12 +272,16 @@ def html_viewer(i):
        sres=[]
        ires=0
 
+       em={}
+
        while iq1<len(sols): # already sorted by most "interesting" solutions (such as highest speedups)
            if iq!=iq1:
               num+=1
 
               iq+=1
               q=sols[iq]
+
+              em=q.get('extra_meta',{})
 
               suid=q['solution_uid']
 
@@ -411,6 +418,32 @@ def html_viewer(i):
               h+='  <td valign="top">\n'
               if ires<2:
                  h+='   <a href="'+url0+'action=pull&common_func=yes&cid=dataset:'+dataset_uoa+'&filename='+dataset_file+'">'+dataset_file+'</a>\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top" align="right">\n'
+              if ires<2:
+                 h+='   '+str(em.get('kernel_repetitions',1))+'\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top" align="right">\n'
+              if ires<2:
+                 x=''
+                 qq=em.get('cpu_cur_freq',[])
+                 for q in qq:
+                     xq=qq[q]
+                     if x!='': x+=','
+                     x+=str(xq)
+                 h+='   '+x+'\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top" align="right">\n'
+              if ires<2:
+                 h+='   '+str(em.get('platform_name',1))+'\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top" align="right">\n'
+              if ires<2:
+                 h+='   '+str(em.get('os_name',1))+'\n'
               h+='  </td>\n'
 
               h+=' </tr>\n'
@@ -653,7 +686,7 @@ def crowdsource(i):
     for q in pft:
         if q.endswith('_uid'):
            plat_extra[q]=pft[q]
-        elif q!='cpu' and type(pft[q])==dict and pft[q].get('name','')!='':
+        elif type(pft[q])==dict and pft[q].get('name','')!='':
            plat_extra[q+'_name']=pft[q]['name']
 
     # Detect real compiler version ***********************************************************
