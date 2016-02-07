@@ -442,7 +442,7 @@ def html_viewer(i):
 
               h+='  <td valign="top" align="right">\n'
               if ires<2:
-                 h+='   '+str(em.get('kernel_repetitions',1))+'\n'
+                 h+='   '+str(em.get('kernel_repetitions',-1))+'\n'
               h+='  </td>\n'
 
               h+='  <td valign="top" align="right">\n'
@@ -464,12 +464,12 @@ def html_viewer(i):
 
               h+='  <td valign="top">\n'
               if ires<2:
-                 h+='   '+str(em.get('platform_name',1))+'\n'
+                 h+='   '+str(em.get('platform_name',''))+'\n'
               h+='  </td>\n'
 
               h+='  <td valign="top">\n'
               if ires<2:
-                 h+='   '+str(em.get('os_name',1))+'\n'
+                 h+='   '+str(em.get('os_name',''))+'\n'
               h+='  </td>\n'
 
               h+=' </tr>\n'
