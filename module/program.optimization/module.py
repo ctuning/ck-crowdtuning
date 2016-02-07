@@ -604,7 +604,7 @@ def show(i):
                 h+='   Number of distinct solutions\n'
                 h+='  </b></td>\n'
                 h+='  <td><b>\n'
-                h+='   First characteristic improvement\n'
+                h+='   Max improvement (first characteristic)\n'
                 h+='  </b></td>\n'
                 for k in pr:
                     qd=k.get('desc','')
