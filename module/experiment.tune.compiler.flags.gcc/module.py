@@ -159,6 +159,8 @@ def html_viewer(i):
 
         h+='<tr><td><b>'+qd+'</b></td><td>'+x+'</td></tr>\n'
 
+    h+='<tr><td><b>Objective</b></td><td>'+obj+'</td></tr>\n'
+
     h+='<tr><td></td><td></td></tr>\n'
 
     kk=0

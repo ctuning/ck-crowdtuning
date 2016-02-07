@@ -433,7 +433,7 @@ def show(i):
     xls=r['lst']
 
     if len(xls)==0:
-       h+='<b>Can\'t find any local expeimrent crowdsourcing scenarios ...</b>'
+       h+='<b>Can\'t find any local experiment crowdsourcing scenarios ...</b>'
     else:
        ls=sorted(xls, key=lambda v: (int(v.get('meta',{}).get('priority',0)), v['data_uoa']))
 
@@ -476,6 +476,24 @@ def show(i):
           r=ck.access(ii)
           if r['return']>0: return r
           ds=r['dict']
+
+          # Get replay description + first key
+          ik=ds.get('improvements_keys',[])
+          ik0=''
+          if len(ik)>0:
+             ik0=ik[0]
+
+          xxmuoa=ds.get('replay_desc',{}).get('module_uoa','')
+          xxkey=ds.get('replay_desc',{}).get('desc_key','')
+
+          pdesc={}
+          if xxmuoa!='':
+             r=ck.access({'action':'load',
+                          'module_uoa':cfg['module_deps']['module'],
+                          'data_uoa':xxmuoa})
+             if r['return']>0: return r
+             pdesc=r.get('desc',{})
+             if xxkey!='': pdesc=pdesc.get(xxkey,{})
 
           pr=ds.get('prune_results',[])
           ipr=len(pr)
@@ -585,6 +603,9 @@ def show(i):
                 h+='  <td><b>\n'
                 h+='   Number of distinct solutions\n'
                 h+='  </b></td>\n'
+                h+='  <td><b>\n'
+                h+='   First characteristic improvement\n'
+                h+='  </b></td>\n'
                 for k in pr:
                     qd=k.get('desc','')
                     qi=k.get('id','')
@@ -613,6 +634,14 @@ def show(i):
                     h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">Click to see solutions ('+duid+')</a>\n'
                     h+=' <td align="center">'+str(ns)+'</td>'
 
+                    dv=qqm.get('max_improvement_first_key',0)
+                    y=''
+                    try:
+                       y=('%.3f' % dv)
+                    except Exception as e: 
+                       pass
+
+                    h+=' <td align="center">'+y+'</td>'
                     for k in pr:
                         qd=k.get('desc','')
                         qi=k.get('id','')
@@ -668,6 +697,8 @@ def add_solution(i):
 
               pruned_choices1       - pruned ref choices
               pruned_choices_order1 - pruned ref choices order
+
+              first_key             - first key (to record max speedup)
             }
 
     Output: {
@@ -698,6 +729,8 @@ def add_solution(i):
 
     choices=i.get('choices',{})
     ft=i.get('features',{})
+
+    fk=i.get('first_key','')
 
     pchoices1=i.get('pruned_choices1',{})
     pchoices_order1=i.get('pruned_choices1',[])
@@ -805,8 +838,16 @@ def add_solution(i):
        i+=1
        ss['touched']=i
 
-    # Change number of solutions in main meta
-    d['solutions']=len(sols)
+    # Sort by improvements and get highest improvement
+    ls=len(sols)
+    d['solutions']=ls
+
+    if fk!='' and ls>0:
+       sols=sorted(sols, key=lambda v: (float(v.get('points',[{}])[0].get('improvements',{}).get(fk,0))), reverse=True)
+
+       dv=float(sols[0].get('points',[{}])[0].get('improvements',{}).get(fk,0))
+       if dv>0:
+          d['max_improvement_first_key']=dv
 
     # Saving summary file
     rx=ck.save_json_to_file({'json_file':psum, 'dict':sols})
@@ -1937,6 +1978,7 @@ def run(i):
                        'iterations':iterations,
                        'user':user,
                        'points_to_add':points_to_add,
+                       'first_key':ik0,
                        'out':oo}
                    rx=ck.access(ii)
                    if rx['return']>0: return rx
