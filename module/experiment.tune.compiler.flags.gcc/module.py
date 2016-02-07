@@ -211,7 +211,7 @@ def html_viewer(i):
        h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"><b>Choices</b></td>\n'
        h+='  <td colspan="1"></td>\n'
        h+='  <td colspan="5" align="center" style="background-color:#bfbfff;"><b>Workload</b></td>\n'
-       h+='  <td colspan="3"></td>\n'
+       h+='  <td colspan="4"></td>\n'
        h+=' </tr>\n'
 
        h+=' <tr style="background-color:#cfcfff;">\n'
@@ -230,7 +230,7 @@ def html_viewer(i):
        h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   Found\n'
        h+='  </b></td>\n'
-       h+='  <td style="background-color:#bfbfff;"><b>\n'
+       h+='  <td style="background-color:#bfbfff;" align="right"><b>\n'
        h+='   Reference\n'
        h+='  </b></td>\n'
 
@@ -249,11 +249,14 @@ def html_viewer(i):
        h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   Dataset file\n'
        h+='  </b></td>\n'
-       h+='  <td style="background-color:#bfbfff;"><b>\n'
+       h+='  <td style="background-color:#bfbfff;" align="right"><b>\n'
        h+='   Kernel repetitions\n'
        h+='  </b></td>\n'
-       h+='  <td><b>\n'
+       h+='  <td align="right"><b>\n'
        h+='   CPU freq (MHz)\n'
+       h+='  </b></td>\n'
+       h+='  <td align="right"><b>\n'
+       h+='   Cores\n'
        h+='  </b></td>\n'
        h+='  <td><b>\n'
        h+='   Platform\n'
@@ -335,6 +338,9 @@ def html_viewer(i):
 
               choices=q['choices']
 
+              ref_sol=q.get('ref_choices',{})
+              ref_sol_order=q.get('ref_choices_order',[])
+
               program_uoa=choices.get('data_uoa','')
               cmd=choices.get('cmd_key','')
               dataset_uoa=choices.get('dataset_uoa','')
@@ -360,7 +366,7 @@ def html_viewer(i):
               h+='  </td>\n'
 
               for k in range(0, len(ik)):
-                  h+='  <td align="right">\n'
+                  h+='  <td valign="top" align="right">\n'
                   dv=rr.get('flat',{}).get(ik[k],'')
 
                   # Add to graph (first dimension and first solution)
@@ -388,12 +394,26 @@ def html_viewer(i):
                   h+='  </td>\n'
 
 
-              h+='  <td><b>\n'
+              h+='  <td valign="top">\n'
+              dv=rr.get('flat',{}).get('##characteristics#compile#joined_compiler_flags#min','')
+              h+='   '+dv+'\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top" align="right">\n'
+              if ires<2:
+                 # Ideally should add pipeline description somewhere
+                 # to properly recreate flags. However since it is most of the time -Ox
+                 # we don't need to make it complex at the moment 
+
+                 ry=rebuild_cmd({'choices':ref_sol,
+                                 'choices_order':ref_sol_order,
+                                 'choices_desc':{}})
+                 if ry['return']>0: return ry
+                 ref=ry['cmd']
+
+                 h+='   '+ref+'\n'
               h+='   \n'
-              h+='  </b></td>\n'
-              h+='  <td><b>\n'
-              h+='   \n'
-              h+='  </b></td>\n'
+              h+='  </td>\n'
 
               h+='  <td valign="top">\n'
               if ires<2:
@@ -438,10 +458,16 @@ def html_viewer(i):
 
               h+='  <td valign="top" align="right">\n'
               if ires<2:
+                 qq=em.get('cpu_num_proc',1)
+                 h+='   '+str(qq)+'\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top">\n'
+              if ires<2:
                  h+='   '+str(em.get('platform_name',1))+'\n'
               h+='  </td>\n'
 
-              h+='  <td valign="top" align="right">\n'
+              h+='  <td valign="top">\n'
               if ires<2:
                  h+='   '+str(em.get('os_name',1))+'\n'
               h+='  </td>\n'
@@ -769,3 +795,42 @@ def crowdsource(i):
 
 
     return {'return':0, 'platform_info':pi}
+
+##############################################################################
+# rebuild compiler cmd from choices
+
+def rebuild_cmd(i):
+    """
+    Input:  {
+               choices       - dict of choices
+               choices_order - choices order
+               choices_desc  - dict of choices desc
+            }
+
+    Output: {
+              return         - return code =  0, if successful
+                                           >  0, if error
+              (error)        - error text if return > 0
+
+              cmd            - compiler command line
+              pruned_choices - leave only compiler flags
+            }
+
+    """
+
+    cmd=''
+
+    choices=i.get('choices',{})
+    corder=i.get('choices_order',[])
+    cdesc=i.get('choices_desc',{})
+
+    for q in sorted(corder):
+        v=choices.get(q, None)
+        d=cdesc.get(q, None)
+
+        if v!=None:
+           if cmd!='': cmd+=' '
+           cmd+=v
+
+    return {'return':0, 'cmd':cmd}
+

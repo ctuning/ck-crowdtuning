@@ -649,22 +649,25 @@ def show(i):
 def add_solution(i):
     """
     Input:  {
-              packed_solution     - new packed points
-              scenario_module_uoa - scenario UID
-              meta                - meta to search
-              (meta_extra)        - extra meta to add
+              packed_solution       - new packed points
+              scenario_module_uoa   - scenario UID
+              meta                  - meta to search
+              (meta_extra)          - extra meta to add
 
-              exchange_repo       - where to record (local or remote)
-              exchange_subrepo    - where to recrod (if remote, local repo in remote machine)
+              exchange_repo         - where to record (local or remote)
+              exchange_subrepo      - where to recrod (if remote, local repo in remote machine)
 
-              choices             - original choices
-              features            - original features
+              choices               - original choices
+              features              - original features
 
-              (user)              - user email/ID to attribute found solutions (optional for privacy)          
+              (user)                - user email/ID to attribute found solutions (optional for privacy)          
                                                                                
-              (iterations)        - performed iterations
+              (iterations)          - performed iterations
 
-              points_to_add       - list of all points to add
+              points_to_add         - list of all points to add
+
+              pruned_choices1       - pruned ref choices
+              pruned_choices_order1 - pruned ref choices order
             }
 
     Output: {
@@ -695,6 +698,9 @@ def add_solution(i):
 
     choices=i.get('choices',{})
     ft=i.get('features',{})
+
+    pchoices1=i.get('pruned_choices1',{})
+    pchoices_order1=i.get('pruned_choices1',[])
 
     iterations=i.get('iterations','')
     if iterations=='': iterations=1
@@ -777,6 +783,8 @@ def add_solution(i):
        # Add solution to summary
        ss={'solution_uid':suid,
            'choices':choices,
+           'ref_choices':pchoices1,
+           'ref_choices_order':pchoices_order1,
            'points':pta,
            'iterations':iterations,
            'extra_meta':emeta,
@@ -1289,6 +1297,8 @@ def run(i):
     for l in range(0, len(pk)):
          pk[l]=pk[l].replace('$#obj#$',objective)
 
+    ik0=ik[0] # first key to sort
+
     #**************************************************************************************************************
     # Preparing pipeline with a temporary directory and random choices if not fixed (progs, datsets, etc)
     ii={'action':'pipeline',
@@ -1364,6 +1374,9 @@ def run(i):
        mmeta['dataset_uoa']=cmd_key
        mmeta['dataset_file']=dataset_file
 
+       pchoices1={}
+       pchoices_order1=[]
+
        euoa0=i.get('record_uoa','')
        puid0=''
        found=False
@@ -1390,9 +1403,12 @@ def run(i):
              for q in points:
                  if q.get('features',{}).get('permanent','')=='yes':
                     found=True
+
                     repeat=q.get('features',{}).get('choices',{}).get('repeat','')
+
                     euoa0=q['data_uid']
                     puid0=q['point_uid']
+
                     break
 
              if found and o=='con':
@@ -1539,6 +1555,8 @@ def run(i):
           points1=ri.get('points',[])
           ruid=ri['recorded_uid']       # UID of the default one
 
+          puid00=points1[0]
+
           if len(points1)==0:
              unexpected=True
 
@@ -1567,11 +1585,27 @@ def run(i):
 
              results1=r.get('points',{})
 
+             # Detect reference optimization points
+             if len(results1)>0:
+                # Search for reference/pemanent point 
+                for q in results1:
+                    if q.get('features',{}).get('permanent','')=='yes':
+
+                       choices1=q.get('features_flat',{})
+                       choices_order1=q.get('features',{}).get('choices_order',[])
+
+                       rx=prune_choices({'choices':choices1,
+                                         'choices_order':choices_order1})
+                       if rx['return']>0: return rx
+
+                       pchoices1=rx['pruned_choices']             # only tuning keys
+                       pchoices_order1=rx['pruned_choices_order'] # only keys (orders)
+
+                       break
+
              # If local autotuning and appending to existing one,
              # check if still the same execution ...
              if la=='yes' and found:
-                puid00=points1[0]
-
                 rx=compare_results({'point0':puid0,
                                     'point1':puid00,
                                     'results':results1,
@@ -1811,15 +1845,19 @@ def run(i):
                           choices2=qq.get('features_flat',{})
                           ft=qq.get('features',{})
 
-                          ppp['choices']=choices2
-                          ppp['improvements']={}
+                          choices_order2=ft.get('choices_order',[])
+
+                          rx=prune_choices({'choices':choices2,
+                                            'choices_order':choices_order2})
+                          if rx['return']>0: return rx
+
+                          ppp['pruned_choices']=rx['pruned_choices']
+                          ppp['pruned_choices_order']=rx['pruned_choices_order']
 
                           for k in keys:
                               dv=behavior2.get(k,None)
 
                               if dv!=None:
-                                 ppp['improvements'][k]=dv
-
                                  y=''
                                  try:
                                     y=('%.3f' % dv)
@@ -1834,7 +1872,22 @@ def run(i):
 
                                  report+='          * '+k1+(' ' * (il-ix))+' : '+y+'\n' 
 
+
+                          ppp['improvements']={}
+                          for k in ik:
+                              dv=behavior2.get(k,None)
+                              ppp['improvements'][k]=dv
+
+                          ppp['misc']={}
+                          for k in pk:
+                              dv=behavior2.get(k,None)
+                              ppp['misc'][k]=dv
+
                           points_to_add.append(ppp)
+
+                if len(points_to_add)>0:
+                   # Sort here 
+                   points_to_add=sorted(points_to_add, key=lambda v: (v.get(ik0,0.0)), reverse=True)
 
                 if o=='con':
                    ck.out('')
@@ -1875,6 +1928,8 @@ def run(i):
                        'meta_extra':emeta,
                        'packed_solution':ps,
                        'choices':choices,
+                       'pruned_choices1':pchoices1,
+                       'pruned_choices_order1':pchoices_order1,
                        'features':ft,
                        'iterations':iterations,
                        'user':user,
@@ -2052,3 +2107,41 @@ def links(i):
     h+='  <a href="https://hal.inria.fr/inria-00436029">GCC Summit\'09</a> ]\n'
 
     return {'return':0, 'html':h}
+
+##############################################################################
+# prune choices (leave only from iterations)
+
+def prune_choices(i):
+    """
+    Input:  {
+               choices       - dict of choices
+               choices_order - choices order
+            }
+
+    Output: {
+              return               - return code =  0, if successful
+                                                 >  0, if error
+              (error)              - error text if return > 0
+
+              pruned_choices       - leave only tuning keys (values)
+              pruned_choices_order - leave only tuning keys (order)
+            }
+
+    """
+
+    pc={}
+    pco=[]
+
+    choices=i.get('choices',{})
+    corder=i.get('choices_order',[])
+
+    for q in sorted(corder):
+        if q.startswith('##'):
+           q1='##choices'+q[1:]
+           v=choices.get(q1, None)
+
+           if v!=None:
+              pc[q1]=v
+              pco.append(q1)
+
+    return {'return':0, 'pruned_choices':pc, 'pruned_choices_order':pco}
