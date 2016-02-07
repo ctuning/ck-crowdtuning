@@ -729,7 +729,10 @@ def add_solution(i):
 
     if len(rl)==0:
        metax=copy.deepcopy(meta)
-#       metax.update(emeta)
+
+#       metax.update(emeta) 
+       if emeta.get('cpu_uid','')!='': metax['cpu_uid']=emeta['cpu_uid']
+       if emeta.get('compiler_description_uoa','')!='': metax['compiler_description_uoa']=emeta['compiler_description_uoa']
 
        ii['action']='add'
        ii['dict']={'meta':metax}
