@@ -634,12 +634,13 @@ def show(i):
                     h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">Click to see solutions ('+duid+')</a>\n'
                     h+=' <td align="center">'+str(ns)+'</td>'
 
-                    dv=qqm.get('max_improvement_first_key',0)
+                    dv=qqm.get('max_improvement_first_key',None)
                     y=''
-                    try:
-                       y=('%.3f' % dv)
-                    except Exception as e: 
-                       pass
+                    if dv!=None:
+                       try:
+                          y=('%.2f' % dv)
+                       except Exception as e: 
+                          pass
 
                     h+=' <td align="center">'+y+'</td>'
                     for k in pr:
