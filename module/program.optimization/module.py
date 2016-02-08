@@ -342,7 +342,6 @@ def submit_from_remote(i):
 def crowdsource(i):
     """
     Input:  {
-xyz
               (host_os)                    - host OS (detect, if omitted)
               (target_os)                  - OS module to check (if omitted, analyze host)
               (device_id)                  - device id if remote (such as adb)
@@ -395,6 +394,15 @@ xyz
               (experiment_meta_extra)      - extra meta such as platform UIDs
 
               (record_uoa)                 - use this UOA to recrod experiments instead of randomly generated ones
+
+              (compiler_description_uoa)   - force compiler description UOA (see module "compiler")
+
+              (flag_tags)                  - extra flag tags (boolean,parametric...)
+
+              (pause_if_fail)              - if pipeline fails, ask to press Enter
+                                             (useful to analyze which flags fail during compiler flag autotuning)
+              
+              (omit_probability)           - probability to omit optimization (for example, compiler flags during exploration/crowdtuning)
             }
 
     Output: {
@@ -1244,6 +1252,9 @@ def run(i):
 
               (repetitions)                - statistical repetitions of a given experiment
 
+              (compiler_description_uoa)   - force compiler description UOA (see module "compiler")
+              (flag_tags)                  - extra flag tags (boolean,parametric...)
+
               (quiet)                      - do not ask questions, but select random ...
               (skip_welcome)               - if 'yes', do not print welcome header
 
@@ -1291,6 +1302,11 @@ def run(i):
 
               (solution_conditions)        - list of conditions:
                                                ["first key", "extra key", "condition", value]
+
+              (pause_if_fail)              - if pipeline fails, ask to press Enter
+                                             (useful to analyze which flags fail during compiler flag autotuning)
+
+              (omit_probability)           - probability to omit optimization (for example, compiler flags during exploration/crowdtuning)
             }
 
     Output: {
@@ -1316,6 +1332,8 @@ def run(i):
     tos=i.get('target_os','')
     tdid=i.get('target_device_id','')
 
+    pifail=i.get('pause_if_fail','')
+
     pi=i.get('platform_info',{})
 
     scfg=i.get('scenario_cfg',{})
@@ -1323,6 +1341,11 @@ def run(i):
     la=i.get('local_autotuning','')
 
     user=i.get('user','')
+
+    cd_uoa=i.get('compiler_description_uoa','')
+    ftags=i.get('flag_tags','').strip()
+
+    oprob=i.get('omit_probability','')
 
     program_tags=i.get('program_tags','').strip()
     program_uoa=i.get('program_uoa','')
@@ -1419,6 +1442,8 @@ def run(i):
         'out':oo}
     if apc!='yes':
        ii['random']='yes'
+    if cd_uoa!='':
+       ii['compiler_description_uoa']=cd_uoa
     if nsc!='': ii['no_state_check']=nsc
     r=ck.access(ii)
     if r['return']>0: return r
@@ -1526,6 +1551,9 @@ def run(i):
            ' * Dataset:                  '+dataset_uoa+'\n' \
            ' * Dataset file:             '+dataset_file+'\n'
 
+       if ftags!='':
+          lx+=' * Compiler flag tags:       '+ftags+'\n'
+
        if repeat!='':
           lx+=' * Kernel repetitions:       '+str(repeat)+'\n'
 
@@ -1536,6 +1564,8 @@ def run(i):
        emeta['compiler_version']=cver
        emeta['compiler_description_uoa']=cdu
        emeta['kernel_repetitions']=repeat
+       emeta['compiler_flag_tags']=ftags
+       emeta['omit_probability']=str(oprob)
 
        if o=='con':
           ck.out(line)
@@ -1614,6 +1644,9 @@ def run(i):
 
        if len(rk)>0:
           ii['process_multi_keys']=rk
+
+       if pifail!='':
+          ii['pause_if_fail']=pifail
 
        r=ck.merge_dicts({'dict1':ii, 'dict2':pup0})
        if r['return']>0: return r
@@ -1730,7 +1763,7 @@ def run(i):
 
                    unexpected=True
 
-                   x='   WARNING: reference points differ - can\'t continue ...'
+                   x='   WARNING: reference points differ in some characteristics - can\'t continue ...'
 
                    ck.out('')
                    ck.out(x+' ...')
@@ -1771,6 +1804,15 @@ def run(i):
                 pup1=scfg.get('experiment_1_pipeline_update',{})
                 pup1['frontier_keys']=fk
 
+                if len(pup1.get('choices_selection',[]))>0:
+                   if ftags!='':
+                      tg=pup1['choices_selection'][0].get('tags','')
+                      if tg!='': tg+=','
+                      tg+=ftags
+                      pup1['choices_selection'][0]['tags']=tg
+                   if oprob!='':
+                      pup1['choices_selection'][0]['omit_probability']=oprob
+
                 if rep!='': pup1['repetitions']=rep
                 if seed!='': pup1['seed']=seed
 
@@ -1803,6 +1845,8 @@ def run(i):
 
                     "meta":mmeta,
 
+                    'aggregate_failed_cases':'yes',
+
                     'flat_dict_for_improvements':fdfi,
 
                     "record":"yes",
@@ -1819,6 +1863,9 @@ def run(i):
                 if len(rk)>0:
                    ii['process_multi_keys']=rk
 
+                if pifail!='':
+                   ii['pause_if_fail']=pifail
+
                 r=ck.merge_dicts({'dict1':ii, 'dict2':pup1})
                 if r['return']>0: return r
                 ii=r['dict1']
@@ -1830,6 +1877,22 @@ def run(i):
                 if r['return']>0: 
                    rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'   FAILURE: '+r['error']+'\n'})
                    return r
+
+                failed_cases=r.get('failed_cases',[])
+                if len(failed_cases)>0:
+                   sfc='\n FAILED CASES:\n'
+                   for fc in failed_cases:
+                       fcp=fc.get('pipeline_state',{})
+                       fcc=fc.get('characteristics',{})
+                       sfc+='   * fail reason:    '+fcp.get('fail_reason','')+'\n'
+                       jcf=fcc.get('compile',{}).get('joined_compiler_flags','')
+                       sfc+='     compiler flags: '+jcf+'\n'
+                       repl='ck pipeline program:'+prog_uoa+' --cmd_key='+cmd_key+' --dataset_uoa='+dataset_uoa+' --dataset_file='+dataset_file+' --target_os='+tos
+                       if tdid!='': repl+=' --device_id='+tdid
+                       repl+=' --flags="'+jcf+'" '
+                       sfc+='     relaxed replay: '+repl+'\n\n'
+
+                   rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':sfc+'\n'})
 
 #               If no frontier, points will not be added, so will not use it
 #                ri=r['recorded_info']

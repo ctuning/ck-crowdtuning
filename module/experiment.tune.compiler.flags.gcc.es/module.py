@@ -35,10 +35,10 @@ def init(i):
 
 def show(i):
     """
-    See in module "experiment.tune.compiler.flags.gcc"
+    See in module "experiment.tune.compiler.flags"
     """
 
-    i['module_uoa']='experiment.tune.compiler.flags.gcc'
+    i['module_uoa']='experiment.tune.compiler.flags'
     i['module_cfg']=cfg
     i['module_work']=work
     return ck.access(i)
@@ -48,10 +48,10 @@ def show(i):
 
 def crowdsource(i):
     """
-    See in module "experiment.tune.compiler.flags.gcc"
+    See in module "experiment.tune.compiler.flags"
     """
 
-    i['module_uoa']='experiment.tune.compiler.flags.gcc'
+    i['module_uoa']='experiment.tune.compiler.flags'
     i['module_cfg']=cfg
     i['module_work']=work
     return ck.access(i)
@@ -61,18 +61,10 @@ def crowdsource(i):
 
 def html_viewer(i):
     """
-    Input:  {
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-            }
-
+    See in module "experiment.tune.compiler.flags"
     """
 
-    i['module_uoa']='experiment.tune.compiler.flags.gcc'
+    i['module_uoa']='experiment.tune.compiler.flags'
     i['module_cfg']=cfg
     i['module_work']=work
     return ck.access(i)
@@ -82,18 +74,10 @@ def html_viewer(i):
 
 def replay(i):
     """
-    Input:  {
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-            }
-
+    See in module "experiment.tune.compiler.flags"
     """
 
-    i['module_uoa']='experiment.tune.compiler.flags.gcc'
+    i['module_uoa']='experiment.tune.compiler.flags'
     i['module_ref_uoa']=work['self_module_uid']
     i['module_cfg']=cfg
     i['module_work']=work
