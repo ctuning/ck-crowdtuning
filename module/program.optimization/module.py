@@ -342,6 +342,59 @@ def submit_from_remote(i):
 def crowdsource(i):
     """
     Input:  {
+xyz
+              (host_os)                    - host OS (detect, if omitted)
+              (target_os)                  - OS module to check (if omitted, analyze host)
+              (device_id)                  - device id if remote (such as adb)
+
+              (once)                       - if 'yes', run scenario once (useful for autotuning a given program)
+
+              (iterations)                 - limit number of iterations, otherwise infinite (default=30)
+                                             if -1, infinite (or until all choices are explored)
+
+              (repetitions)                - statistical repetitions of a given experiment
+
+              (local_autotuning)           - if 'yes', local autotuning instead of collaborative optimization
+
+              (quiet)                      - do not ask questions, but select random ...
+              (skip_welcome)               - if 'yes', do not print welcome header
+
+              (skip_exchange)              - if 'yes', do not exchange platform info
+                                            (development mode)
+
+              (user)                       - user email/ID to record solutions (attribute found good solutions)
+
+              (local)                      - if 'yes', use local repo for exchange (local autotuning/benchmarking)
+              (exchange_repo)              - which repo to record/update info (remote-ck by default)
+              (exchange_subrepo)           - if remote, remote repo UOA
+
+              (force_platform_name)        - if !='', use this for platform name
+
+              (scenario)                   - module UOA of crowdsourcing scenario
+              (scenario_cfg)               - cfg of a scenario
+
+              (seed)                       - autotuning seed
+
+              (program_tags)               - force selection of programs by tags
+
+              (program_uoa)                - force program UOA
+              (cmd_key)                    - CMD key
+              (dataset_uoa)                - dataset UOA
+              (dataset_file)               - dataset filename (if more than one inside one entry - suggest to have a UID in name)
+
+              (calibration_time)           - change calibration time (deafult 10 sec.)
+
+              (objective)                  - extension to flat characteristics (min,exp,mean,center) to tune on Pareto
+                                             (default: min - to see what we can squeeze from a given architecture)
+
+              (keep_tmp)                   - if 'yes', do not remove run batch
+
+              (ask_pipeline_choices)       - if 'yes', ask for each pipeline choice, otherwise random selection 
+
+              (experiment_meta)            - meta when recording experiment
+              (experiment_meta_extra)      - extra meta such as platform UIDs
+
+              (record_uoa)                 - use this UOA to recrod experiments instead of randomly generated ones
             }
 
     Output: {
@@ -699,7 +752,7 @@ def add_solution(i):
               pruned_choices1       - pruned ref choices
               pruned_choices_order1 - pruned ref choices order
 
-              first_key             - first key (to record max speedup)
+              (first_key)           - first key (to record max speedup)
             }
 
     Output: {
@@ -1184,6 +1237,13 @@ def run(i):
               (target_os)                  - OS module to check (if omitted, analyze host)
               (device_id)                  - device id if remote (such as adb)
 
+              (once)                       - if 'yes', run scenario once (useful for autotuning a given program)
+
+              (iterations)                 - limit number of iterations, otherwise infinite (default=30)
+                                             if -1, infinite (or until all choices are explored)
+
+              (repetitions)                - statistical repetitions of a given experiment
+
               (quiet)                      - do not ask questions, but select random ...
               (skip_welcome)               - if 'yes', do not print welcome header
 
@@ -1212,19 +1272,13 @@ def run(i):
               (dataset_uoa)                - dataset UOA
               (dataset_file)               - dataset filename (if more than one inside one entry - suggest to have a UID in name)
 
-              (iterations)                 - limit number of iterations, otherwise infinite (default=30)
-                                             if -1, infinite (or until all choices are explored)
 
               (calibration_time)           - change calibration time (deafult 10 sec.)
-
-              (repetitions)                - statistical repetitions of a given experiment
 
               (objective)                  - extension to flat characteristics (min,exp,mean,center) to tune on Pareto
                                              (default: min - to see what we can squeeze from a given architecture)
 
               (keep_tmp)                   - if 'yes', do not remove run batch
-
-              (only_one_run)               - if 'yes', run scenario ones (useful for autotuning a given program)
 
               (ask_pipeline_choices)       - if 'yes', ask for each pipeline choice, otherwise random selection 
 
@@ -2033,7 +2087,7 @@ def run(i):
                 ck.out('  * replay above experiments via "ck replay experiment:'+euoa0+' (--point={above solution UID})"')
                 ck.out('  * plot graph for above experiments via "ck plot graph:'+euoa0+'"')
 
-       if i.get('only_one_run','')=='yes':
+       if i.get('once','')=='yes':
           finish=True
 
     return {'return':0}

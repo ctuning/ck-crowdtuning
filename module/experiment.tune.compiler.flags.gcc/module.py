@@ -561,53 +561,7 @@ def html_viewer(i):
 def crowdsource(i):
     """
     Input:  {
-              (host_os)                    - host OS (detect, if omitted)
-              (target_os)                  - OS module to check (if omitted, analyze host)
-              (device_id)                  - device id if remote (such as adb)
-
-              (quiet)                      - do not ask questions, but select random ...
-              (skip_welcome)               - if 'yes', do not print welcome header
-
-              (skip_exchange)              - if 'yes', do not exchange platform info
-                                            (development mode)
-
-              (change_user)                - if yes', change user
-
-              (local)                      - if 'yes', use local repo for exchange (local autotuning/benchmarking)
-              (exchange_repo)              - which repo to record/update info (remote-ck by default)
-              (exchange_subrepo)           - if remote, remote repo UOA
-
-              (force_platform_name)        - if !='', use this for platform name
-
-              (scenario)                   - module UOA of crowdsourcing scenario
-
-              (seed)                       - autotuning seed
-
-              (program_tags)               - force selection of programs by tags
-
-              (program_uoa)                - force program UOA
-              (cmd_key)                    - CMD key
-              (dataset_uoa)                - dataset UOA
-              (dataset_file)               - dataset filename (if more than one inside one entry - suggest to have a UID in name)
-
-              (iterations)                 - limit number of iterations, otherwise infinite (default=30)
-                                             if -1, infinite (or until all choices are explored)
-
-              (calibration_time)           - change calibration time (deafult 10 sec.)
-
-              (repetitions)                - statistical repetitions of a given experiment
-
-              (objective)                  - extension to flat characteristics (min,max,exp) to tune on Pareto
-                                             (default: min - to see what we can squeeze from a given architecture)
-
-              (keep_tmp)                   - if 'yes', do not remove run batch
-              (keep_experiments)           - if 'yes', do not remove experiments entries
-
-              (only_one_run)               - if 'yes', run scenario ones (useful for autotuning a given program)
-
-              (ask_pipeline_choices)       - if 'yes', ask for each pipeline choice, otherwise random selection 
-
-              (platform_info)              - reusing platform info
+               See 'crowdsource program.optimization'
             }
 
     Output: {
@@ -837,3 +791,84 @@ def rebuild_cmd(i):
 
     return {'return':0, 'cmd':cmd}
 
+##############################################################################
+# replay optimization
+
+def replay(i):
+    """
+    Input:  {
+               (local)                       - use local repositories. By default - crowdtuning repo (remote-ck)
+
+               (repo_uoa)                    - repo UOA with optimization
+               (remote_repo_uoa)             - if repo above is remote, use this repo on remote machine
+
+               (data_uoa)                    - experiment data UOA (can have wildcards)
+
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    o=i.get('out','')
+
+    ruoa=i.get('repo_uoa','')
+    rruoa=i.get('remote_repo_uoa','')
+
+    local=i.get('local','')
+
+    if ruoa=='' and local!='yes':
+       ruoa=ck.cfg['default_exchange_repo_uoa']
+
+    muoa=i.get('module_uoa','')
+    mruoa=i.get('module_ref_uoa','')
+    if mruoa!='': muoa=mruoa
+
+    duoa=i.get('data_uoa','')
+
+    # Search entries
+    ii={'action':'search',
+        'out':'',
+        'repo_uoa':ruoa,
+        'module_uoa':muoa,
+        'data_uoa':duoa,
+        'add_meta':'yes'}
+    if rruoa!='': ii['remote_repo_uoa']=rruoa
+    print (ii)
+    r=ck.access(ii)
+    if r['return']>0: return r
+
+    lst=r['lst']
+    print (len(lst))
+    exit(1)
+
+    if len(lst)==0:
+       return {'return':1, 'error':'entry not found'}
+    elif len(lst)==1:
+       ruoa=lst[0]['repo_uoa']
+
+       muoa=lst[0]['module_uoa']
+       duoa=lst[0]['data_uoa']
+
+       dmeta=lst[0]['meta']
+    else:
+       if o=='con':
+          r=ck.select_uoa({'choices':lst})
+          if r['return']>0: return r
+          duoa=r['choice']
+
+          for q in lst:
+              if q['data_uid']==duoa:
+                 dmeta=q['meta']
+                 break
+
+          ck.out('')
+       else:
+          return {'return':1, 'error':'multiple entries found - please prune search', 'lst':lst}
+
+
+    return {'return':0}

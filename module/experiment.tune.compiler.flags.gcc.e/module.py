@@ -76,3 +76,25 @@ def html_viewer(i):
     i['module_cfg']=cfg
     i['module_work']=work
     return ck.access(i)
+
+##############################################################################
+# replay optimization
+
+def replay(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    i['module_uoa']='experiment.tune.compiler.flags.gcc'
+    i['module_ref_uoa']=work['self_module_uid']
+    i['module_cfg']=cfg
+    i['module_work']=work
+    return ck.access(i)

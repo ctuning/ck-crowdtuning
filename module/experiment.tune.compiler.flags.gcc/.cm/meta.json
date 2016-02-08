@@ -9,6 +9,9 @@
     }, 
     "prune": {
       "desc": "prune compiler flags"
+    }, 
+    "replay": {
+      "desc": "replay optimization"
     }
   }, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
@@ -142,17 +145,17 @@
     "##characteristics#*"
   ], 
   "reference_threshold": 0.03, 
+  "replay_desc": {
+    "desc_key": "pipeline_desc", 
+    "module_uoa": "b0ac08fe1d3c2615"
+  }, 
   "replay_keys": [
     "##characteristics#run#execution_time_kernel_0#min", 
     "##characteristics#run#execution_time_kernel_0#exp", 
     "##characteristics#run#execution_time_kernel_0#max", 
     "##characteristics#compile#obj_size#min", 
     "##characteristics#compile#md5_sum#min"
-  ],
-  "replay_desc": {
-     "module_uoa":"b0ac08fe1d3c2615",
-     "desc_key":"pipeline_desc"
-  }, 
+  ], 
   "solution_conditions": [
     [
       "##characteristics#compile#md5_sum$#objective#$", 
