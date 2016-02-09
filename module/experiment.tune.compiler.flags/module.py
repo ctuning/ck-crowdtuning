@@ -561,7 +561,9 @@ def html_viewer(i):
 def crowdsource(i):
     """
     Input:  {
-               See 'crowdsource program.optimization'
+              See 'crowdsource program.optimization'
+
+              (compiler_env_uoa)           - fix compiler environment
             }
 
     Output: {
@@ -603,6 +605,15 @@ def crowdsource(i):
 
     user=''
 
+    ceuoa=i.get('compiler_env_uoa', '')
+
+    if ceuoa!='':
+       rx=ck.access({'action':'load',
+                     'module_uoa':cfg['module_deps']['env'],
+                     'data_uoa':ceuoa})
+       if rx['return']>0: return rx
+       ceuoa=rx['data_uid']
+
     # Initialize local environment for program optimization ***********************************************************
     pi=i.get('platform_info',{})
     if len(pi)==0:
@@ -643,6 +654,14 @@ def crowdsource(i):
           ck.out(line)
           ck.out('Resolving software dependencies required for this scenario ...')
           ck.out('')
+
+       if ceuoa!='':
+          x=sdeps.get('compiler',{})
+          if len(x)>0:
+             if 'cus' in x: del(x['cus'])
+             if 'deps' in x: del(x['deps'])
+             x['uoa']=ceuoa
+             sdeps['compiler']=x
 
        ii={'action':'resolve',
            'module_uoa':cfg['module_deps']['env'],
@@ -688,7 +707,7 @@ def crowdsource(i):
     if r['return']>0: return r
     compiler_version=r['version_str']
 
-    compiler='GCC '+compiler_version
+    compiler=cfg.get('compiler_name','')+' '+compiler_version
 
     if o=='con':
        ck.out('')

@@ -405,6 +405,8 @@ def crowdsource(i):
               (omit_probability)           - probability to omit optimization (for example, compiler flags during exploration/crowdtuning)
               (parametric_flags)           - if 'yes', also tune parametric flags
               (arch_flags)                 - if 'yes', also tune arch-specific flags
+
+              (compiler_env_uoa)           - fix compiler environment
             }
 
     Output: {
@@ -1309,9 +1311,10 @@ def run(i):
                                              (useful to analyze which flags fail during compiler flag autotuning)
 
               (omit_probability)           - probability to omit optimization (for example, compiler flags during exploration/crowdtuning)
-
               (parametric_flags)           - if 'yes', also tune parametric flags
               (arch_flags)                 - if 'yes', also tune arch-specific flags
+
+              (compiler_env_uoa)           - fix compiler environment
             }
 
     Output: {
@@ -1547,18 +1550,23 @@ def run(i):
                  if q.get('features',{}).get('permanent','')=='yes':
                     found=True
 
-                    repeat=q.get('features',{}).get('choices',{}).get('repeat','')
-
                     euoa0=q['data_uid']
                     puid0=q['point_uid']
 
+                    if o=='con':
+                       ck.out('')
+                       ck.out('  Found previous exploration ('+euoa0+'/'+puid0+') - restarting ...')
+
+                    repeatx=q.get('features',{}).get('choices',{}).get('repeat','')
+
+                    if str(repeat)!='' and str(repeatx)!=str(repeat):
+                       return {'return':1, 'error':'requested kernel repeat number ('+str(repeat)+') is not the same as in reference point ('+str(repeatx)+')'}
+
+                    repeat=repeatx
+
+                    time.sleep(2)
+
                     break
-
-             if found and o=='con':
-                ck.out('')
-                ck.out('  Found previous exploration ('+euoa0+'/'+puid0+') - restarting ...')
-
-                time.sleep(2)
 
        if euoa0=='':
           rx=ck.gen_uid({})
