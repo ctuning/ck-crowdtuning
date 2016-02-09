@@ -401,8 +401,10 @@ def crowdsource(i):
 
               (pause_if_fail)              - if pipeline fails, ask to press Enter
                                              (useful to analyze which flags fail during compiler flag autotuning)
-              
+
               (omit_probability)           - probability to omit optimization (for example, compiler flags during exploration/crowdtuning)
+              (parametric_flags)           - if 'yes', also tune parametric flags
+              (arch_flags)                 - if 'yes', also tune arch-specific flags
             }
 
     Output: {
@@ -1307,6 +1309,9 @@ def run(i):
                                              (useful to analyze which flags fail during compiler flag autotuning)
 
               (omit_probability)           - probability to omit optimization (for example, compiler flags during exploration/crowdtuning)
+
+              (parametric_flags)           - if 'yes', also tune parametric flags
+              (arch_flags)                 - if 'yes', also tune arch-specific flags
             }
 
     Output: {
@@ -1344,6 +1349,20 @@ def run(i):
 
     cd_uoa=i.get('compiler_description_uoa','')
     ftags=i.get('flag_tags','').strip()
+
+
+    # Add boolean
+    anyftags=i.get('any_flags_tags','').strip()
+
+    if anyftags!='': anyftags+=','
+    anyftags+='boolean'
+
+    pflags=i.get('parametric_flags','')
+    aflags=i.get('arch_flags','')
+
+    if pflags=='yes':
+       if anyftags!='': anyftags+=','
+       anyftags+='parametric'
 
     oprob=i.get('omit_probability','')
 
@@ -1552,7 +1571,10 @@ def run(i):
            ' * Dataset file:             '+dataset_file+'\n'
 
        if ftags!='':
-          lx+=' * Compiler flag tags:       '+ftags+'\n'
+          lx+=' * Compiler flag tags (all): '+ftags+'\n'
+
+       if anyftags!='':
+          lx+=' * Compiler flag tags (any): '+anyftags+'\n'
 
        if repeat!='':
           lx+=' * Kernel repetitions:       '+str(repeat)+'\n'
@@ -1805,13 +1827,22 @@ def run(i):
                 pup1['frontier_keys']=fk
 
                 if len(pup1.get('choices_selection',[]))>0:
+                   xpup1=pup1['choices_selection'][0]
+
                    if ftags!='':
-                      tg=pup1['choices_selection'][0].get('tags','')
+                      tg=xpup1.get('tags','')
                       if tg!='': tg+=','
                       tg+=ftags
-                      pup1['choices_selection'][0]['tags']=tg
+                      xpup1['tags']=tg
+                   if anyftags!='':
+                      tg=xpup1.get('anytags','')
+                      if tg!='': tg+=','
+                      tg+=anyftags
+                      xpup1['anytags']=tg
                    if oprob!='':
-                      pup1['choices_selection'][0]['omit_probability']=oprob
+                      xpup1['omit_probability']=oprob
+
+                   pup1['choices_selection'][0]=xpup1
 
                 if rep!='': pup1['repetitions']=rep
                 if seed!='': pup1['seed']=seed
@@ -1840,7 +1871,7 @@ def run(i):
                     "choices_order":[ [] ],
 
                     "tmp_dir":tmp_dir,
-   
+
                     "tags":"crowdtuning,tmp",
 
                     "meta":mmeta,
