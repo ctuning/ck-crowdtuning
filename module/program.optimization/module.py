@@ -361,6 +361,9 @@ def crowdsource(i):
               (skip_exchange)              - if 'yes', do not exchange platform info
                                             (development mode)
 
+              (record_repo)                - repo where to search/record local experiments 
+                                             ("local" by default, to avoid polluting other repos)
+
               (user)                       - user email/ID to record solutions (attribute found good solutions)
 
               (local)                      - if 'yes', use local repo for exchange (local autotuning/benchmarking)
@@ -1273,6 +1276,9 @@ def run(i):
               (exchange_repo)              - which repo to record/update info (remote-ck by default)
               (exchange_subrepo)           - if remote, remote repo UOA
 
+              (record_repo)                - repo where to search/record local experiments
+                                             ("local" by default, to avoid polluting other repos)
+
               (local_autotuning)           - if 'yes', do not crowdtune, i.e. find local experiment and do not exchnage results
 
               (force_platform_name)        - if !='', use this for platform name
@@ -1343,6 +1349,9 @@ def run(i):
     hos=i.get('host_os','')
     tos=i.get('target_os','')
     tdid=i.get('target_device_id','')
+
+    eruoa=i.get('record_repo','')
+    if eruoa=='': eruoa='local'
 
     pifail=i.get('pause_if_fail','')
 
@@ -1485,9 +1494,6 @@ def run(i):
        rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':x+'\n'})
     else:
        ################################################################################
-       # Prepare (tmp) experiment entry
-       eruoa0=i.get('record_repo','')
-
        # Continue
        del(r['return'])
 
@@ -1539,6 +1545,7 @@ def run(i):
           # Try to find in local experiments by meta
           jj={'action':'get',
               'module_uoa':cfg['module_deps']['experiment'],
+              'repo_uoa':euruoa,
               'data_uoa':euoa0,
               'meta':mmeta,
               'flat_keys_list':ik,
@@ -1662,7 +1669,7 @@ def run(i):
 
            "record":"yes",
            "record_uoa":euoa0,
-           "record_repo":eruoa0,
+           "record_repo":eruoa,
            "record_permanent":'yes',
 
            "tags":"crowdtuning,tmp",
@@ -1894,7 +1901,7 @@ def run(i):
 
                     "record":"yes",
                     "record_uoa":euoa0,
-                    "record_repo":eruoa0,
+                    "record_repo":eruoa,
 
                     'out':oo
                    }
