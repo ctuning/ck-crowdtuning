@@ -15,6 +15,10 @@ ck=None # Will be updated by CK (initialized CK kernel)
 
 ##############################################################################
 # Initialize module
+import copy
+
+##############################################################################
+# Initialize module
 
 def init(i):
     """
@@ -39,8 +43,8 @@ def show(i):
     """
 
     i['module_uoa']='experiment.tune.compiler.flags'
-    i['module_cfg']=cfg
-    i['module_work']=work
+    i['module_cfg']=copy.deepcopy(cfg)
+    i['module_work']=copy.deepcopy(work)
     return ck.access(i)
 
 ##############################################################################
@@ -52,8 +56,8 @@ def crowdsource(i):
     """
 
     i['module_uoa']='experiment.tune.compiler.flags'
-    i['module_cfg']=cfg
-    i['module_work']=work
+    i['module_cfg']=copy.deepcopy(cfg)
+    i['module_work']=copy.deepcopy(work)
     return ck.access(i)
 
 ##############################################################################
@@ -65,8 +69,8 @@ def html_viewer(i):
     """
 
     i['module_uoa']='experiment.tune.compiler.flags'
-    i['module_cfg']=cfg
-    i['module_work']=work
+    i['module_cfg']=copy.deepcopy(cfg)
+    i['module_work']=copy.deepcopy(work)
     return ck.access(i)
 
 ##############################################################################
@@ -79,6 +83,6 @@ def replay(i):
 
     i['module_uoa']='experiment.tune.compiler.flags'
     i['module_ref_uoa']=work['self_module_uid']
-    i['module_cfg']=cfg
-    i['module_work']=work
+    i['module_cfg']=copy.deepcopy(cfg)
+    i['module_work']=copy.deepcopy(work)
     return ck.access(i)
