@@ -407,6 +407,8 @@ def crowdsource(i):
               (arch_flags)                 - if 'yes', also tune arch-specific flags
 
               (compiler_env_uoa)           - fix compiler environment
+
+              (new)                        - if 'yes', do not search for existing experiment, but start new
             }
 
     Output: {
@@ -1315,6 +1317,8 @@ def run(i):
               (arch_flags)                 - if 'yes', also tune arch-specific flags
 
               (compiler_env_uoa)           - fix compiler environment
+
+              (new)                        - if 'yes', do not search for existing experiment, but start new
             }
 
     Output: {
@@ -1527,7 +1531,7 @@ def run(i):
        puid0=''
        found=False
        results00={}
-       if la=='yes':
+       if la=='yes' and i.get('new','')!='yes':
           if o=='con':
              ck.out('')
              ck.out('Searching if similar experiment already exists in your local repo ...')
