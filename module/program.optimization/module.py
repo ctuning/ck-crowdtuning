@@ -2501,10 +2501,6 @@ def get(i):
               psols.append(q)
 
 
-              ss=q
-              break
-
-
 
 
     return {'return':0, 'solutions':psols}
