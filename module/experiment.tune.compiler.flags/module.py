@@ -226,7 +226,8 @@ def html_viewer(i):
        h+='<table class="ck_table" border="0">\n'
 
        h+=' <tr style="background-color:#cfcfff;">\n'
-       h+='  <td colspan="2"></td>\n'
+       h+='  <td colspan="1"></td>\n'
+       h+='  <td colspan="1" style="background-color:#bfbfff;"></td>\n'
        h+='  <td colspan="'+str(len(ik))+'" align="center"><b>Improvements (<4% variation)</b></td>\n'
        h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"><b>Choices</b></td>\n'
        h+='  <td colspan="2"></td>\n'
@@ -238,7 +239,7 @@ def html_viewer(i):
        h+='  <td><b>\n'
        h+='   #\n'
        h+='  </b></td>\n'
-       h+='  <td><b>\n'
+       h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   Solution UID\n'
        h+='  </b></td>\n'
 
@@ -378,7 +379,7 @@ def html_viewer(i):
 
               ss='S'+str(num)
               h+=' <tr>\n'
-              h+='  <td valign="top">\n'
+              h+='  <td valign="top" style="background-color:#efefff;">\n'
               if ires<2:
 
                  h+='   '+ss+'\n'
@@ -386,11 +387,11 @@ def html_viewer(i):
 
               h+='  <td valign="top">\n'
               if ires<2:
-                 h+='   '+suid+'\n'
+                 h+='   <a href="'+url0+'action=get&cid='+cfg['module_deps']['program.optimization']+':'+duid+'&scenario_module_uoa='+muid+'&out=json&solution_uid='+suid+'">'+suid+'</a>\n'
               h+='  </td>\n'
 
               for k in range(0, len(ik)):
-                  h+='  <td valign="top" align="right">\n'
+                  h+='  <td valign="top" align="right" style="background-color:#efefff;">\n'
                   dv=rr.get('flat',{}).get(ik[k],'')
 
                   # Add to graph (first dimension and first solution)
@@ -439,12 +440,12 @@ def html_viewer(i):
               h+='   \n'
               h+='  </td>\n'
 
-              h+='  <td valign="top" align="center">\n'
+              h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
               if ires<2:
                  h+='   '+str(validated)+'\n'
               h+='  </td>\n'
 
-              h+='  <td valign="top" align="center">\n'
+              h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
               if ires<2:
                  h+='   '+str(iterations)+'\n'
               h+='  </td>\n'
@@ -474,7 +475,7 @@ def html_viewer(i):
                  h+='   '+str(em.get('kernel_repetitions',-1))+'\n'
               h+='  </td>\n'
 
-              h+='  <td valign="top" align="right">\n'
+              h+='  <td valign="top" align="right" style="background-color:#efefff;">\n'
               if ires<2:
                  x=''
                  qq=em.get('cpu_cur_freq',[])
@@ -485,18 +486,18 @@ def html_viewer(i):
                  h+='   '+x+'\n'
               h+='  </td>\n'
 
-              h+='  <td valign="top" align="right">\n'
+              h+='  <td valign="top" align="right" style="background-color:#efefff;">\n'
               if ires<2:
                  qq=em.get('cpu_num_proc',1)
                  h+='   '+str(qq)+'\n'
               h+='  </td>\n'
 
-              h+='  <td valign="top">\n'
+              h+='  <td valign="top" style="background-color:#efefff;">\n'
               if ires<2:
                  h+='   '+str(em.get('platform_name',''))+'\n'
               h+='  </td>\n'
 
-              h+='  <td valign="top">\n'
+              h+='  <td valign="top" style="background-color:#efefff;">\n'
               if ires<2:
                  h+='   '+str(em.get('os_name',''))+'\n'
               h+='  </td>\n'
