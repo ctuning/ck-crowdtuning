@@ -17,6 +17,10 @@
       "desc": "generate experiment pack for crowdsourcing in remote hardware (mobile phones or tablets)", 
       "for_web": "yes"
     }, 
+    "get": {
+      "desc": "get solutions", 
+      "for_web": "yes"
+    }, 
     "initialize": {
       "desc": "initialize experiment"
     }, 
@@ -70,6 +74,6 @@
     "wfe": "1e4e644996b7f2a0"
   }, 
   "solutions_modules_tags": "crowdsoure,experiments,program optimization", 
-  "tags": [],
-  "url_discuss":"https://groups.google.com/forum/#!forum/ctuning-discussions"
+  "tags": [], 
+  "url_discuss": "https://groups.google.com/forum/#!forum/ctuning-discussions"
 }

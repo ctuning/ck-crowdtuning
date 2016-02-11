@@ -408,7 +408,7 @@ def crowdsource(i):
 
               (omit_probability)           - probability to omit optimization (for example, compiler flags during exploration/crowdtuning)
               (parametric_flags)           - if 'yes', also tune parametric flags
-              (arch_flags)                 - if 'yes', also tune arch-specific flags
+              (cpu_flags)                 - if 'yes', also tune cpu-specific flags
 
               (compiler_env_uoa)           - fix compiler environment
 
@@ -1336,7 +1336,7 @@ def run(i):
 
               (omit_probability)           - probability to omit optimization (for example, compiler flags during exploration/crowdtuning)
               (parametric_flags)           - if 'yes', also tune parametric flags
-              (arch_flags)                 - if 'yes', also tune arch-specific flags
+              (cpu_flags)                 - if 'yes', also tune cpu-specific flags
 
               (compiler_env_uoa)           - fix compiler environment
 
@@ -1389,7 +1389,7 @@ def run(i):
     anyftags+='boolean'
 
     pflags=i.get('parametric_flags','')
-    aflags=i.get('arch_flags','')
+    aflags=i.get('cpu_flags','')
 
     if pflags=='yes':
        if anyftags!='': anyftags+=','
@@ -1398,7 +1398,7 @@ def run(i):
     # Check CPU specific tags
     if aflags=='yes':
        if anyftags!='': anyftags+=','
-       anyftags+='arch-specific'
+       anyftags+='cpu-specific'
 
        cpu_ft=pi.get('features',{}).get('cpu',{}).get('compile_tags','')
        if cpu_ft!='':
@@ -1562,11 +1562,13 @@ def run(i):
        puid0=''
        found=False
        results00={}
+       ####################################################### IF LOCAL AUTOTUNING
        if la=='yes' and i.get('new','')!='yes':
           if o=='con':
              ck.out('')
              ck.out('Searching if similar experiment already exists in your local repo ...')
 
+          ###########################################################################################33
           # Try to find in local experiments by meta
           jj={'action':'get',
               'module_uoa':cfg['module_deps']['experiment'],
@@ -1664,7 +1666,39 @@ def run(i):
        # Saving pipeline
        pipeline_copy=copy.deepcopy(pipeline)
 
-       # Run with default optimization
+       # ***************************************************************** Check if similar cases already found collaboratively
+       ii={'action':'get',
+           'module_uoa':work['self_module_uid'],
+           'repo_uoa':er,
+           'remote_repo_uoa':esr,
+           'meta':meta}
+       rz=ck.access(ii)
+       if rz['return']>0: return rz
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       # ***************************************************************** FIRST EXPERIMENT !!!!!!!!!!!!!!
        if o=='con':
           ck.out(line)
           ck.out('Running first experiment with default optimization:')
@@ -1676,7 +1710,6 @@ def run(i):
        if rep!='': pup0['repetitions']=rep
        if nsc!='': pup0['no_state_check']=nsc
 
-       # ***************************************************************** FIRST EXPERIMENT
        ii={'action':'autotune',
            'module_uoa':cfg['module_deps']['pipeline'],
            'data_uoa':cfg['module_deps']['program'],
@@ -2385,3 +2418,33 @@ def prune_choices(i):
               pco.append(q1)
 
     return {'return':0, 'pruned_choices':pc, 'pruned_choices_order':pco}
+
+##############################################################################
+# get solutions
+
+def get(i):
+    """
+    Input:  {
+              (repo_uoa) - repo_uoa
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    ck.out('get solutions')
+
+    ck.out('')
+    ck.out('Command line: ')
+    ck.out('')
+
+    import json
+    cmd=json.dumps(i, indent=2)
+
+    ck.out(cmd)
+
+    return {'return':0}
