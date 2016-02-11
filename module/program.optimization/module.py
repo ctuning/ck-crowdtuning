@@ -836,11 +836,13 @@ def add_solution(i):
     r=get(ii)
     if r['return']>0: return r
 
-    found=r['found']
     sols=r['solutions']
 
+    si=r['solutions_info']
+    found=si['found']
+
     if found=='yes':
-       duoa=r['data_uoa']
+       duoa=si['data_uoa']
     else:
        metax=copy.deepcopy(meta)
 
@@ -2537,4 +2539,4 @@ def get(i):
               if equal=='yes':
                  psols.append(q)
 
-    return {'return':0, 'solutions':psols, 'found':found, 'repo_uoa':fruoa, 'module_uoa':fmuoa, 'data_uoa':fduoa}
+    return {'return':0, 'solutions':psols, 'solutions_info':{'found':found, 'repo_uoa':fruoa, 'module_uoa':fmuoa, 'data_uoa':fduoa}}

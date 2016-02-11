@@ -154,6 +154,10 @@ def html_viewer(i):
     if urld!='':
        h+='<tr><td><b>Discuss:</b></td><td><a href="'+urld+'">Google group</a></td></tr>\n'
 
+    urlx=url0+'action=get&cid='+cfg['module_deps']['program.optimization']+':'+duid+'&scenario_module_uoa='+muid+'&out=json'
+    if urlx!='':
+       h+='<tr><td><b>Download:</b></td><td><a href="'+urlx+'">All solutions in JSON</a></td></tr>\n'
+
     if url5!='' or urld!='':
        h+='<tr><td><td></td></tr>\n'
 
@@ -386,8 +390,8 @@ def html_viewer(i):
               h+='  </td>\n'
 
               h+='  <td valign="top">\n'
-              if ires<2:
-                 h+='   <a href="'+url0+'action=get&cid='+cfg['module_deps']['program.optimization']+':'+duid+'&scenario_module_uoa='+muid+'&out=json&solution_uid='+suid+'">'+suid+'</a>\n'
+              if ires<2 and urlx!='':
+                 h+='   <a href="'+urlx+'&solution_uid='+suid+'">'+suid+'</a>\n'
               h+='  </td>\n'
 
               for k in range(0, len(ik)):
