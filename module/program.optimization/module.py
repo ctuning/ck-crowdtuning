@@ -1924,7 +1924,7 @@ def run(i):
 
                     'flat_dict_for_improvements':fdfi,
 
-                    'ask_enter_after_choices':'yes', # xyz
+#                    'ask_enter_after_choices':'yes',
 
                     "record":"yes",
                     "record_uoa":euoa0,
