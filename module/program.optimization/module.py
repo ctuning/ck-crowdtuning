@@ -1671,8 +1671,9 @@ def run(i):
        rz=ck.access(ii)
        if rz['return']>0: return rz
 
-       raw_input('xyz')
+       psols=rz['solutions']
 
+       
 
 
 
