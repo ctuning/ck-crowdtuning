@@ -2426,12 +2426,26 @@ def get(i):
               scenario_module_uoa - scenario UID
               (meta)              - search by meta
               (smeta)             - search solution meta (program_uoa, cmd, etc)
+
+              (data_uoa)          - narrow search
+              (solution_uid)      - return only this solution
             }
 
     Output: {
               return       - return code =  0, if successful
                                          >  0, if error
               (error)      - error text if return > 0
+
+              if i['only_choices']=='yes':
+               choices_list       - list of choices, ready to add to autotuning
+
+              else:
+               found
+               repo_uoa
+               module_uoa
+               data_uoa
+               solutions          - list of solutions
+ 
             }
 
     """
@@ -2444,7 +2458,14 @@ def get(i):
     meta=i.get('meta',{})
     smeta=i.get('smeta',{})
 
+    duoa=i.get('data_uoa','')
+
     smuoa=i['scenario_module_uoa']
+
+    suid=i.get('solution_uid','')
+    oc=i.get('only_choices','')
+
+    choices=[]
 
     # Search if exists
     if o=='con': 
@@ -2455,9 +2476,12 @@ def get(i):
         'common_func':'yes',
         'repo_uoa': ruoa,
         'module_uoa': smuoa,
-        'search_dict':{'meta':meta},
+        'data_uoa':duoa,
         'add_meta':'yes'
        }
+    if len(meta)>0:
+       ii['search_dict']={'meta':meta}
+
     r=ck.access(ii)
     if r['return']>0: return r
     rl=r['lst']
@@ -2498,13 +2522,19 @@ def get(i):
        for q in sols:
            qmeta=q.get('choices',{})
 
-           rx=ck.compare_dicts({'dict1':qmeta, 'dict2':smeta})
-           if rx['return']>0: return rx
-           equal=rx['equal']
+           equal='yes'
+
+           if len(smeta)>0:
+              rx=ck.compare_dicts({'dict1':qmeta, 'dict2':smeta})
+              if rx['return']>0: return rx
+              equal=rx['equal']
+
            if equal=='yes': 
-              psols.append(q)
+              if suid!='':
+                 if q.get('solution_uid','')!=suid:
+                    equal='no'
 
-
-    
+              if equal=='yes':
+                 psols.append(q)
 
     return {'return':0, 'solutions':psols, 'found':found, 'repo_uoa':fruoa, 'module_uoa':fmuoa, 'data_uoa':fduoa}
