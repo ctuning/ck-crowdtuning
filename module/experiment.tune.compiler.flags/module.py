@@ -731,6 +731,7 @@ def crowdsource(i):
         'env':compiler_env}
     r=ck.access(ii)
     if r['return']>0: return r
+
     compiler_version=r['version_str']
 
     compiler=cfg.get('compiler_name','')+' '+compiler_version

@@ -1,3 +1,7 @@
+* 2016.02.10 * adding support to crowdtuning arch specific flags 
+               (for example, ARM specific flags in GCC and LLVM
+                when collaboratively optimizing Android mobile devices)
+
 * 2016.02.09 * adding first LLVM crowdtuning strategies
 
 * 2016.02.05 * various small fixes and enhancements for experiment replay

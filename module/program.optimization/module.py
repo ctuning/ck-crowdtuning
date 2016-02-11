@@ -400,7 +400,8 @@ def crowdsource(i):
 
               (compiler_description_uoa)   - force compiler description UOA (see module "compiler")
 
-              (flag_tags)                  - extra flag tags (boolean,parametric...)
+              (flag_tags)                  - extra flag tags (must have)
+              (any_flag_tags)              - extra flag tags (any of these)
 
               (pause_if_fail)              - if pipeline fails, ask to press Enter
                                              (useful to analyze which flags fail during compiler flag autotuning)
@@ -1276,7 +1277,8 @@ def run(i):
               (repetitions)                - statistical repetitions of a given experiment
 
               (compiler_description_uoa)   - force compiler description UOA (see module "compiler")
-              (flag_tags)                  - extra flag tags (boolean,parametric...)
+              (flag_tags)                  - extra flag tags (must have)
+              (any_flag_tags)              - extra flag tags (any of these)
 
               (quiet)                      - do not ask questions, but select random ...
               (skip_welcome)               - if 'yes', do not print welcome header
@@ -1380,9 +1382,8 @@ def run(i):
     cd_uoa=i.get('compiler_description_uoa','')
     ftags=i.get('flag_tags','').strip()
 
-
     # Add boolean
-    anyftags=i.get('any_flags_tags','').strip()
+    anyftags=i.get('any_flag_tags','').strip()
 
     if anyftags!='': anyftags+=','
     anyftags+='boolean'
@@ -1393,6 +1394,16 @@ def run(i):
     if pflags=='yes':
        if anyftags!='': anyftags+=','
        anyftags+='parametric'
+
+    # Check CPU specific tags
+    if aflags=='yes':
+       if anyftags!='': anyftags+=','
+       anyftags+='arch-specific'
+
+       cpu_ft=pi.get('features',{}).get('cpu',{}).get('compile_tags','')
+       if cpu_ft!='':
+          if anyftags!='': anyftags+=','
+          anyftags+=cpu_ft
 
     oprob=i.get('omit_probability','')
 
@@ -1912,6 +1923,8 @@ def run(i):
                     'aggregate_failed_cases':'yes',
 
                     'flat_dict_for_improvements':fdfi,
+
+                    'ask_enter_after_choices':'yes', # xyz
 
                     "record":"yes",
                     "record_uoa":euoa0,
