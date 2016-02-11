@@ -1552,7 +1552,7 @@ def run(i):
 
        mmeta['program_uoa']=prog_uoa
        mmeta['cmd_key']=cmd_key
-       mmeta['dataset_uoa']=cmd_key
+       mmeta['dataset_uoa']=dataset_uoa
        mmeta['dataset_file']=dataset_file
 
        pchoices1={}
@@ -1667,15 +1667,21 @@ def run(i):
        pipeline_copy=copy.deepcopy(pipeline)
 
        # ***************************************************************** Check if similar cases already found collaboratively
+       smeta={'data_uoa':prog_uoa,
+              'cmd_key':cmd_key}
+
        ii={'action':'get',
            'module_uoa':work['self_module_uid'],
            'repo_uoa':er,
            'remote_repo_uoa':esr,
-           'meta':meta}
+           'scenario_module_uoa':smuoa,
+           'meta':meta,
+           'smeta':smeta}
        rz=ck.access(ii)
        if rz['return']>0: return rz
 
-
+       print (rz)
+       raw_input('xyz')
 
 
 
@@ -2425,7 +2431,10 @@ def prune_choices(i):
 def get(i):
     """
     Input:  {
-              (repo_uoa) - repo_uoa
+              (repo_uoa)          - repo_uoa
+              scenario_module_uoa - scenario UID
+              (meta)              - search by meta
+              (smeta)             - search solution meta (program_uoa, cmd, etc)
             }
 
     Output: {
@@ -2436,15 +2445,66 @@ def get(i):
 
     """
 
-    ck.out('get solutions')
+    import os
 
-    ck.out('')
-    ck.out('Command line: ')
-    ck.out('')
+    o=i.get('out','')
 
-    import json
-    cmd=json.dumps(i, indent=2)
+    ruoa=i.get('repo_uoa','')
+    meta=i.get('meta',{})
+    smeta=i.get('smeta',{})
 
-    ck.out(cmd)
+    smuoa=i['scenario_module_uoa']
 
-    return {'return':0}
+    # Search if exists
+    if o=='con': 
+       ck.out('')
+       ck.out('  Searching scenario solutions ...')
+
+    ii={'action':'search',
+        'common_func':'yes',
+        'repo_uoa': ruoa,
+        'module_uoa': smuoa,
+        'search_dict':{'meta':meta},
+        'add_meta':'yes'
+       }
+    r=ck.access(ii)
+    if r['return']>0: return r
+    rl=r['lst']
+    et=r.get('elapsed_time','')
+    if et!='' and o=='con':
+       ck.out('      Elapsed time (s) :'+str(et))
+
+    # Check solution (should be one)
+    psols=[] # pruned solutions
+
+    if len(rl)>0:
+       rlx=rl[0]
+
+       p=rlx['path']
+
+       psum=os.path.join(p, fsummary)
+       if os.path.isfile(psum):
+          rx=ck.load_json_file({'json_file':psum})
+          if rx['return']>0: return rx
+          sols=rx['dict']
+
+       # Check if exists by the same choices
+       ss={}
+
+       for q in sols:
+           qmeta=q.get('choices',{})
+
+           rx=ck.compare_dicts({'dict1':qmeta, 'dict2':smeta})
+           if rx['return']>0: return rx
+           equal=rx['equal']
+           if equal=='yes': 
+              psols.append(q)
+
+
+              ss=q
+              break
+
+
+
+
+    return {'return':0, 'solutions':psols}
