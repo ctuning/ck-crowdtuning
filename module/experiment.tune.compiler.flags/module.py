@@ -105,6 +105,13 @@ def html_viewer(i):
 
     ik=cfg['improvements_keys']
 
+    # Load program optimization entry
+    rx=ck.access({'action':'load',
+                  'module_uoa':cfg['module_deps']['module'],
+                  'data_uoa':cfg['module_deps']['program.optimization']})
+    if rx['return']>0: return rx
+    urld=rx['dict'].get('url_discuss','')
+
     # Load Entry
     r=ck.access({'action':'load',
                  'repo_uoa':ruoa,
@@ -139,6 +146,16 @@ def html_viewer(i):
     h+='<tr><td><b>Scenario UID</b></td><td>'+x+'</td></tr>\n'
     h+='<tr><td><b>Data UID</b></td><td>'+duid+'</td></tr>\n'
     h+='<tr><td><td></td></tr>\n'
+
+    url5=ck.cfg.get('wiki_data_web','')
+
+    if url5!='':
+       h+='<tr><td><b>Discuss:</b></td><td><a href="'+url5+x+'_'+duid+'">GitHub wiki</a></td></tr>\n'
+    if urld!='':
+       h+='<tr><td><b>Discuss:</b></td><td><a href="'+urld+'">Google group</a></td></tr>\n'
+
+    if url5!='' or urld!='':
+       h+='<tr><td><td></td></tr>\n'
 
     pr=cfg.get('prune_results',[])
     mm=d.get('meta',{})
@@ -212,7 +229,7 @@ def html_viewer(i):
        h+='  <td colspan="2"></td>\n'
        h+='  <td colspan="'+str(len(ik))+'" align="center"><b>Improvements (<4% variation)</b></td>\n'
        h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"><b>Choices</b></td>\n'
-       h+='  <td colspan="1"></td>\n'
+       h+='  <td colspan="2"></td>\n'
        h+='  <td colspan="5" align="center" style="background-color:#bfbfff;"><b>Workload</b></td>\n'
        h+='  <td colspan="4"></td>\n'
        h+=' </tr>\n'
@@ -237,7 +254,10 @@ def html_viewer(i):
        h+='   Reference\n'
        h+='  </b></td>\n'
 
-       h+='  <td><b>\n'
+       h+='  <td align="center"><b>\n'
+       h+='   Validated\n'
+       h+='  </b></td>\n'
+       h+='  <td align="center"><b>\n'
        h+='   Explorations\n'
        h+='  </b></td>\n'
        h+='  <td style="background-color:#bfbfff;"><b>\n'
@@ -337,7 +357,8 @@ def html_viewer(i):
               rr=res.get(sres[ires],{})
               ires+=1
 
-              iterations=q['iterations']
+              iterations=q.get('iterations',1)
+              validated=q.get('validatd',1)
 
               choices=q['choices']
 
@@ -418,7 +439,12 @@ def html_viewer(i):
               h+='   \n'
               h+='  </td>\n'
 
-              h+='  <td valign="top">\n'
+              h+='  <td valign="top" align="center">\n'
+              if ires<2:
+                 h+='   '+str(validated)+'\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top" align="center">\n'
               if ires<2:
                  h+='   '+str(iterations)+'\n'
               h+='  </td>\n'

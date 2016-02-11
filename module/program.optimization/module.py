@@ -502,6 +502,8 @@ def show(i):
 
     xls=r['lst']
 
+    url5=ck.cfg.get('wiki_data_web','')
+
     if len(xls)==0:
        h+='<b>Can\'t find any local experiment crowdsourcing scenarios ...</b>'
     else:
@@ -667,9 +669,15 @@ def show(i):
                 h+='  <td><b>\n'
                 h+='   #\n'
                 h+='  </b></td>\n'
+
                 h+='  <td><b>\n'
                 h+='   <a href="'+url0+'wcid='+scenario+':">UID</a>\n'
                 h+='  </b></td>\n'
+
+                h+='  <td align="center"><b>\n'
+                h+='   <a href="'+cfg['url_discuss']+'">Discuss</a>\n'
+                h+='  </b></td>\n'
+
                 h+='  <td><b>\n'
                 h+='   Number of distinct solutions\n'
                 h+='  </b></td>\n'
@@ -702,6 +710,11 @@ def show(i):
                     h+='<tr>'
                     h+=' <td>'+str(iq)+'</td>'
                     h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">Click to see solutions ('+duid+')</a>\n'
+
+                    h+=' <td align="center">'
+                    if url5!='': h+='<a href="'+url5+scenario+'_'+duid+'">Wiki</a>'
+                    h+='\n'
+
                     h+=' <td align="center">'+str(ns)+'</td>'
 
                     dv=qqm.get('max_improvement_first_key',None)
@@ -895,7 +908,8 @@ def add_solution(i):
            'points':pta,
            'iterations':iterations,
            'extra_meta':emeta,
-           'touched':1}
+           'touched':1,
+           'validated':1}
        if user!='' and user!='-':
           ss['user']=user
 
@@ -1721,7 +1735,7 @@ def run(i):
 
           emeta['kernel_repetitions']=repeat
           fp_cpu=state.get('features.platform.cpu',{})
-          emeta['cpu_cur_freq']=fp_cpu.get('current_freq',[])
+          emeta['cpu_cur_freq']=fp_cpu.get('current_freq',{})
           emeta['cpu_num_proc']=fp_cpu.get('num_proc',1)
 
           ri=r['recorded_info']
