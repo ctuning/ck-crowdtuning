@@ -827,38 +827,36 @@ def add_solution(i):
     user=i.get('user','')
 
     # Search if exists
-    if o=='con': 
-       ck.out('')
-       ck.out('  Searching scenario solutions ...')
-
-    ii={'action':'search',
-        'common_func':'yes',
+    ii={
         'repo_uoa': ruoa,
-        'module_uoa': smuoa,
-        'search_dict':{'meta':meta},
-        'add_meta':'yes'
+        'scenario_module_uoa':smuoa,
+        'meta':meta,
+        'out':oo
        }
-    r=ck.access(ii)
+    r=get(ii)
     if r['return']>0: return r
-    rl=r['lst']
-    et=r.get('elapsed_time','')
-    if et!='' and o=='con':
-       ck.out('      Elapsed time (s) :'+str(et))
 
-    if len(rl)==0:
+    found=r['found']
+    sols=r['solutions']
+
+    if found=='yes':
+       duoa=r['data_uoa']
+    else:
        metax=copy.deepcopy(meta)
 
 #       metax.update(emeta) 
        if emeta.get('cpu_uid','')!='': metax['cpu_uid']=emeta['cpu_uid']
        if emeta.get('compiler_description_uoa','')!='': metax['compiler_description_uoa']=emeta['compiler_description_uoa']
 
-       ii['action']='add'
-       ii['dict']={'meta':metax}
+       ii={'action':'add',
+           'common_func':'yes',
+           'repo_uoa': ruoa,
+           'module_uoa': smuoa,
+           'dict':{'meta':metax}
+          }
        r=ck.access(ii)
        if r['return']>0: return r
        duoa=r['data_uid']
-    else:
-       duoa=rl[0]['data_uid']
 
     if o=='con': 
        ck.out('  Loading and locking entry ('+duoa+') ...')
@@ -877,17 +875,7 @@ def add_solution(i):
 
     d=r['dict']
     
-    # Loading summary file with solutions
-    sols=[]
-
-    psum=os.path.join(p, fsummary)
-    if os.path.isfile(psum):
-       rx=ck.load_json_file({'json_file':psum})
-       if rx['return']>0: return rx
-       sols=rx['dict']
-
     # Check if exists by the same choices
-    found=False
     suid=''
     ss={}
 
@@ -895,7 +883,17 @@ def add_solution(i):
 
 
 
-    if not found:
+    if found=='yes':
+       i=int(ss['iterations'])
+       i+=iterations
+       ss['iterations']=i
+
+       i=int(ss['touched'])
+       i+=1
+       ss['touched']=i
+
+
+    else:
        # Generate new solution UID
        r=ck.gen_uid({})
        if r['return']>0: return r
@@ -915,14 +913,6 @@ def add_solution(i):
           ss['user']=user
 
        sols.append(ss)
-    else:
-       i=int(ss['iterations'])
-       i+=iterations
-       ss['iterations']=i
-
-       i=int(ss['touched'])
-       i+=1
-       ss['touched']=i
 
     # Sort by improvements and get highest improvement
     ls=len(sols)
@@ -936,6 +926,7 @@ def add_solution(i):
           d['max_improvement_first_key']=dv
 
     # Saving summary file
+    psum=os.path.join(p, fsummary)
     rx=ck.save_json_to_file({'json_file':psum, 'dict':sols})
     if rx['return']>0: return rx
 
@@ -1680,7 +1671,6 @@ def run(i):
        rz=ck.access(ii)
        if rz['return']>0: return rz
 
-       print (rz)
        raw_input('xyz')
 
 
@@ -2470,6 +2460,7 @@ def get(i):
     r=ck.access(ii)
     if r['return']>0: return r
     rl=r['lst']
+
     et=r.get('elapsed_time','')
     if et!='' and o=='con':
        ck.out('      Elapsed time (s) :'+str(et))
@@ -2477,8 +2468,20 @@ def get(i):
     # Check solution (should be one)
     psols=[] # pruned solutions
 
+    fruoa=''
+    fmuoa=''
+    fduoa=''
+
+    found='no'
+
     if len(rl)>0:
        rlx=rl[0]
+
+       fruoa=rlx['repo_uid']
+       fmuoa=rlx['module_uid']
+       fduoa=rlx['data_uid']
+
+       found='yes'
 
        p=rlx['path']
 
@@ -2501,6 +2504,6 @@ def get(i):
               psols.append(q)
 
 
+    
 
-
-    return {'return':0, 'solutions':psols}
+    return {'return':0, 'solutions':psols, 'found':found, 'repo_uoa':fruoa, 'module_uoa':fmuoa, 'data_uoa':fduoa}
