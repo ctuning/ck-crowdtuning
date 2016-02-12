@@ -1428,6 +1428,7 @@ def run(i):
 
     iterations=i.get('iterations','')
     if iterations=='': iterations=30
+    iterations=int(iterations)
 
     nsc=i.get('no_state_check','')
 
@@ -1651,14 +1652,6 @@ def run(i):
           ck.out('')
           ck.out(lx)
 
-       lx=' ===============================================================================\n' \
-          ' * Scenario:                 '+sdesc+'\n' \
-          ' * Sub scenarion:            '+ssdesc+'\n' \
-          ' * Number of iterations:     '+str(iterations)+'\n'+lx
-
-       r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':lx})
-       if r['return']>0: return r
-
        # Load program module to get desc keys
        pdesc={}
 
@@ -1677,42 +1670,42 @@ def run(i):
        pipeline_copy=copy.deepcopy(pipeline)
 
        # ***************************************************************** Check if similar cases already found collaboratively
-       smeta={'data_uoa':prog_uoa,
-              'cmd_key':cmd_key}
+       if len(sols)==0:
 
-       ii={'action':'get',
-           'module_uoa':work['self_module_uid'],
-           'repo_uoa':er,
-           'remote_repo_uoa':esr,
-           'scenario_module_uoa':smuoa,
-           'meta':meta,
-           'smeta':smeta}
-       rz=ck.access(ii)
-       if rz['return']>0: return rz
+          if o=='con':
+             ck.out('')
+             ck.out('Searching if collaborative solutions already exist ...')
 
-       psols=rz['solutions']
+          ii={'action':'get',
+              'module_uoa':work['self_module_uid'],
+              'repo_uoa':er,
+              'remote_repo_uoa':esr,
+              'scenario_module_uoa':smuoa,
+              'meta':meta}
+          rz=ck.access(ii)
+          if rz['return']>0: return rz
 
-       #xyz
+          sols=rz['solutions']
+          isols=len(sols)
 
+          if isols>0:
+             ck.out('')
+             ck.out('  Found '+str(isols)+' solution(s) - trying them first ...')
 
+             time.sleep(2)
 
+             iterations+=isols
 
+       lx=' ===============================================================================\n' \
+          ' * Scenario:                 '+sdesc+'\n' \
+          ' * Sub scenarion:            '+ssdesc+'\n' \
+          ' * Existing solutions:       '+str(len(sols))+'\n' \
+          ' * Number of iterations:     '+str(iterations)+'\n'+lx
 
+       r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':lx})
+       if r['return']>0: return r
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+       raw_input('xyz')
 
        # ***************************************************************** FIRST EXPERIMENT !!!!!!!!!!!!!!
        if o=='con':
