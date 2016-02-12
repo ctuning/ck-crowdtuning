@@ -408,11 +408,14 @@ def crowdsource(i):
 
               (omit_probability)           - probability to omit optimization (for example, compiler flags during exploration/crowdtuning)
               (parametric_flags)           - if 'yes', also tune parametric flags
-              (cpu_flags)                 - if 'yes', also tune cpu-specific flags
+              (cpu_flags)                  - if 'yes', also tune cpu-specific flags
 
               (compiler_env_uoa)           - fix compiler environment
 
               (new)                        - if 'yes', do not search for existing experiment, but start new
+
+              (solutions)                  - list of solutions
+              (solutions_info)             - info (repo_uoa, module_uoa, data_uoa)
             }
 
     Output: {
@@ -864,10 +867,13 @@ def add_solution(i):
        ck.out('  Loading and locking entry ('+duoa+') ...')
 
     # Loading existing info and locking
-    ii['action']='load'
-    ii['get_lock']='yes'
-    ii['lock_expire_time']=120
-    ii['data_uoa']=duoa
+    ii={'action':'load',
+        'common_func':'yes',
+        'module_uoa':smuoa,
+        'data_uoa':duoa,
+        'repo_uoa': ruoa,
+        'get_lock':'yes',
+        'lock_expire_time':120}
     r=ck.access(ii)
     if r['return']>0: return r
     duid=r['data_uid']
@@ -877,44 +883,44 @@ def add_solution(i):
 
     d=r['dict']
     
-    # Check if exists by the same choices
-    suid=''
-    ss={}
 
 
 
+#    # Check if exists by the same choices
+#    suid=''
+#    ss={}
 
+#    if found=='yes':
+#       i=int(ss['iterations'])
+#       i+=iterations
+#       ss['iterations']=i
+#
+#       i=int(ss['touched'])
+#       i+=1
+#       ss['touched']=i
+#
+#
+#    else:
 
-    if found=='yes':
-       i=int(ss['iterations'])
-       i+=iterations
-       ss['iterations']=i
+    # Generate new solution UID
+    r=ck.gen_uid({})
+    if r['return']>0: return r
+    suid=r['data_uid'] # solution UID
 
-       i=int(ss['touched'])
-       i+=1
-       ss['touched']=i
+    # Add solution to summary
+    ss={'solution_uid':suid,
+        'choices':choices,
+        'ref_choices':pchoices1,
+        'ref_choices_order':pchoices_order1,
+        'points':pta,
+        'iterations':iterations,
+        'extra_meta':emeta,
+        'touched':1,
+        'validated':1}
+    if user!='' and user!='-':
+       ss['user']=user
 
-
-    else:
-       # Generate new solution UID
-       r=ck.gen_uid({})
-       if r['return']>0: return r
-       suid=r['data_uid'] # solution UID
-
-       # Add solution to summary
-       ss={'solution_uid':suid,
-           'choices':choices,
-           'ref_choices':pchoices1,
-           'ref_choices_order':pchoices_order1,
-           'points':pta,
-           'iterations':iterations,
-           'extra_meta':emeta,
-           'touched':1,
-           'validated':1}
-       if user!='' and user!='-':
-          ss['user']=user
-
-       sols.append(ss)
+    sols.append(ss)
 
     # Sort by improvements and get highest improvement
     ls=len(sols)
@@ -1334,6 +1340,9 @@ def run(i):
               (compiler_env_uoa)           - fix compiler environment
 
               (new)                        - if 'yes', do not search for existing experiment, but start new
+
+              (solutions)                  - list of solutions
+              (solutions_info)             - info (repo_uoa, module_uoa, data_uoa)
             }
 
     Output: {
@@ -1444,6 +1453,9 @@ def run(i):
     esr=i.get('exchange_subrepo','')
 
     repeat=i.get('repeat','')
+
+    sols=i.get('solutions',[])
+    sols_info=i.get('solutions_info',{})
 
     # Check (multi-objective) characteristics to process
     ok=scfg.get('original_keys',[])
@@ -1565,7 +1577,7 @@ def run(i):
           # Try to find in local experiments by meta
           jj={'action':'get',
               'module_uoa':cfg['module_deps']['experiment'],
-              'repo_uoa':euruoa,
+              'repo_uoa':eruoa,
               'data_uoa':euoa0,
               'meta':mmeta,
               'flat_keys_list':ik,
@@ -1746,6 +1758,10 @@ def run(i):
        if pifail!='':
           ii['pause_if_fail']=pifail
 
+       if la=='yes' and len(sols)>0:
+          ii['solutions']=sols
+          ii['ref_solution']='yes'
+
        r=ck.merge_dicts({'dict1':ii, 'dict2':pup0})
        if r['return']>0: return r
        ii=r['dict1']
@@ -1923,7 +1939,7 @@ def run(i):
                 if rep!='': pup1['repetitions']=rep
                 if seed!='': pup1['seed']=seed
 
-                ################################################################################
+                ################################################################### Start autotuning !!!!!!!!!!
                 # Run autotuning
                 if o=='con':
                    ck.out(line)
@@ -1968,6 +1984,9 @@ def run(i):
                 if la!='yes':
                    ii["skip_record_pipeline"]="yes"
                    ii["skip_record_desc"]="yes"
+
+                if la=='yes' and len(sols)>0:
+                   ii['solutions']=sols
 
                 if len(rk)>0:
                    ii['process_multi_keys']=rk
@@ -2519,8 +2538,6 @@ def get(i):
           sols=rx['dict']
 
        # Check if exists by the same choices
-       ss={}
-
        for q in sols:
            qmeta=q.get('choices',{})
 
