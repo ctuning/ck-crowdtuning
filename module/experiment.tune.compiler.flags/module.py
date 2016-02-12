@@ -521,7 +521,7 @@ def html_viewer(i):
                  h+='   '+str(em.get('os_name',''))+'\n'
               h+='  </td>\n'
 
-              h+='    <td valign="top" align="center"><input type="button" class="ck_small_button" style="height:60px;" onClick="copyToClipboard(\''+'ck replay '+cid+' --solution_uid='+suid+'\');" value="Copy\nto\nclipboard"></td>\n'
+              h+='    <td valign="top" align="center"><input type="button" class="ck_small_button" style="height:60px;" onClick="copyToClipboard(\''+'ck replay '+cid+' --solution_uid='+suid+'\');" value="Copy \nto \nclipboard"></td>\n'
 
               h+=' </tr>\n'
 
