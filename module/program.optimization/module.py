@@ -1349,6 +1349,8 @@ def run(i):
               return       - return code =  0, if successful
                                          >  0, if error
               (error)      - error text if return > 0
+
+              (solutions)  - if 'solutions' present in input, possibly updated ones will present in output too (replay)
             }
 
     """
@@ -1485,6 +1487,9 @@ def run(i):
          pk[l]=pk[l].replace('$#obj#$',objective)
 
     ik0=ik[0] # first key to sort
+
+    # Prepare output (embed autotuning results)
+    rrr={'return':0}
 
     #**************************************************************************************************************
     # Preparing pipeline with a temporary directory and random choices if not fixed (progs, datsets, etc)
@@ -1777,6 +1782,8 @@ def run(i):
           rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'   FAILURE: '+r['error']+'\n'})
           return r
 
+       rrr=copy.deepcopy(r)
+
        lio=r['last_iteration_output']
        fail=lio.get('fail','')
        if fail=='yes':
@@ -2011,6 +2018,8 @@ def run(i):
                 if r['return']>0: 
                    rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'   FAILURE: '+r['error']+'\n'})
                    return r
+
+                rrr=copy.deepcopy(r)
 
                 failed_cases=r.get('failed_cases',[])
                 if len(failed_cases)>0:
@@ -2287,7 +2296,7 @@ def run(i):
        if i.get('once','')=='yes':
           finish=True
 
-    return {'return':0}
+    return rrr
 
 ##############################################################################
 # compare results (if similar or not)

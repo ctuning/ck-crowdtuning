@@ -1,5 +1,9 @@
 {
   "actions": {
+    "classify": {
+      "desc": "classify solutions", 
+      "for_web": "yes"
+    }, 
     "crowdsource": {
       "desc": "crowdsource these experiments"
     }, 

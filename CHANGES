@@ -1,4 +1,5 @@
 * 2016.02.12 * adding replay function (still need to add final check/classification of a computational species)
+             * added graph of reactions to optimizations
 
 * 2016.02.10 * adding support to crowdtuning arch specific flags 
                (for example, ARM specific flags in GCC and LLVM

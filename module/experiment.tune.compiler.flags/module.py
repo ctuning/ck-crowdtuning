@@ -17,6 +17,7 @@ compiler_choices='#choices#compiler_flags#'
 line='================================================================'
 
 fsummary='summary.json'
+fgraph='tmp-reactions-graph.json'
 
 ##############################################################################
 # Initialize module
@@ -244,7 +245,7 @@ def html_viewer(i):
        h+='  <td colspan="'+str(len(ik))+'" align="center"><b>Improvements (<4% variation)</b></td>\n'
        h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"><b>Choices</b></td>\n'
        h+='  <td colspan="2"></td>\n'
-       h+='  <td colspan="5" align="center" style="background-color:#bfbfff;"><b>Workload</b></td>\n'
+       h+='  <td colspan="5" align="center" style="background-color:#bfbfff;"><b>Distinct workload</b></td>\n'
        h+='  <td colspan="4"></td>\n'
        h+='  <td colspan="1" align="center" style="background-color:#bfbfff;"><b>Replay</b></td>\n'
        h+=' </tr>\n'
@@ -797,6 +798,8 @@ def crowdsource(i):
 
     sx=randint(1,ss)
 
+    rr={'return':0}
+
     if sx==1 or la=='yes':
        # **************************************************************** explore random program/dataset
        sdesc='explore random program/cmd/data set'
@@ -806,8 +809,8 @@ def crowdsource(i):
 
        ii['subscenario_desc']=sdesc
 
-       r=ck.access(ii)
-       if r['return']>0: return r
+       rr=ck.access(ii)
+       if rr['return']>0: return rr
 
 
 
@@ -817,7 +820,9 @@ def crowdsource(i):
 
 
 
-    return {'return':0, 'platform_info':pi}
+    rr['platform_info']=pi
+
+    return rr
 
 ##############################################################################
 # rebuild compiler cmd from choices
@@ -871,17 +876,24 @@ def replay(i):
                (data_uoa)                    - experiment data UOA (can have wildcards)
 
                (solution_uid)                - solution UID, if known (otherwise all - useful to classify a given program by reactions to optimizations)
+
+               (graph)                       - if 'yes', prepare local graph with reactions
             }
 
     Output: {
               return       - return code =  0, if successful
                                          >  0, if error
               (error)      - error text if return > 0
+
+              solutions    - processed solutions (including reactions)
             }
 
     """
 
     import copy
+    import os
+
+    curdir=os.getcwd()
 
     o=i.get('out','')
 
@@ -898,6 +910,8 @@ def replay(i):
     if mruoa!='': muoa=mruoa
 
     duoa=ck.get_from_dicts(i, 'data_uoa', '', None)
+
+    graph=i.get('graph','')
 
     scenario=ck.get_from_dicts(i, 'scenario', '', None)
     if scenario=='-':
@@ -979,14 +993,112 @@ def replay(i):
         if ic.get(q,'')=='':
            ic[q]=choices[q]
 
-    r=ck.access(ic)
+    rrr=ck.access(ic)
+    if rrr['return']>0: return rrr
+
+    # Check and classify solutions
+    sols=rrr.get('solutions',[])
+
+    ii={'solutions':sols}
+    if graph=='yes':
+       ii['graph_file']=os.path.join(curdir, fgraph)
+
+    r=classify(ii)
     if r['return']>0: return r
 
-    ck.save_json_to_file({'json_file':'d:\\xyz999.json','dict':r})
+    rrr['solutions']=r['solutions']
 
+    if graph=='yes' and o=='con':
+       ck.out('')
+       ck.out('Note: graph with reactions to optimizations was recorded. Plot it via "ck graph @'+fgraph+'"')
 
+    return rrr
 
-    sols=r.get('solutions',[])
+##############################################################################
+# classify solutions
 
+def classify(i):
+    """
+    Input:  {
+              solutions    - list of solutions with reactions
+              (graph_file) - output reactions as bar graph!
+            }
 
-    return {'return':0}
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    sols=i['solutions']
+    gf=i.get('graph_file','')
+
+    table_orig=[]
+    table_new=[]
+
+    key='##characteristics#run#execution_time_kernel_0#min_imp'
+
+    si=0
+    for s in range(0, len(sols)):
+        sol=sols[s]
+        si+=1
+
+        points=sol.get('points',[])
+        for p in range(0, len(points)):
+            point=points[p]
+
+            # Original improvements
+            oimp=point.get('improvements',{})
+            rimp=point.get('reaction_raw_flat',{})
+            nimp={}
+
+            for k in oimp:
+                if k in rimp:
+                   nimp[k]=rimp[k]
+       
+            if 'reaction_raw_flat' in point:
+               del(point['reaction_raw_flat'])
+
+            point['reaction_flat']=nimp
+
+            # Check if graph
+            if gf!='':
+               table_orig.append([si, oimp.get(key,0.0)])
+               table_new.append([si, nimp.get(key,0.0)])
+
+        points[p]=point
+
+    sols[s]=sol
+
+    # Save graph
+    if gf!='':
+
+       d={
+           "module_uoa":"graph",
+
+           "table":{"0": table_orig, "1":table_new},
+
+           "ignore_point_if_none":"yes",
+
+           "plot_type":"mpl_2d_bars",
+
+           "display_y_error_bar":"no",
+
+           "title":"Powered by Collective Knowledge",
+
+           "axis_x_desc":"Improvement",
+           "axis_y_desc":"Solution",
+
+           "plot_grid":"yes",
+
+           "mpl_image_size_x":"12",
+           "mpl_image_size_y":"6",
+           "mpl_image_dpi":"100"
+         }
+
+       r=ck.save_json_to_file({'json_file':gf, 'dict':d})
+       if r['return']>0: return r
+
+    return {'return':0, 'solutions':sols}
