@@ -243,11 +243,11 @@ def html_viewer(i):
        h+='  <td colspan="1"></td>\n'
        h+='  <td colspan="1" style="background-color:#bfbfff;"></td>\n'
        h+='  <td colspan="'+str(len(ik))+'" align="center"><b>Improvements (<4% variation)</b></td>\n'
-       h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"><b>Choices</b></td>\n'
+       h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"></td>\n'
        h+='  <td colspan="2"></td>\n'
        h+='  <td colspan="5" align="center" style="background-color:#bfbfff;"><b>Distinct workload</b></td>\n'
        h+='  <td colspan="4"></td>\n'
-       h+='  <td colspan="1" align="center" style="background-color:#bfbfff;"><b>Replay</b></td>\n'
+       h+='  <td colspan="1" align="center" style="background-color:#bfbfff;"></td>\n'
        h+=' </tr>\n'
 
        h+=' <tr style="background-color:#cfcfff;">\n'
@@ -263,11 +263,11 @@ def html_viewer(i):
            h+='   IK'+str(k+1)+'\n'
            h+='  </b></td>\n'
 
-       h+='  <td style="background-color:#bfbfff;"><b>\n'
-       h+='   Found\n'
+       h+='  <td align="center" style="background-color:#bfbfff;"><b>\n'
+       h+='   New distinct optimization choices\n'
        h+='  </b></td>\n'
-       h+='  <td style="background-color:#bfbfff;" align="right"><b>\n'
-       h+='   Reference\n'
+       h+='  <td align="center" style="background-color:#bfbfff;" align="right"><b>\n'
+       h+='   Ref\n'
        h+='  </b></td>\n'
 
        h+='  <td align="center"><b>\n'
@@ -304,7 +304,8 @@ def html_viewer(i):
        h+='   OS\n'
        h+='  </b></td>\n'
 
-       h+='  <td style="background-color:#bfbfff;">\n'
+       h+='  <td align="center" style="background-color:#bfbfff;">\n'
+       h+='   <b>Replay</b>\n'
        h+='  </td>\n'
 
        h+=' </tr>\n'
@@ -443,7 +444,7 @@ def html_viewer(i):
               h+='   '+dv+'\n'
               h+='  </td>\n'
 
-              h+='  <td valign="top" align="right">\n'
+              h+='  <td valign="top" align="center">\n'
               if ires<2:
                  # Ideally should add pipeline description somewhere
                  # to properly recreate flags. However since it is most of the time -Ox
