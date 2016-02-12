@@ -1088,8 +1088,8 @@ def classify(i):
 
            "title":"Powered by Collective Knowledge",
 
-           "axis_x_desc":"Improvement",
-           "axis_y_desc":"Solution",
+           "axis_x_desc":"Solution",
+           "axis_y_desc":"Improvement",
 
            "plot_grid":"yes",
 
