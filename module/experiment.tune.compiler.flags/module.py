@@ -135,10 +135,15 @@ def html_viewer(i):
        pdesc=pdesc.get(xxkey,{})
 
     h='<center>\n'
+
+    h+='\n\n<script language="JavaScript">function copyToClipboard (text) {window.prompt ("Copy to clipboard: Ctrl+C, Enter", text);}</script>\n\n' 
+
     h+='<H2>Distinct solutions: '+cfg['desc']+'</H2>\n'
     h+='</center>\n'
 
     h+='<p>\n'
+
+    cid=muid+':'+duid
 
     h+='<table border="0" cellpadding="4" cellspacing="0">\n'
     x=muid
@@ -154,12 +159,16 @@ def html_viewer(i):
     if urld!='':
        h+='<tr><td><b>Discuss:</b></td><td><a href="'+urld+'">Google group</a></td></tr>\n'
 
+    if url5!='' or urld!='':
+       h+='<tr><td><td></td></tr>\n'
+
     urlx=url0+'action=get&cid='+cfg['module_deps']['program.optimization']+':'+duid+'&scenario_module_uoa='+muid+'&out=json'
     if urlx!='':
        h+='<tr><td><b>Download:</b></td><td><a href="'+urlx+'">All solutions in JSON</a></td></tr>\n'
 
-    if url5!='' or urld!='':
-       h+='<tr><td><td></td></tr>\n'
+    h+='<tr><td><b>Reproduce all (with reactions):</b></td><td><i>ck replay '+cid+'</i></td></tr>\n'
+
+    h+='<tr><td><td></td></tr>\n'
 
     pr=cfg.get('prune_results',[])
     mm=d.get('meta',{})
@@ -237,6 +246,7 @@ def html_viewer(i):
        h+='  <td colspan="2"></td>\n'
        h+='  <td colspan="5" align="center" style="background-color:#bfbfff;"><b>Workload</b></td>\n'
        h+='  <td colspan="4"></td>\n'
+       h+='  <td colspan="1" align="center" style="background-color:#bfbfff;"><b>Replay</b></td>\n'
        h+=' </tr>\n'
 
        h+=' <tr style="background-color:#cfcfff;">\n'
@@ -292,6 +302,10 @@ def html_viewer(i):
        h+='  <td><b>\n'
        h+='   OS\n'
        h+='  </b></td>\n'
+
+       h+='  <td style="background-color:#bfbfff;">\n'
+       h+='  </td>\n'
+
        h+=' </tr>\n'
 
        # List
@@ -505,6 +519,8 @@ def html_viewer(i):
               if ires<2:
                  h+='   '+str(em.get('os_name',''))+'\n'
               h+='  </td>\n'
+
+              h+='    <td valign="top" align="center"><input type="button" class="ck_small_button" style="height:60px;" onClick="copyToClipboard(\''+'ck replay '+cid+' --solution_uid='+suid+'\');" value="Copy\nto\nclipboard"></td>\n'
 
               h+=' </tr>\n'
 
@@ -854,6 +870,7 @@ def replay(i):
 
                (data_uoa)                    - experiment data UOA (can have wildcards)
 
+               (solution_uid)                - solution UID, if known (otherwise all - useful to classify a given program by reactions to optimizations)
             }
 
     Output: {
@@ -864,61 +881,112 @@ def replay(i):
 
     """
 
+    import copy
+
     o=i.get('out','')
 
-    ruoa=i.get('repo_uoa','')
-    rruoa=i.get('remote_repo_uoa','')
+    ruoa=ck.get_from_dicts(i, 'repo_uoa', '', None)
+    rruoa=ck.get_from_dicts(i, 'remote_repo_uoa', '', None)
 
-    local=i.get('local','')
+    local=ck.get_from_dicts(i, 'local', '', None)
 
     if ruoa=='' and local!='yes':
        ruoa=ck.cfg['default_exchange_repo_uoa']
 
-    muoa=i.get('module_uoa','')
-    mruoa=i.get('module_ref_uoa','')
+    muoa=ck.get_from_dicts(i, 'module_uoa', '', None)
+    mruoa=ck.get_from_dicts(i, 'module_ref_uoa', '', None)
     if mruoa!='': muoa=mruoa
 
-    duoa=i.get('data_uoa','')
+    duoa=ck.get_from_dicts(i, 'data_uoa', '', None)
 
-    # Search entries
-    ii={'action':'search',
-        'out':'',
+    scenario=ck.get_from_dicts(i, 'scenario', '', None)
+    if scenario=='-':
+       scenario=''
+    elif scenario=='':
+       scenario=muoa
+
+    suid=ck.get_from_dicts(i, 'solution_uid', '', None)
+
+    if 'module_cfg' in i: del(i['module_cfg'])
+    if 'module_work' in i: del(i['module_work'])
+    if 'xcids' in i: del(i['xcids'])
+    if 'cids' in i: del(i['cids'])
+    if 'cid' in i: del(i['cid'])
+
+    ic=copy.deepcopy(i)
+
+    # Get solutions
+    ii={'action':'get',
         'repo_uoa':ruoa,
-        'module_uoa':muoa,
-        'data_uoa':duoa,
-        'add_meta':'yes'}
-    if rruoa!='': ii['remote_repo_uoa']=rruoa
-    print (ii)
+        'module_uoa':cfg['module_deps']['program.optimization'],
+        'scenario_module_uoa':muoa,
+        'data_uoa':duoa}
+    if rruoa!='': 
+       ii['remote_repo_uoa']=rruoa
+    if suid!='': 
+       ii['solution_uid']=suid
     r=ck.access(ii)
     if r['return']>0: return r
 
-    lst=r['lst']
-    print (len(lst))
-    exit(1)
+    sols=r['solutions']
+    osols=copy.deepcopy(sols) # original solutions
+    isols=len(sols)
+    if isols==0:
+       return {'return':1, 'error':'solutions not found'}
 
-    if len(lst)==0:
-       return {'return':1, 'error':'entry not found'}
-    elif len(lst)==1:
-       ruoa=lst[0]['repo_uoa']
+    if o=='con':
+       ck.out(str(isols)+' solution(s) found - checking ...')
 
-       muoa=lst[0]['module_uoa']
-       duoa=lst[0]['data_uoa']
+    # Run autotuning
+    ic['action']='autotune'
+    ic['module_uoa']=cfg['module_deps']['program']
 
-       dmeta=lst[0]['meta']
-    else:
-       if o=='con':
-          r=ck.select_uoa({'choices':lst})
-          if r['return']>0: return r
-          duoa=r['choice']
+    ic['solutions']=sols
+    ic['scenario']=scenario
 
-          for q in lst:
-              if q['data_uid']==duoa:
-                 dmeta=q['meta']
-                 break
+    if ic.get('new','')=='':
+       ic['new']='yes'
 
-          ck.out('')
-       else:
-          return {'return':1, 'error':'multiple entries found - please prune search', 'lst':lst}
+    if ic.get('iterations','')=='':
+       ic['iterations']=str(isols)
+
+    ignore=[]
+    if ic.get('program_uoa','')!='':
+       ic['data_uoa']=ic['program_uoa']
+       del(ic['program_uoa'])
+
+       ignore.append('program_tags')
+       ignore.append('data_uoa')
+       ignore.append('cmd_key')
+       ignore.append('dataset_uoa')
+       ignore.append('dataset_file')
+
+       renew_workload_info=True
+
+    if ic.get('cmd_key','')!='':
+       ignore.append('dataset_uoa')
+       ignore.append('dataset_file')
+
+    if ic.get('dataset_uoa','')!='':
+       ignore.append('dataset_file')
+
+    # Pre-select various params from the first solution
+    choices=sols[0].get('choices',{})
+
+    for q in choices:
+        if q in ignore:
+           continue
+        if ic.get(q,'')=='':
+           ic[q]=choices[q]
+
+    r=ck.access(ic)
+    if r['return']>0: return r
+
+    ck.save_json_to_file({'json_file':'d:\\xyz999.json','dict':r})
+
+
+
+    sols=r.get('solutions',[])
 
 
     return {'return':0}

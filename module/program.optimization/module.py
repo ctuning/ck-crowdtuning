@@ -1748,6 +1748,9 @@ def run(i):
            'out':oo
           }
 
+       if i.get('save_to_file','')!='':
+          ii['save_to_file']=i['save_to_file']
+
        if la!='yes':
           ii["skip_record_pipeline"]="yes"
           ii["skip_record_desc"]="yes"
@@ -1980,6 +1983,9 @@ def run(i):
 
                     'out':oo
                    }
+
+                if i.get('save_to_file','')!='':
+                   ii['save_to_file']=i['save_to_file']
 
                 if la!='yes':
                    ii["skip_record_pipeline"]="yes"
