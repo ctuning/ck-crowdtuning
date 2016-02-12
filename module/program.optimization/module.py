@@ -1705,8 +1705,6 @@ def run(i):
        r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':lx})
        if r['return']>0: return r
 
-       raw_input('xyz')
-
        # ***************************************************************** FIRST EXPERIMENT !!!!!!!!!!!!!!
        if o=='con':
           ck.out(line)
