@@ -4,6 +4,10 @@
       "desc": "add new solution", 
       "for_web": "yes"
     }, 
+    "classify": {
+      "desc": "classify solutions", 
+      "for_web": "yes"
+    }, 
     "compare_results": {
       "desc": "compare results (if similar or not)"
     }, 
@@ -26,6 +30,14 @@
     }, 
     "links": {
       "desc": "prepare links", 
+      "for_web": "yes"
+    }, 
+    "prune": {
+      "desc": "prune solutions", 
+      "for_web": "yes"
+    }, 
+    "replay": {
+      "desc": "replay solution", 
       "for_web": "yes"
     }, 
     "run": {

@@ -1,22 +1,12 @@
 {
   "actions": {
-    "classify": {
-      "desc": "classify solutions", 
-      "for_web": "yes"
-    }, 
     "crowdsource": {
       "desc": "crowdsource these experiments"
     }, 
     "html_viewer": {
       "desc": "view solutions in html", 
       "for_web": "yes"
-    }, 
-    "prune": {
-      "desc": "prune compiler flags"
-    }, 
-    "replay": {
-      "desc": "replay optimization"
-    }
+    } 
   }, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
   "deps": {

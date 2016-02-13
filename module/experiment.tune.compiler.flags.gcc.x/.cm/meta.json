@@ -10,10 +10,6 @@
     "prune": {
       "desc": "prune compiler flags"
     }, 
-    "show": {
-      "desc": "show results", 
-      "for_web": "yes"
-    },
     "replay": {
       "desc": "replay optimization"
     }

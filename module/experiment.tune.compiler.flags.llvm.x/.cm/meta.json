@@ -12,10 +12,6 @@
     }, 
     "replay": {
       "desc": "replay optimization"
-    }, 
-    "show": {
-      "desc": "show results", 
-      "for_web": "yes"
     }
   }, 
   "compiler_name": "LLVM", 

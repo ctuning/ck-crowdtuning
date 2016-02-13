@@ -32,19 +32,6 @@ def init(i):
     return {'return':0}
 
 ##############################################################################
-# show results
-
-def show(i):
-    """
-    See in module "experiment.tune.compiler.flags"
-    """
-
-    i['module_uoa']='experiment.tune.compiler.flags'
-    i['module_cfg']=copy.deepcopy(cfg)
-    i['module_work']=copy.deepcopy(work)
-    return ck.access(i)
-
-##############################################################################
 # crowdsource these experiments
 
 def crowdsource(i):
@@ -78,7 +65,7 @@ def replay(i):
     See in module "experiment.tune.compiler.flags"
     """
 
-    i['module_uoa']='experiment.tune.compiler.flags'
+    i['module_uoa']=cfg['module_deps']['program.optimization']
     i['module_ref_uoa']=work['self_module_uid']
     i['module_cfg']=copy.deepcopy(cfg)
     i['module_work']=copy.deepcopy(work)

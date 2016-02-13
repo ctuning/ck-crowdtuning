@@ -51,6 +51,7 @@ wprune='pruning'
 
 fstats='stats.json'
 fsummary='summary.json'
+fgraph='tmp-reactions-graph.json'
 
 iuoa='index'
 
@@ -1412,6 +1413,7 @@ def run(i):
     oprob=i.get('omit_probability','')
 
     program_tags=i.get('program_tags','').strip()
+
     program_uoa=i.get('program_uoa','')
     if program_uoa=='': program_uoa=i.get('data_uoa','')
     cmd_key=i.get('cmd_key','')
@@ -2563,3 +2565,287 @@ def get(i):
                  psols.append(q)
 
     return {'return':0, 'solutions':psols, 'solutions_info':{'found':found, 'repo_uoa':fruoa, 'module_uoa':fmuoa, 'data_uoa':fduoa}}
+
+##############################################################################
+# replay optimization solution
+
+def replay(i):
+    """
+    Input:  {
+               (solutions)          - pre-existing solutions (to avoid getting it from repos)
+               (solutions_info)     - pre-existing solutions info (for scenario)
+
+               (local)              - use local repositories. By default - crowdtuning repo (remote-ck)
+
+               (repo_uoa)           - repo UOA with optimization
+               (remote_repo_uoa)    - if repo above is remote, use this repo on remote machine
+
+               (data_uoa)           - experiment data UOA (can have wildcards)
+
+               (solution_uid)       - solution UID, if known (otherwise all - useful to classify a given program by reactions to optimizations)
+
+               (graph)              - if 'yes', prepare local graph with reactions
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+
+              solutions    - processed solutions (including reactions)
+            }
+
+    """
+
+    import copy
+    import os
+
+    curdir=os.getcwd()
+
+    o=i.get('out','')
+
+    sols=ck.get_from_dicts(i, 'solutions', '', None)
+    sols_info=ck.get_from_dicts(i, 'solutions_info', '', None)
+
+    ruoa=ck.get_from_dicts(i, 'repo_uoa', '', None)
+    rruoa=ck.get_from_dicts(i, 'remote_repo_uoa', '', None)
+
+    local=ck.get_from_dicts(i, 'local', '', None)
+
+    if ruoa=='' and local!='yes':
+       ruoa=ck.cfg['default_exchange_repo_uoa']
+
+    muoa=ck.get_from_dicts(i, 'module_uoa', '', None)
+    mruoa=ck.get_from_dicts(i, 'module_ref_uoa', '', None)
+    if mruoa!='': muoa=mruoa
+
+    # Check if it's generic program.optimization and scenario pre-exists
+    x=sols_info.get('module_uoa','')
+    if x!='' and (muoa==work['self_module_uoa'] or muoa==work['self_module_uid']):
+       muoa=x
+
+    duoa=ck.get_from_dicts(i, 'data_uoa', '', None)
+
+    graph=i.get('graph','')
+
+    scenario=ck.get_from_dicts(i, 'scenario', '', None)
+    if scenario=='-':
+       scenario=''
+    elif scenario=='':
+       scenario=muoa
+
+    suid=ck.get_from_dicts(i, 'solution_uid', '', None)
+
+    if 'module_cfg' in i: del(i['module_cfg'])
+    if 'module_work' in i: del(i['module_work'])
+    if 'xcids' in i: del(i['xcids'])
+    if 'cids' in i: del(i['cids'])
+    if 'cid' in i: del(i['cid'])
+
+    ic=copy.deepcopy(i)
+
+    # Get solutions
+    if len(sols)==0:
+       ii={'action':'get',
+           'repo_uoa':ruoa,
+           'module_uoa':work['self_module_uid'],
+           'scenario_module_uoa':muoa,
+           'data_uoa':duoa}
+       if rruoa!='': 
+          ii['remote_repo_uoa']=rruoa
+       if suid!='': 
+          ii['solution_uid']=suid
+       r=ck.access(ii)
+       if r['return']>0: return r
+
+       sols=r['solutions']
+
+    # Check solutions
+    osols=copy.deepcopy(sols) # original solutions
+    isols=len(sols)
+    if isols==0:
+       return {'return':1, 'error':'solutions not found'}
+
+    if o=='con':
+       ck.out(str(isols)+' solution(s) found - checking ...')
+
+    # Run autotuning
+    ic['action']='autotune'
+    ic['module_uoa']=cfg['module_deps']['program']
+
+    ic['solutions']=sols
+    ic['scenario']=scenario
+
+    if ic.get('new','')=='':
+       ic['new']='yes'
+
+    if ic.get('iterations','')=='':
+       ic['iterations']=str(isols)
+
+    ignore=[]
+    if ic.get('program_uoa','')!='':
+       ic['data_uoa']=ic['program_uoa']
+       del(ic['program_uoa'])
+
+       ignore.append('program_tags')
+       ignore.append('data_uoa')
+       ignore.append('cmd_key')
+       ignore.append('dataset_uoa')
+       ignore.append('dataset_file')
+
+       renew_workload_info=True
+
+    if ic.get('cmd_key','')!='':
+       ignore.append('dataset_uoa')
+       ignore.append('dataset_file')
+
+    if ic.get('dataset_uoa','')!='':
+       ignore.append('dataset_file')
+
+    # Pre-select various params from the first solution
+    choices=sols[0].get('choices',{})
+
+    for q in choices:
+        if q in ignore:
+           continue
+        if ic.get(q,'')=='':
+           ic[q]=choices[q]
+
+    rrr=ck.access(ic)
+    if rrr['return']>0: return rrr
+
+    # Check and classify solutions
+    sols=rrr.get('solutions',[])
+
+    ii={'solutions':sols}
+    if graph=='yes':
+       ii['graph_file']=os.path.join(curdir, fgraph)
+
+    r=classify(ii)
+    if r['return']>0: return r
+
+    rrr['solutions']=r['solutions']
+
+    if graph=='yes' and o=='con':
+       ck.out('')
+       ck.out('Note: graph with reactions to optimizations was recorded. Plot it via "ck graph @'+fgraph+'"')
+
+    return rrr
+
+##############################################################################
+# classify solutions
+
+def classify(i):
+    """
+    Input:  {
+              solutions    - list of solutions with reactions
+              (graph_file) - output reactions as bar graph!
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    sols=i['solutions']
+    gf=i.get('graph_file','')
+
+    table_orig=[]
+    table_new=[]
+
+    key='##characteristics#run#execution_time_kernel_0#min_imp'
+
+    si=0
+    for s in range(0, len(sols)):
+        sol=sols[s]
+        si+=1
+
+        points=sol.get('points',[])
+        for p in range(0, len(points)):
+            point=points[p]
+
+            # Original improvements
+            oimp=point.get('improvements',{})
+            rimp=point.get('reaction_raw_flat',{})
+            nimp={}
+
+            for k in oimp:
+                if k in rimp:
+                   nimp[k]=rimp[k]
+       
+            if 'reaction_raw_flat' in point:
+               del(point['reaction_raw_flat'])
+
+            point['reaction_flat']=nimp
+
+            # Check if graph
+            if gf!='':
+               table_orig.append([si, oimp.get(key,0.0)])
+               table_new.append([si, nimp.get(key,0.0)])
+
+        points[p]=point
+
+    sols[s]=sol
+
+    # Save graph
+    if gf!='':
+
+       d={
+           "module_uoa":"graph",
+
+           "table":{"0": table_orig, "1":table_new},
+
+           "ignore_point_if_none":"yes",
+
+           "plot_type":"mpl_2d_bars",
+
+           "display_y_error_bar":"no",
+
+           "title":"Powered by Collective Knowledge",
+
+           "axis_x_desc":"Solution",
+           "axis_y_desc":"Improvement",
+
+           "plot_grid":"yes",
+
+           "mpl_image_size_x":"12",
+           "mpl_image_size_y":"6",
+           "mpl_image_dpi":"100"
+         }
+
+       r=ck.save_json_to_file({'json_file':gf, 'dict':d})
+       if r['return']>0: return r
+
+    return {'return':0, 'solutions':sols}
+
+##############################################################################
+# prune solutions
+
+def prune(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    ck.out('prune solutions')
+
+    ck.out('')
+    ck.out('Command line: ')
+    ck.out('')
+
+    import json
+    cmd=json.dumps(i, indent=2)
+
+    ck.out(cmd)
+
+    return {'return':0}
