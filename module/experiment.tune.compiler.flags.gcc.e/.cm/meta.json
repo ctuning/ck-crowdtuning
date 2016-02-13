@@ -8,7 +8,7 @@
       "for_web": "yes"
     }, 
     "prune": {
-      "desc": "prune compiler flags"
+      "desc": "prune compiler flags to find minimal set of choices"
     }, 
     "replay": {
       "desc": "replay optimization"

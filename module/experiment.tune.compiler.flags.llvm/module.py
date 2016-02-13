@@ -65,7 +65,21 @@ def html_viewer(i):
 
 def replay(i):
     """
-    See in module "experiment.tune.compiler.flags"
+    See in module "program.optimization"
+    """
+
+    i['module_uoa']=cfg['module_deps']['program.optimization']
+    i['module_ref_uoa']=work['self_module_uid']
+    i['module_cfg']=copy.deepcopy(cfg)
+    i['module_work']=copy.deepcopy(work)
+    return ck.access(i)
+
+##############################################################################
+# prune compiler flags to find minimal set of choices
+
+def prune(i):
+    """
+    See in module "program.optimization"
     """
 
     i['module_uoa']=cfg['module_deps']['program.optimization']

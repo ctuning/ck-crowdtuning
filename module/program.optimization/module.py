@@ -1365,6 +1365,9 @@ def run(i):
 
               (solutions)                  - list of solutions
               (solutions_info)             - info (repo_uoa, module_uoa, data_uoa)
+
+              (prune)                      - prune solution (find minimal choices that give the same result)
+
             }
 
     Output: {
@@ -1404,6 +1407,8 @@ def run(i):
     la=i.get('local_autotuning','')
 
     user=i.get('user','')
+
+    prune=i.get('prune','')
 
     cd_uoa=i.get('compiler_description_uoa','')
     ftags=i.get('flag_tags','').strip()
@@ -1784,6 +1789,9 @@ def run(i):
           ii['solutions']=sols
           ii['ref_solution']='yes'
 
+          if prune!='':
+             ii['prune']=prune
+
        r=ck.merge_dicts({'dict1':ii, 'dict2':pup0})
        if r['return']>0: return r
        ii=r['dict1']
@@ -2014,6 +2022,9 @@ def run(i):
 
                 if la=='yes' and len(sols)>0:
                    ii['solutions']=sols
+
+                   if prune!='':
+                      ii['prune']=prune
 
                 if len(rk)>0:
                    ii['process_multi_keys']=rk
@@ -2606,7 +2617,9 @@ def replay(i):
                (solution_uid)       - solution UID, if known (otherwise all - useful to classify a given program by reactions to optimizations)
 
                (graph)              - if 'yes', prepare local graph with reactions
-            }
+ 
+               (prune)              - if 'yes', prune solution
+           }
 
     Output: {
               return       - return code =  0, if successful
@@ -2848,6 +2861,7 @@ def classify(i):
 def prune(i):
     """
     Input:  {
+              See "replay" in this module
             }
 
     Output: {
@@ -2858,15 +2872,6 @@ def prune(i):
 
     """
 
-    ck.out('prune solutions')
+    i['prune']='yes'
+    return replay(i)
 
-    ck.out('')
-    ck.out('Command line: ')
-    ck.out('')
-
-    import json
-    cmd=json.dumps(i, indent=2)
-
-    ck.out(cmd)
-
-    return {'return':0}
