@@ -1,3 +1,5 @@
+* 2016.02.13 * adding flags: llvm,gcc,opencl,bugs to search specific crowdsourcing scenarios
+
 * 2016.02.12 * adding replay function (still need to add final check/classification of a computational species)
              * added graph of reactions to optimizations
 

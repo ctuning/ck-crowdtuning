@@ -417,6 +417,11 @@ def crowdsource(i):
 
               (solutions)                  - list of solutions
               (solutions_info)             - info (repo_uoa, module_uoa, data_uoa)
+
+              (gcc)                        - add tag 'gcc' to search optimization crowdsourcing scenarios
+              (llvm)                       - add tag 'llvm' to search optimization crowdsourcing scenarios
+              (opencl)                     - add tag 'opencl' to search optimization crowdsourcing scenarios
+              (bugs)                       - add tag 'bugs' to search optimization crowdsourcing scenarios
             }
 
     Output: {
@@ -430,6 +435,22 @@ def crowdsource(i):
     tags='crowdsource,experiments,program optimization'
     if i.get('local_autotuning','')=='yes': 
        tags='program optimization,autotuning'
+
+    if i.get('gcc','')=='yes':
+       if tags!='': tags+=','
+       tags+='gcc'
+
+    if i.get('llvm','')=='yes':
+       if tags!='': tags+=','
+       tags+='llvm'
+
+    if i.get('opencl','')=='yes':
+       if tags!='': tags+=','
+       tags+='opencl'
+
+    if i.get('bugs','')=='yes':
+       if tags!='': tags+=','
+       tags+='bugs'
 
     i['tags']=tags
     i['module_uoa']=cfg['module_deps']['experiment']

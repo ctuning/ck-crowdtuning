@@ -167,6 +167,7 @@
   ], 
   "tags": [
     "program optimization", 
-    "autotuning"
+    "autotuning",
+    "gcc"
   ]
 }

@@ -183,6 +183,7 @@
     "crowdsource", 
     "experiments", 
     "program optimization", 
-    "autotuning"
+    "autotuning",
+    "gcc"
   ]
 }
