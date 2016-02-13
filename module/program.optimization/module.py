@@ -1426,6 +1426,8 @@ def run(i):
        if anyftags!='': anyftags+=','
        anyftags+='parametric'
 
+    quiet=i.get('quiet','')
+
     # Check CPU specific tags
     if aflags=='yes':
        if anyftags!='': anyftags+=','
@@ -1538,6 +1540,7 @@ def run(i):
         'calibration_time':cat,
         'generate_rnd_tmp_dir':'yes', # to be able to run crowdtuning in parallel on the same machine ...
         'prepare':'yes',
+        'quiet':quiet,
         'out':oo}
     if apc!='yes':
        ii['random']='yes'
@@ -1769,6 +1772,8 @@ def run(i):
 
            "meta":mmeta,
 
+           'quiet':quiet,
+
            'out':oo
           }
 
@@ -1785,12 +1790,9 @@ def run(i):
        if pifail!='':
           ii['pause_if_fail']=pifail
 
-       if la=='yes' and len(sols)>0:
+       if len(sols)>0:
           ii['solutions']=sols
           ii['ref_solution']='yes'
-
-          if prune!='':
-             ii['prune']=prune
 
        r=ck.merge_dicts({'dict1':ii, 'dict2':pup0})
        if r['return']>0: return r
@@ -2004,7 +2006,10 @@ def run(i):
 
                     'flat_dict_for_improvements':fdfi,
 
+# For Debugging
 #                    'ask_enter_after_choices':'yes',
+
+                    'quiet':quiet,
 
                     "record":"yes",
                     "record_uoa":euoa0,
@@ -2020,9 +2025,8 @@ def run(i):
                    ii["skip_record_pipeline"]="yes"
                    ii["skip_record_desc"]="yes"
 
-                if la=='yes' and len(sols)>0:
+                if len(sols)>0:
                    ii['solutions']=sols
-
                    if prune!='':
                       ii['prune']=prune
 
@@ -2139,7 +2143,7 @@ def run(i):
              if len(gpoints)==0:
                 report+='      New solutions were not found...\n'
              else:
-                report+='      FOUND NEW SOLUTION(S)!\n'
+                report+='      FOUND SOLUTION(S)!\n'
 
                 points_to_add=[]
 
@@ -2639,7 +2643,7 @@ def replay(i):
     o=i.get('out','')
 
     sols=ck.get_from_dicts(i, 'solutions', '', None)
-    sols_info=ck.get_from_dicts(i, 'solutions_info', '', None)
+    sols_info=ck.get_from_dicts(i, 'solutions_info', {}, None)
 
     ruoa=ck.get_from_dicts(i, 'repo_uoa', '', None)
     rruoa=ck.get_from_dicts(i, 'remote_repo_uoa', '', None)
