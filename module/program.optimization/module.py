@@ -1826,8 +1826,11 @@ def run(i):
           repeat=state.get('repeat','')
           ftmp_dir=state.get('cur_dir','')
 
+          ft=lio.get('features',{})
+
           emeta['kernel_repetitions']=repeat
-          fp_cpu=state.get('features.platform.cpu',{})
+          fp_cpu=ft.get('platform',{}).get('cpu',{})
+
           emeta['cpu_cur_freq']=fp_cpu.get('current_freq',{})
           emeta['cpu_num_proc']=fp_cpu.get('num_proc',1)
 
