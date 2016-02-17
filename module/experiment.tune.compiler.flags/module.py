@@ -472,7 +472,7 @@ def html_viewer(i):
                  qq=em.get('cpu_cur_freq',[])
                  for q in qq:
                      xq=qq[q]
-                     if x!='': x+=','
+                     if x!='': x+=', '
                      x+=str(xq)
                  h+='   '+x+'\n'
               h+='  </td>\n'

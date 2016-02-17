@@ -87,5 +87,6 @@
   }, 
   "solutions_modules_tags": "crowdsoure,experiments,program optimization", 
   "tags": [], 
-  "url_discuss": "https://groups.google.com/forum/#!forum/ctuning-discussions"
+  "url_discuss": "https://groups.google.com/forum/#!forum/ctuning-discussions",
+  "opt_keys":["gcc","llvm","opencl","opengl","cuda","icc","pgi","openmp","mpi","bugs"]
 }

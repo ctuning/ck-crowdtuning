@@ -1,3 +1,8 @@
+* 2016.02.17 * adding dimension reduction to pipeline 
+               (leaving only influential optimizations + inverting and turning off all if needed)
+               very important for proper collaborative machine learning
+             * changed platform.accelerator -> platform.gpu
+
 * 2016.02.13 * adding flags: llvm,gcc,opencl,bugs to search specific crowdsourcing scenarios
              * starting pruning of solutions (flags, etc)
 

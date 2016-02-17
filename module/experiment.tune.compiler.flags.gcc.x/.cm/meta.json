@@ -187,5 +187,9 @@
     "program optimization", 
     "autotuning",
     "gcc"
-  ]
+  ],
+  "prune_autotune_pipeline": {
+    "prune_ignore_choices":["##compiler_flags#base_opt"],
+    "prune_md5":"yes"
+  }
 }

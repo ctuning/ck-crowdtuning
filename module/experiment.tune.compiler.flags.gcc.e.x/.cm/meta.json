@@ -191,5 +191,29 @@
     "program optimization", 
     "autotuning",
     "gcc"
-  ]
+  ],
+  "prune_autotune_pipeline": {
+    "prune_ignore_choices":["##compiler_flags#base_opt"],
+    "result_conditions": [
+       [
+         "##characteristics#run#execution_time_kernel_0$#objective#$", 
+         "_imp", 
+         ">", 
+         0.99
+       ], 
+       [
+         "##characteristics#compile#obj_size$#objective#$", 
+         "_imp", 
+         ">", 
+         0.98
+       ], 
+       [
+         "##characteristics#run#execution_time_kernel_0#range_percent", 
+         "", 
+         "<", 
+         0.05
+       ]
+     ], 
+    "prune_md5":"yes"
+  }
 }

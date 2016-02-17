@@ -20,7 +20,7 @@ welcome   = "Dear friends!\n\n" \
             " optimizing compilers are simply not keeping pace with all this complexity and rapidly evolving hardware and software." \
             " It is possible to speed up code from 15% to more than 10x while considerably reducing energy usage and code size" \
             " for many popular algorithms (DNN, vision processing, BLAS) using multi-objective autotuning (compiler optimizations, " \
-            " OpenCL/CUDA/OpenMP/MPI/algorithm parameters." \
+            " OpenCL/CUDA/OpenMP/MPI/algorithm parameters)." \
             " Unfortunately, it can be untolerably slow and there is a lack of realistic workloads.\n\n" \
             "Therefore, we have developed this CK-based experimental workflow for collaborative program autotuning and machine learning"  \
             " across diverse hardware and environments kindly provided by volunteers." \
@@ -52,10 +52,13 @@ wprune='pruning'
 fstats='stats.json'
 fsummary='summary.json'
 fgraph='tmp-reactions-graph.json'
+fsolutions='tmp-solutions.json'
 
 iuoa='index'
 
 key_prune='__web_prune__'
+
+opt_keys=['gcc','llvm','opencl','opengl','cuda','icc','pgi','openmp','mpi','bugs']
 
 ##############################################################################
 # Initialize module
@@ -234,7 +237,7 @@ def generate_for_remote(i):
                                        * platform_uoa
                                        * platform_os_uoa
                                        * platform_cpu_uoa
-                                       * platform_accelerator_uoa
+                                       * platform_gpu_uoa
             }
 
     Output: {
@@ -421,6 +424,11 @@ def crowdsource(i):
               (gcc)                        - add tag 'gcc' to search optimization crowdsourcing scenarios
               (llvm)                       - add tag 'llvm' to search optimization crowdsourcing scenarios
               (opencl)                     - add tag 'opencl' to search optimization crowdsourcing scenarios
+              (cuda)                       - add tag 'cuda' to search optimization crowdsourcing scenarios
+              (openmp)                     - add tag 'openmp' to search optimization crowdsourcing scenarios
+              (mpi)                        - add tag 'mpi' to search optimization crowdsourcing scenarios
+              (tbb)                        - add tag 'tbb' to search optimization crowdsourcing scenarios
+              (opengl)                     - add tag 'opengl' to search optimization crowdsourcing scenarios
               (bugs)                       - add tag 'bugs' to search optimization crowdsourcing scenarios
             }
 
@@ -436,21 +444,10 @@ def crowdsource(i):
     if i.get('local_autotuning','')=='yes': 
        tags='program optimization,autotuning'
 
-    if i.get('gcc','')=='yes':
-       if tags!='': tags+=','
-       tags+='gcc'
-
-    if i.get('llvm','')=='yes':
-       if tags!='': tags+=','
-       tags+='llvm'
-
-    if i.get('opencl','')=='yes':
-       if tags!='': tags+=','
-       tags+='opencl'
-
-    if i.get('bugs','')=='yes':
-       if tags!='': tags+=','
-       tags+='bugs'
+    for q in cfg['opt_keys']:
+        if i.get(q,'')=='yes':
+           if tags!='': tags+=','
+           tags+=q
 
     i['tags']=tags
     i['module_uoa']=cfg['module_deps']['experiment']
@@ -843,7 +840,7 @@ def add_solution(i):
     fk=i.get('first_key','')
 
     pchoices1=i.get('pruned_choices1',{})
-    pchoices_order1=i.get('pruned_choices1',[])
+    pchoices_order1=i.get('pruned_choices_order1',[])
 
     iterations=i.get('iterations','')
     if iterations=='': iterations=1
@@ -1367,7 +1364,10 @@ def run(i):
               (solutions_info)             - info (repo_uoa, module_uoa, data_uoa)
 
               (prune)                      - prune solution (find minimal choices that give the same result)
+              (prune_md5)                  - if 'yes', check if MD5 doesn't change
+              (prune_invert)                  - prune all (turn off even swiched off)
 
+              (replay)                     - if 'yes', replay
             }
 
     Output: {
@@ -1409,6 +1409,11 @@ def run(i):
     user=i.get('user','')
 
     prune=i.get('prune','')
+    prune_md5=i.get('prune_md5','')
+    prune_invert=i.get('prune_invert','')
+    prune_invert_add_iters=i.get('prune_invert_add_iters','')
+    prune_ignore_choices=i.get('prune_ignore_choices',[])
+    result_conditions=i.get('result_conditions',[])
 
     cd_uoa=i.get('compiler_description_uoa','')
     ftags=i.get('flag_tags','').strip()
@@ -2028,10 +2033,20 @@ def run(i):
                    ii["skip_record_pipeline"]="yes"
                    ii["skip_record_desc"]="yes"
 
+                ii['condition_objective']=xobjective 
+
                 if len(sols)>0:
                    ii['solutions']=sols
-                   if prune!='':
+                   if prune=='yes':
                       ii['prune']=prune
+                      ii['prune_md5']=prune_md5
+                      ii['prune_invert']=prune_invert
+                      ii['prune_ignore_choices']=prune_ignore_choices
+                      ii['prune_result_conditions']=result_conditions
+
+                if prune!='yes':
+                   ii['result_conditions']=scon
+                   ii['prune_invert_add_iters']=prune_invert_add_iters
 
                 if len(rk)>0:
                    ii['process_multi_keys']=rk
@@ -2084,197 +2099,155 @@ def run(i):
                        points2.append(kk)
 
              ################################################################################
-             rp='New solution was not found ...'
+             # If prune or replay, do not continue
+             if prune!='yes' and replay!='yes':
+                rp='New solution was not found ...'
 
-             pif=pi.get('features',{})
+                pif=pi.get('features',{})
 
-             # Prepare meta
-             plat_uid=pif.get('platform_uid','')
-             plat_cpu_uid=pif.get('cpu_uid','')
-             plat_os_uid=pif.get('os_uid','')
-             plat_acc_uid=pif.get('acc_uid','')
+                # Prepare meta
+                plat_uid=pif.get('platform_uid','')
+                plat_cpu_uid=pif.get('cpu_uid','')
+                plat_os_uid=pif.get('os_uid','')
+                plat_gpu_uid=pif.get('gpu_uid','')
 
-             import json
+                import json
 
-             # Check if any older solution got updated
-             if o=='con':
-                ck.out(line)
-                ck.out('Checking solutions for specific conditions:')
-                ck.out('  Experiment UOA:     '+euoa0)
-                ck.out('  Original solutions: '+json.dumps(points1))
-                ck.out('  New solutions:      '+json.dumps(points2))
+                gpoints=points2
 
-             ii={'action':'check',
-                 'module_uoa':cfg['module_deps']['math.conditions'],
-                 'original_points':points1,
-                 'new_points':points2,
-                 'results':results2,
-                 'conditions':scon}
-             if objective!='':
-                ii['middle_key']=xobjective
-             r=ck.access(ii)
-             if r['return']>0: return r 
+                # Good points 
+                report=''
+                if len(gpoints)==0:
+                   report+='      New solutions were not found...\n'
+                else:
+                   report+='      FOUND SOLUTION(S)!\n'
 
-             gpoints=r['good_points']
-             dpoints=r['points_to_delete']
+                   points_to_add=[]
 
-             # Points that should be deleted
-             if len(dpoints)>0:
-                if o=='con':
-                   ck.out('')
-                   ck.out('       Following points will be deleted: '+json.dumps(dpoints))
+                   if len(ik)>0:
+                      keys=[]
+                      for x in ik:
+                          keys.append(x)
+                      for x in pk:
+                          keys.append(x)
 
-                xdpoints=[]
-                for q in dpoints:
-                    found=False
-                    for qq in results2:
-                        if qq['point_uid']==q:
-                           found=True
-                           break
-                    if found:
-                       xdpoints.append(qq)
+                      # Find size of keys
+                      il=0
+                      for k in keys:
+                          k1=pdesc.get(k,{}).get('desc','')
+                          if k1=='': k1=k
 
-                # Attempt to delete non-optimal solutions
-                rx=ck.access({'action':'delete_points',
-                              'module_uoa':cfg['module_deps']['experiment'],
-                              'points':xdpoints,
-                              'out':oo})
-                if rx['return']>0: return rx
+                          if len(k1)>il: il=len(k1)
 
-             # Good points 
-             report=''
-             if len(gpoints)==0:
-                report+='      New solutions were not found...\n'
-             else:
-                report+='      FOUND SOLUTION(S)!\n'
+                      # Find point in results
+                      for q in gpoints:
+                          ppp={}
 
-                points_to_add=[]
+                          report+='        '+q+'\n'
 
-                if len(ik)>0:
-                   keys=[]
-                   for x in ik:
-                       keys.append(x)
-                   for x in pk:
-                       keys.append(x)
+                          qq={}
+                          for e in results2:
+                              if e.get('point_uid','')==q:
+                                 qq=e
+                                 break
 
-                   # Find size of keys
-                   il=0
-                   for k in keys:
-                       k1=pdesc.get(k,{}).get('desc','')
-                       if k1=='': k1=k
+                          if len(qq)>0:
+                             behavior2=qq.get('flat',{})
+                             choices2=qq.get('features_flat',{})
+                             ft=qq.get('features',{})
 
-                       if len(k1)>il: il=len(k1)
+                             choices_order2=ft.get('choices_order',[])
 
-                   # Find point in results
-                   for q in gpoints:
-                       ppp={}
+                             rx=prune_choices({'choices':choices2,
+                                               'choices_order':choices_order2})
+                             if rx['return']>0: return rx
 
-                       report+='        '+q+'\n'
+                             ppp['pruned_choices']=rx['pruned_choices']
+                             ppp['pruned_choices_order']=rx['pruned_choices_order']
 
-                       qq={}
-                       for e in results2:
-                           if e.get('point_uid','')==q:
-                              qq=e
-                              break
+                             for k in keys:
+                                 dv=behavior2.get(k,None)
 
-                       if len(qq)>0:
-                          behavior2=qq.get('flat',{})
-                          choices2=qq.get('features_flat',{})
-                          ft=qq.get('features',{})
+                                 if dv!=None:
+                                    y=''
+                                    try:
+                                       y=('%.3f' % dv)
+                                    except Exception as e: 
+                                       y=dv
+                                       pass
 
-                          choices_order2=ft.get('choices_order',[])
+                                    k1=pdesc.get(k,{}).get('desc','')
+                                    if k1=='': k1=k
 
-                          rx=prune_choices({'choices':choices2,
-                                            'choices_order':choices_order2})
-                          if rx['return']>0: return rx
+                                    ix=len(k1)
 
-                          ppp['pruned_choices']=rx['pruned_choices']
-                          ppp['pruned_choices_order']=rx['pruned_choices_order']
-
-                          for k in keys:
-                              dv=behavior2.get(k,None)
-
-                              if dv!=None:
-                                 y=''
-                                 try:
-                                    y=('%.3f' % dv)
-                                 except Exception as e: 
-                                    y=dv
-                                    pass
-
-                                 k1=pdesc.get(k,{}).get('desc','')
-                                 if k1=='': k1=k
-
-                                 ix=len(k1)
-
-                                 report+='          * '+k1+(' ' * (il-ix))+' : '+y+'\n' 
+                                    report+='          * '+k1+(' ' * (il-ix))+' : '+y+'\n' 
 
 
-                          ppp['improvements']={}
-                          for k in ik:
-                              dv=behavior2.get(k,None)
-                              ppp['improvements'][k]=dv
+                             ppp['improvements']={}
+                             for k in ik:
+                                 dv=behavior2.get(k,None)
+                                 ppp['improvements'][k]=dv
 
-                          ppp['misc']={}
-                          for k in pk:
-                              dv=behavior2.get(k,None)
-                              ppp['misc'][k]=dv
+                             ppp['misc']={}
+                             for k in pk:
+                                 dv=behavior2.get(k,None)
+                                 ppp['misc'][k]=dv
 
-                          points_to_add.append(ppp)
+                             points_to_add.append(ppp)
 
-                if len(points_to_add)>0:
-                   # Sort here 
-                   points_to_add=sorted(points_to_add, key=lambda v: (v.get(ik0,0.0)), reverse=True)
+                   if len(points_to_add)>0:
+                      # Sort here 
+                      points_to_add=sorted(points_to_add, key=lambda v: (v.get(ik0,0.0)), reverse=True)
 
-                if o=='con':
-                   ck.out('')
-                   ck.out(report)
-
-                r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report})
-
-                if la!='yes':
-                   # Packing new points
                    if o=='con':
                       ck.out('')
-                      ck.out('       Packing solution(s) ...')
+                      ck.out(report)
 
-                   # Add original points and remove delete ones
-                   ppoints=[]
-                   for q in points2:
-                       if q not in dpoints:
+                   r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report})
+
+                   if la!='yes':
+                      # Packing new points
+                      if o=='con':
+                         ck.out('')
+                         ck.out('       Packing solution(s) ...')
+
+                      # Add original points and remove delete ones
+                      ppoints=[]
+                      for q in points2:
                           ppoints.append(q)
 
-                   rx=ck.access({'action':'pack',
-                                 'module_uoa':cfg['module_deps']['experiment'],
-                                 'data_uoa':euoa0,
-                                 'points':ppoints})
-                   if rx['return']>0: return rx
-                   ps=rx['file_content_base64']
+                      rx=ck.access({'action':'pack',
+                                    'module_uoa':cfg['module_deps']['experiment'],
+                                    'data_uoa':euoa0,
+                                    'points':ppoints})
+                      if rx['return']>0: return rx
+                      ps=rx['file_content_base64']
 
-                   if o=='con':
-                      ck.out('')
-                      ck.out('       Recording solution(s) ...')
+                      if o=='con':
+                         ck.out('')
+                         ck.out('       Recording solution(s) ...')
 
-                   # Adding solution
-                   ii={'action':'add_solution',
-                       'module_uoa':work['self_module_uid'],
-                       'repo_uoa':er,
-                       'remote_repo_uoa':esr,
-                       'scenario_module_uoa':smuoa,
-                       'meta':meta,
-                       'meta_extra':emeta,
-                       'packed_solution':ps,
-                       'choices':choices,
-                       'pruned_choices1':pchoices1,
-                       'pruned_choices_order1':pchoices_order1,
-                       'features':ft,
-                       'iterations':iterations,
-                       'user':user,
-                       'points_to_add':points_to_add,
-                       'first_key':ik0,
-                       'out':oo}
-                   rx=ck.access(ii)
-                   if rx['return']>0: return rx
+                      # Adding solution
+                      ii={'action':'add_solution',
+                          'module_uoa':work['self_module_uid'],
+                          'repo_uoa':er,
+                          'remote_repo_uoa':esr,
+                          'scenario_module_uoa':smuoa,
+                          'meta':meta,
+                          'meta_extra':emeta,
+                          'packed_solution':ps,
+                          'choices':choices,
+                          'pruned_choices1':pchoices1,
+                          'pruned_choices_order1':pchoices_order1,
+                          'features':ft,
+                          'iterations':iterations,
+                          'user':user,
+                          'points_to_add':points_to_add,
+                          'first_key':ik0,
+                          'out':oo}
+                      rx=ck.access(ii)
+                      if rx['return']>0: return rx
 
 
 
@@ -2323,7 +2296,8 @@ def run(i):
                 ck.out('')
                 ck.out('Note that you can:')
                 ck.out('  * replay above experiments via "ck replay experiment:'+euoa0+' (--point={above solution UID})"')
-                ck.out('  * plot graph for above experiments via "ck plot graph:'+euoa0+'"')
+                if prune!='yes' and replay!='yes':
+                   ck.out('  * plot graph for above experiments via "ck plot graph:'+euoa0+'"')
 
        if i.get('once','')=='yes':
           finish=True
@@ -2437,7 +2411,7 @@ def links(i):
     h+='[ <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform">Participated Platforms</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.os">OS</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.cpu">CPU</a>, \n'
-    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.accelerator">Accelerators</a> ], \n'
+    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpu">GPU</a> ], \n'
     h+='[ Vision papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a> ,\n'
     h+='  <a href="http://bit.ly/ck-date16">DATE\'16</a> ,\n'
     h+='  <a href="http://hal.inria.fr/hal-01054763">JSP\'14</a> ,\n'
@@ -2479,8 +2453,8 @@ def prune_choices(i):
            v=choices.get(q1, None)
 
            if v!=None:
-              pc[q1]=v
-              pco.append(q1)
+              pc[q]=v
+              pco.append(q)
 
     return {'return':0, 'pruned_choices':pc, 'pruned_choices_order':pco}
 
@@ -2626,6 +2600,9 @@ def replay(i):
                (graph)              - if 'yes', prepare local graph with reactions
  
                (prune)              - if 'yes', prune solution
+
+               (record_solutions)   - if 'yes', record solutions
+               (solutions_file)     - output solutions to a file
            }
 
     Output: {
@@ -2645,6 +2622,12 @@ def replay(i):
 
     o=i.get('out','')
 
+    sf=i.get('solutions_file','')
+    if sf=='':
+       sf=os.path.join(curdir, fsolutions)
+
+    prune=i.get('prune','')
+
     sols=ck.get_from_dicts(i, 'solutions', '', None)
     sols_info=ck.get_from_dicts(i, 'solutions_info', {}, None)
 
@@ -2662,9 +2645,20 @@ def replay(i):
 
     # Check if it's generic program.optimization and scenario pre-exists
     x=sols_info.get('module_uoa','')
-    if x!='' and (muoa==work['self_module_uoa'] or muoa==work['self_module_uid']):
-       muoa=x
+    if x!='':
+       if muoa==work['self_module_uoa'] or muoa==work['self_module_uid']:
+          muoa=x
 
+    if muoa==work['self_module_uoa'] or muoa==work['self_module_uid']:
+       return {'return':1, 'error':'scenario_module_uoa is not defined'}
+
+    # Check specific replay/prune params from the scenario module
+    rx=ck.access({'action':'load',
+                  'module_uoa':cfg['module_deps']['module'],
+                  'data_uoa':muoa})
+    if rx['return']>0: return rx
+    drx=rx['dict']
+    
     duoa=ck.get_from_dicts(i, 'data_uoa', '', None)
 
     graph=i.get('graph','')
@@ -2721,7 +2715,14 @@ def replay(i):
        ic['new']='yes'
 
     if ic.get('iterations','')=='':
-       ic['iterations']=str(isols)
+       if prune=='yes':
+          pp=sols[0].get('points',[])
+          if len(pp)==0 or len(pp[0].get('pruned_choices',{}))==0:
+             return {'return':1, 'error':'points in first solution are not found'}
+          ic['iterations']=len(pp[0]['pruned_choices'])+1
+          ic['prune_invert_add_iters']='yes'
+       else:
+          ic['iterations']=isols
 
     ignore=[]
     if ic.get('program_uoa','')!='':
@@ -2752,24 +2753,36 @@ def replay(i):
         if ic.get(q,'')=='':
            ic[q]=choices[q]
 
+    # If prune, check specific params (such as prune_md5)
+    if prune=='yes':
+       ic.update(drx.get('prune_autotune_pipeline',{}))
+    else:
+       ic['replay']='yes'
+
     rrr=ck.access(ic)
     if rrr['return']>0: return rrr
 
     # Check and classify solutions
     sols=rrr.get('solutions',[])
 
-    ii={'solutions':sols}
-    if graph=='yes':
-       ii['graph_file']=os.path.join(curdir, fgraph)
+    if prune!='yes':
+       ii={'solutions':sols}
+       if graph=='yes':
+          ii['graph_file']=os.path.join(curdir, fgraph)
 
-    r=classify(ii)
-    if r['return']>0: return r
+       r=classify(ii)
+       if r['return']>0: return r
 
-    rrr['solutions']=r['solutions']
+       rrr['solutions']=r['solutions']
 
-    if graph=='yes' and o=='con':
-       ck.out('')
-       ck.out('Note: graph with reactions to optimizations was recorded. Plot it via "ck graph @'+fgraph+'"')
+       if graph=='yes' and o=='con':
+          ck.out('')
+          ck.out('Note: graph with reactions to optimizations was recorded. Plot it via "ck graph @'+fgraph+'"')
+
+    # Record solutions if needed
+    if i.get('record_solutions','')=='yes':
+       rx=ck.save_json_to_file({'json_file':sf,'dict':sols})
+       if rx['return']>0: return rx
 
     return rrr
 
@@ -2779,8 +2792,8 @@ def replay(i):
 def classify(i):
     """
     Input:  {
-              solutions    - list of solutions with reactions
-              (graph_file) - output reactions as bar graph!
+              solutions        - list of solutions with reactions
+              (graph_file)     - output reactions as bar graph!
             }
 
     Output: {
@@ -2879,6 +2892,114 @@ def prune(i):
 
     """
 
-    i['prune']='yes'
-    return replay(i)
 
+    import os
+
+    curdir=os.getcwd()
+
+    o=i.get('out','')
+
+    graph=i.get('graph','')
+    if 'graph' in i: del(i['graph'])
+
+    i['prune']='yes'
+
+    if i.get('invert','')=='yes':
+       del(i['invert'])
+       i['prune_invert']='yes'
+
+    r=replay(i)
+    if r['return']>0: return r
+
+    sol=r['solutions'][0]['points'][0]
+
+    pruned_influence=sol.get('pruned_influence',{})
+    pruned_chars=sol.get('pruned_chars',[])
+    pruned_inversed_flags=sol.get('pruned_inversed_flags',{})
+
+    pruned_choices_order=sol.get('pruned_choices_order',[])
+    pruned_choices=sol.get('pruned_choices',{})
+
+    if graph=='yes' and len(pruned_influence)>0 and len(pruned_chars)>0:
+       gf=i.get('graph_file','')
+       if gf=='':
+          gf=os.path.join(curdir, fgraph)
+
+       table={}
+       jx=0
+       for k in pruned_chars:
+           jj=str(jx)
+           table[jj]=[]
+           jx+=1
+
+       xlabels=[]
+
+       j=0
+       k0=pruned_chars[0]
+
+       # remove null
+       pin={}
+       for q in pruned_influence:
+           if (pruned_influence[q].get(k0,0.0))!=None:
+              pin[q]=pruned_influence[q]
+
+       for q in sorted(pin, key=lambda v: (float(pruned_influence[v].get(k0,0.0)))):
+           qq=pruned_influence[q]
+
+           qv=pruned_choices.get(q,None)
+           if qv=='' or qv==None:
+              qv=pruned_inversed_flags.get(q,'')
+              if qv=='': qv=q
+              x='Adding '+qv
+           else:
+              x='Removing '+str(qv)
+
+           xlabels.append(x)
+
+           jx=0
+           for k in pruned_chars:
+               vv=[j]
+               vv.append(qq.get(k,None))
+
+               jj=str(jx)
+               table[jj].append(vv)
+               jx+=1
+
+           j+=1
+
+       d={
+           "module_uoa":"graph",
+
+           "table":table,
+           "axis_x_labels":xlabels,
+
+           "ignore_point_if_none":"yes",
+
+           "plot_type":"mpl_2d_bars",
+
+           "display_y_error_bar":"no",
+
+           "title":"Powered by Collective Knowledge",
+
+           "ymax":1.1,
+
+           "axis_x_desc":"Solution",
+           "axis_y_desc":"Improvement",
+
+           "legend":pruned_chars,
+
+           "plot_grid":"yes",
+
+           "mpl_image_size_x":"12",
+           "mpl_image_size_y":"6",
+           "mpl_image_dpi":"100"
+         }
+
+       rx=ck.save_json_to_file({'json_file':gf, 'dict':d})
+       if rx['return']>0: return rx
+
+       if o=='con':
+          ck.out('')
+          ck.out('Note: graph with reactions to pruned optimizations was recorded. Plot it via "ck graph @'+fgraph+'"')
+
+    return r
