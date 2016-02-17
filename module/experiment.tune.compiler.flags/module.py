@@ -203,7 +203,7 @@ def html_viewer(i):
 
     # List solutions
     if len(sols)==0:
-       h+='<h2>No solutions found!</h2>\n'
+       h+='<h2>No distinct solutions found!</h2>\n'
     else:
        # Check host URL prefix and default module/action
        url0=ck.cfg.get('wfe_url_prefix','')

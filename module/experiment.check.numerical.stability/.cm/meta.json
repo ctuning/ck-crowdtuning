@@ -14,7 +14,7 @@
       "desc": "replay optimization"
     }
   }, 
-  "compiler_name":"GCC",
+  "compiler_name": "GCC", 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
   "deps": {
     "compiler": {
@@ -28,7 +28,7 @@
       "tags": "lib,xopenme"
     }
   }, 
-  "desc": "crowdtune GCC compiler flags (minimize execution time)", 
+  "desc": "crowdsource program numerical stability",
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 
@@ -72,9 +72,7 @@
     }
   }, 
   "file_solution_extension": "s-", 
-  "frontier_keys": [
-    "##characteristics#run#execution_time_kernel_0#$#obj#$"
-  ], 
+  "frontier_keys": [], 
   "improvements_keys": [
     "##characteristics#run#execution_time_kernel_0#$#obj#$_imp", 
     "##characteristics#compile#obj_size#$#obj#$_imp", 
@@ -127,8 +125,14 @@
     "##characteristics#compile#md5_sum#min", 
     "##characteristics#compile#joined_compiler_flags#min"
   ], 
-  "priority": -200, 
+  "priority": 1000, 
   "program_tags": "crowd-tuning,small", 
+  "prune_autotune_pipeline": {
+    "prune_ignore_choices": [
+      "##compiler_flags#base_opt"
+    ], 
+    "prune_md5": "yes"
+  }, 
   "prune_results": [
     {
       "desc": "Compiler", 
@@ -147,7 +151,11 @@
   "record_keys": [
     "##characteristics#*"
   ], 
-  "reference_threshold": 0.04, 
+  "reference_threshold": 0.03, 
+  "replay_desc": {
+    "desc_key": "pipeline_desc", 
+    "module_uoa": "b0ac08fe1d3c2615"
+  }, 
   "replay_keys": [
     "##characteristics#run#execution_time_kernel_0#min", 
     "##characteristics#run#execution_time_kernel_0#exp", 
@@ -155,39 +163,19 @@
     "##characteristics#compile#obj_size#min", 
     "##characteristics#compile#md5_sum#min"
   ], 
-  "replay_desc": {
-     "module_uoa":"b0ac08fe1d3c2615",
-     "desc_key":"pipeline_desc"
-  }, 
   "solution_conditions": [
-    [
-      "##characteristics#run#execution_time_kernel_0$#objective#$", 
-      "_imp", 
-      ">", 
-      1.09
-    ], 
     [
       "##characteristics#compile#md5_sum$#objective#$", 
       "_imp", 
       "==", 
       0
-    ], 
-    [
-      "##characteristics#run#execution_time_kernel_0#range_percent", 
-      "", 
-      "<", 
-      0.04
     ]
   ], 
   "tags": [
     "crowdsource", 
     "experiments", 
     "program optimization", 
-    "autotuning",
-    "gcc"
-  ],
-  "prune_autotune_pipeline": {
-    "prune_ignore_choices":["##compiler_flags#base_opt"],
-    "prune_md5":"yes"
-  }
+    "opencl", 
+    "bugs"
+  ]
 }

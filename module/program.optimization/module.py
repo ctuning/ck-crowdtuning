@@ -476,7 +476,7 @@ def show(i):
     import os
 
     h='<center>\n'
-    h+='<h2>Aggregated results of crowdsourced experiments (under development)</h2>\n'
+    h+='<h2>Aggregated results of crowdsourced experiments<br><i>(under active community <a href="http://cTuning.org">development</a>)</i></h2>\n'
 
     h+='<small><i>'+welcome+'</i></small>\n'
     h+='<p>\n'
@@ -2407,16 +2407,18 @@ def links(i):
             }
 
     """
-    h ='[ <a href="https://github.com/ctuning/ck/wiki/Advanced_usage_crowdsourcing">More details about our collaborative autotuning and machine learning approach</a> ], \n'
-    h+='[ <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform">Participated Platforms</a>, \n'
+    h ='[ <a href="https://github.com/ctuning/ck/wiki/Advanced_usage_crowdsourcing">Experiment crowdsourcing wiki</a> ], \n'
+    h+='[ Participated <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform">Platforms</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.os">OS</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.cpu">CPU</a>, \n'
-    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpu">GPU</a> ], \n'
+    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpu">GPU</a>, \n'
+    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpgpu">GPGPU</a>, \n'
+    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpgpu">NN</a> ], \n'
     h+='[ Vision papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a> ,\n'
     h+='  <a href="http://bit.ly/ck-date16">DATE\'16</a> ,\n'
     h+='  <a href="http://hal.inria.fr/hal-01054763">JSP\'14</a> ,\n'
-    h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST\'14@PLDI\'14</a> ,\n'
-    h+='  <a href="https://hal.inria.fr/inria-00436029">GCC Summit\'09</a> ]\n'
+    h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST@PLDI\'14</a> ,\n'
+    h+='  <a href="https://hal.inria.fr/inria-00436029">GCC\'09</a> ]\n'
 
     return {'return':0, 'html':h}
 
