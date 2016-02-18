@@ -1,3 +1,6 @@
+* 2016.02.18 * first version of the online classification of the workloads vs distinct optimizations
+               aka online learning or active learning (see our CPC'15 paper)
+
 * 2016.02.17 * adding dimension reduction to pipeline 
                (leaving only influential optimizations + inverting and turning off all if needed)
                very important for proper collaborative machine learning

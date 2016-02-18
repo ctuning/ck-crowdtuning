@@ -51,6 +51,7 @@ wprune='pruning'
 
 fstats='stats.json'
 fsummary='summary.json'
+fclassification='classification.json'
 fgraph='tmp-reactions-graph.json'
 fsolutions='tmp-solutions.json'
 
@@ -794,17 +795,19 @@ def add_solution(i):
               exchange_repo         - where to record (local or remote)
               exchange_subrepo      - where to recrod (if remote, local repo in remote machine)
 
-              choices               - original choices
-              features              - original features
+              (packed_solution)     - new packed solution (experimental points ready to be sent via Internet 
+                                      if communicating with crowd-server)
+              (solution_uid)        - new solution UID (if found)
+
+              solutions             - list of solutions (pre-existing and new with re-classification)
+
+              (classification)      - classification of solutions (active learning or online learning 
+                                      or online classification to avoid big data)
+
+              (workload)            - workload dict to classify distinct optimizations
+                                      (useful for collaborative machine learning and run-time adaptation)
 
               (user)                - user email/ID to attribute found solutions (optional for privacy)          
-                                                                               
-              (iterations)          - performed iterations
-
-              points_to_add         - list of all points to add
-
-              pruned_choices1       - pruned ref choices
-              pruned_choices_order1 - pruned ref choices order
 
               (first_key)           - first key (to record max speedup)
             }
@@ -824,9 +827,12 @@ def add_solution(i):
     oo=''
     if o=='con': oo='con'
 
-    pta=i.get('points_to_add',[])
-
     ps=i.get('packed_solution','')
+    sols=i.get('solutions',[])
+    suid=i.get('solution_uid','')
+
+    sc=i.get('classification',{})
+
     ruoa=i.get('repo_uoa','')
     smuoa=i['scenario_module_uoa']
     meta=i['meta']
@@ -840,14 +846,7 @@ def add_solution(i):
 
     fk=i.get('first_key','')
 
-    pchoices1=i.get('pruned_choices1',{})
-    pchoices_order1=i.get('pruned_choices_order1',[])
-
-    iterations=i.get('iterations','')
-    if iterations=='': iterations=1
-    iterations=int(iterations)
-
-    user=i.get('user','')
+    workload=i.get('workload',{})
 
     # Search if exists
     ii={
@@ -859,7 +858,7 @@ def add_solution(i):
     r=get(ii)
     if r['return']>0: return r
 
-    sols=r['solutions']
+    esols=r['solutions'] # Existing solutions
 
     si=r['solutions_info']
     found=si['found']
@@ -898,49 +897,83 @@ def add_solution(i):
     if r['return']>0: return r
     duid=r['data_uid']
 
-    p=r['path']
     lock_uid=r['lock_uid']
 
+    p=r['path']
     d=r['dict']
     
+    # Saving summary file
+    osols={}
+    psum=os.path.join(p, fsummary)
+    if os.path.isfile(psum):
+       rx=ck.load_json_file({'json_file':psum})
+       if rx['return']>0: return rx
+       osols=rx['dict']
 
+    # Load classification file
+    classification={}
+    pcl=os.path.join(p, fclassification)
+    if os.path.isfile(pcl):
+       rx=ck.load_json_file({'json_file':pcl})
+       if rx['return']>0: return rx
+       classification=rx['dict']
 
+    # Classify
+    best_suid=sc.get('best_solution_uid','')
 
-#    # Check if exists by the same choices
-#    suid=''
-#    ss={}
+    if best_suid!='':
+       # First remove all old
+       for q in classification:
+           cc=classification[q]
 
-#    if found=='yes':
-#       i=int(ss['iterations'])
-#       i+=iterations
-#       ss['iterations']=i
-#
-#       i=int(ss['touched'])
-#       i+=1
-#       ss['touched']=i
-#
-#
-#    else:
+           for k in range(0, len(cc)):
+               ccx=cc[k]
 
-    # Generate new solution UID
-    r=ck.gen_uid({})
-    if r['return']>0: return r
-    suid=r['data_uid'] # solution UID
+               rx=ck.compare_dicts({'dict1':ccx, 'dict2':workload})
+               if rx['return']>0: return rx
+               equal=rx['equal']
+               if equal=='yes': 
+                  del(cc[k])
+                  break
 
-    # Add solution to summary
-    ss={'solution_uid':suid,
-        'choices':choices,
-        'ref_choices':pchoices1,
-        'ref_choices_order':pchoices_order1,
-        'points':pta,
-        'iterations':iterations,
-        'extra_meta':emeta,
-        'touched':1,
-        'validated':1}
-    if user!='' and user!='-':
-       ss['user']=user
+       # Add new
+       ce=classification.get(best_suid,[])
+       ce.append(workload)
+       classification[best_suid]=ce
 
-    sols.append(ss)
+    # Evict if empty (each access to remove orphans)!
+    uids_to_delete=[]
+
+    for q in classification:
+        cc=classification[q]
+        if len(cc)==0:
+           uids_to_delete.append(q)
+
+    for q in uids_to_delete:
+        if q in classification:
+           print ('deleting',q)
+           del(classification[q])
+
+           p1=os.path.join(p, q)
+           if os.path.isdir(p1):
+              import shutil
+              try:
+                 shutil.rmtree(p1, ignore_errors=True)
+              except Exception as e: 
+                 if o=='con':
+                    ck.out('')
+                    ck.out('WARNING: can\'t fully erase tmp dir '+p1)
+                    ck.out('')
+                 pass
+    # clean solutions (if no classification)
+    solsx=[]
+    for k in range(0,len(sols)):
+        kk=sols[k]
+        kks=kk.get('solution_uid')
+        if kks in classification:
+           solsx.append(kk)
+
+    sols=solsx
 
     # Sort by improvements and get highest improvement
     ls=len(sols)
@@ -953,33 +986,32 @@ def add_solution(i):
        if dv>0.0:
           d['max_improvement_first_key']=dv
 
+    # Adding solution (if new)
+    if suid!='' and ps!='':
+       p1=os.path.join(p, suid)
+       if not os.path.isdir(p1):
+          os.makedirs(p1)
+
+       # Prepare tmp file
+       rx=ck.convert_upload_string_to_file({'file_content_base64':ps,
+                                            'filename':''})
+       if rx['return']>0: return rx
+       fn=rx['filename']
+
+       # Unzip
+       rx=ck.unzip_file({'archive_file':fn,
+                         'path':p1,
+                         'overwrite':'yes',
+                         'delete_after_unzip':'yes'})
+       if rx['return']>0: return rx
+
+    # Saving classification file
+    rx=ck.save_json_to_file({'json_file':pcl, 'dict':classification})
+    if rx['return']>0: return rx
+
     # Saving summary file
-    psum=os.path.join(p, fsummary)
     rx=ck.save_json_to_file({'json_file':psum, 'dict':sols})
     if rx['return']>0: return rx
-
-
-
-
-
-    # Adding solution
-    p1=os.path.join(p, suid)
-    if not os.path.isdir(p1):
-       os.makedirs(p1)
-
-    # Prepare tmp file
-    rx=ck.convert_upload_string_to_file({'file_content_base64':ps,
-                                         'filename':''})
-    if rx['return']>0: return rx
-    fn=rx['filename']
-
-    # Unzip
-    rx=ck.unzip_file({'archive_file':fn,
-                      'path':p1,
-                      'overwrite':'yes',
-                      'delete_after_unzip':'yes'})
-    if rx['return']>0: return rx
-
 
 
 
@@ -1603,6 +1635,13 @@ def run(i):
        mmeta['dataset_uoa']=dataset_uoa
        mmeta['dataset_file']=dataset_file
 
+       workload={} # to classify distinct optimizations across different workloads
+                   # later may be used for split-compilation and run-time adaptation
+       workload['program_uoa']=prog_uoa
+       workload['cmd_key']=cmd_key
+       workload['dataset_uoa']=dataset_uoa
+       workload['dataset_file']=dataset_file
+
        pchoices1={}
        pchoices_order1=[]
 
@@ -1707,6 +1746,7 @@ def run(i):
        pipeline_copy=copy.deepcopy(pipeline)
 
        # ***************************************************************** Check if similar cases already found collaboratively
+       last_sol_id=''
        if len(sols)==0:
 
           if o=='con':
@@ -2069,9 +2109,9 @@ def run(i):
                    rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'   FAILURE: '+r['error']+'\n'})
                    return r
 
-                ck.save_json_to_file({'json_file':'d:\\xyz9999.json','dict':r})
-
                 rrr=copy.deepcopy(r)
+
+                sols=r.get('solutions',[])
 
                 failed_cases=r.get('failed_cases',[])
                 if len(failed_cases)>0:
@@ -2098,8 +2138,6 @@ def run(i):
                 if r['return']>0: return r
                 results2=r.get('points',{})
 
-                ck.save_json_to_file({'json_file':'d:\\xyz-results2.json','dict':results2})
-
                 for k in results2:
                     kk=k.get('point_uid','')
                     if kk!='' and kk not in points2 and k.get('features',{}).get('permanent','')!='yes':
@@ -2115,8 +2153,6 @@ def run(i):
                 plat_cpu_uid=pif.get('cpu_uid','')
                 plat_os_uid=pif.get('os_uid','')
                 plat_gpu_uid=pif.get('gpu_uid','')
-
-                import json
 
                 # Find if need to add points
                 points_to_add=[]
@@ -2143,8 +2179,6 @@ def run(i):
                       qi=0
                       for q in points2:
                           ppp={}
-
-                          print ('xyz=',q)
 
                           qq={}
                           for e in results2:
@@ -2205,20 +2239,73 @@ def run(i):
                                 points_to_add.append(ppp)
 
                 # Print report
+                suid=''
                 if len(points_to_add)>0:
-                   report='      SOLUTION(S):\n'+report
-                else:
-                   report='      New solutions were not found...\n'+report
+                   # Generate new solution UID
+                   r=ck.gen_uid({})
+                   if r['return']>0: return r
+                   suid=r['data_uid'] # solution UID
 
+                   report='      New SOLUTION ('+suid+'):\n\n'+report
+
+                   # Generate last touch UID
+                   r=ck.gen_uid({})
+                   if r['return']>0: return r
+                   ltuid=r['data_uid'] # solution UID
+
+                   # Prepare new solution
+                   sol={'solution_uid':suid,
+                        'choices':choices,
+                        'ref_choices':pchoices1,
+                        'ref_choices_order':pchoices_order1,
+                        'points':points_to_add,
+                        'iterations':iterations,
+                        'extra_meta':emeta,
+                        'touched':1,
+                        'last_touch_uid':ltuid,
+                        'validated':1}
+                   if user!='' and user!='-':
+                      sol['user']=user
+
+                   # Append new solution
+                   sols.append(sol)
+
+                classification={}
+                if len(sols)>0:
+                   # Update statistics of previous solutions
+                   for q in range(0, len(sols)):
+                       qq=sols[q]
+                       
+                       ix=qq.get('iterations','')
+                       if ix=='': ix=1
+                       ix=int(ix)+1
+                       qq['iterations']=ix
+                       
+                       ix=qq.get('touched','')
+                       if ix=='': ix=1
+                       ix=int(ix)+1
+                       qq['touched']=ix
+
+                       sols[q]=qq
+
+                   # Classify solutions
+                   rx=classify({'solutions':sols, 'key':ik0})
+                   if rx['return']>0: return rx
+                   classification=rx['classification']
+
+                else:
+                   report='      New solutions were not found...\n\n'+report
+
+                # Finish report
                 if o=='con':
                    ck.out('')
                    ck.out(report)
 
                 r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report})
 
-                # Continue processing solution(s)
+                # Pack solution(s)
+                ps=''
                 if len(points_to_add)>0:
-
                    # Sort here 
                    points_to_add=sorted(points_to_add, key=lambda v: (v.get(ik0,0.0)), reverse=True)
 
@@ -2240,44 +2327,30 @@ def run(i):
                       if rx['return']>0: return rx
                       ps=rx['file_content_base64']
 
-                      if o=='con':
-                         ck.out('')
-                         ck.out('       Recording solution(s) ...')
+                # Adding/updating solution
+                if len(sols)>0:
+                   if o=='con':
+                      ck.out('')
+                      ck.out('       Adding/updating solution(s) in repository ...')
 
-                      # Adding solution
-                      ii={'action':'add_solution',
-                          'module_uoa':work['self_module_uid'],
-                          'repo_uoa':er,
-                          'remote_repo_uoa':esr,
-                          'scenario_module_uoa':smuoa,
-                          'meta':meta,
-                          'meta_extra':emeta,
-                          'packed_solution':ps,
-                          'choices':choices,
-                          'pruned_choices1':pchoices1,
-                          'pruned_choices_order1':pchoices_order1,
-                          'features':ft,
-                          'iterations':iterations,
-                          'user':user,
-                          'points_to_add':points_to_add,
-                          'first_key':ik0,
-                          'out':oo}
-                      rx=ck.access(ii)
-                      if rx['return']>0: return rx
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                   # Adding solution
+                   ii={'action':'add_solution',
+                       'module_uoa':work['self_module_uid'],
+                       'repo_uoa':er,
+                       'remote_repo_uoa':esr,
+                       'scenario_module_uoa':smuoa,
+                       'meta':meta,
+                       'meta_extra':emeta,
+                       'solutions':sols,
+                       'solution_uid':suid,
+                       'classification':classification,
+                       'workload':workload,
+                       'packed_solution':ps,
+                       'points_to_add':points_to_add,
+                       'first_key':ik0,
+                       'out':oo}
+                   rx=ck.access(ii)
+                   if rx['return']>0: return rx
 
           ################################################################################
           # Clean temporal directory and entry
@@ -2505,7 +2578,6 @@ def get(i):
                module_uoa
                data_uoa
                solutions          - list of solutions
- 
             }
 
     """
@@ -2559,6 +2631,8 @@ def get(i):
     fduoa=''
 
     found='no'
+
+    lsid=''
 
     if len(rl)>0:
        rlx=rl[0]
@@ -2812,6 +2886,7 @@ def classify(i):
     """
     Input:  {
               solutions        - list of solutions with reactions
+              (key)            - key for classification analysis/sorting
               (graph_file)     - output reactions as bar graph!
             }
 
@@ -2829,12 +2904,22 @@ def classify(i):
     table_orig=[]
     table_new=[]
 
-    key='##characteristics#run#execution_time_kernel_0#min_imp'
+    cc={}
+
+    key=i.get('key','')
+
+    best_suid=''
+    worst_suid=''
+
+    best_v=0.0
+    worst_v=0.0
 
     si=0
     for s in range(0, len(sols)):
         sol=sols[s]
         si+=1
+
+        suid=sol.get('solution_uid','')
 
         points=sol.get('points',[])
         for p in range(0, len(points)):
@@ -2842,6 +2927,7 @@ def classify(i):
 
             # Original improvements
             oimp=point.get('improvements',{})
+            odeg=point.get('degradations',{})
             rimp=point.get('reaction_raw_flat',{})
             nimp={}
 
@@ -2854,14 +2940,54 @@ def classify(i):
 
             point['reaction_flat']=nimp
 
+            ov=oimp.get(key,0.0)
+
+            if key in nimp:
+               nv=nimp.get(key,0.0)
+            else:
+               # If new optimization and no yet reactions ...
+               nv=ov
+
+            if nv>best_v: 
+               best_v=ov
+               best_suid=suid
+
+            if nv==0.0 and nv<worst_v: 
+               worst_v=ov
+               worst_suid=suid
+
+            # Check degradations
+            vd=odeg.get(key,1.0)
+            if nv<vd:
+               odeg[key]=nv
+
+            # Clean solution
+            if 'reaction_info' in point:
+               del(point['reaction_info'])
+            if 'reaction_flat' in point:
+               del(point['reaction_flat'])
+
+
+
+
+
             # Check if graph
             if gf!='':
                table_orig.append([si, oimp.get(key,0.0)])
                table_new.append([si, nimp.get(key,0.0)])
 
         points[p]=point
+        sols[s]=sol
 
-    sols[s]=sol
+    cc['best_solution_uid']=best_suid
+    cc['worst_solution_uid']=worst_suid
+
+
+
+
+
+
+
 
     # Save graph
     if gf!='':
@@ -2892,7 +3018,7 @@ def classify(i):
        r=ck.save_json_to_file({'json_file':gf, 'dict':d})
        if r['return']>0: return r
 
-    return {'return':0, 'solutions':sols}
+    return {'return':0, 'solutions':sols, 'classification':cc}
 
 ##############################################################################
 # prune solutions
