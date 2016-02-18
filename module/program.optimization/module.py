@@ -947,10 +947,10 @@ def add_solution(i):
     d['solutions']=ls
 
     if fk!='' and ls>0:
-       sols=sorted(sols, key=lambda v: (float(v.get('points',[{}])[0].get('improvements',{}).get(fk,0))), reverse=True)
+       sols=sorted(sols, key=lambda v: (ck.safe_float(v.get('points',[{}])[0].get('improvements',{}).get(fk,0),0.0)), reverse=True)
 
-       dv=float(sols[0].get('points',[{}])[0].get('improvements',{}).get(fk,0))
-       if dv>0:
+       dv=ck.safe_float(sols[0].get('points',[{}])[0].get('improvements',{}).get(fk,0),0.0)
+       if dv>0.0:
           d['max_improvement_first_key']=dv
 
     # Saving summary file
@@ -1991,6 +1991,8 @@ def run(i):
 
                 pipeline=copy.deepcopy(pipeline_copy)
 
+
+
                 ii={'action':'autotune',
 
                     'module_uoa':cfg['module_deps']['pipeline'],
@@ -2067,6 +2069,8 @@ def run(i):
                    rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'   FAILURE: '+r['error']+'\n'})
                    return r
 
+                ck.save_json_to_file({'json_file':'d:\\xyz9999.json','dict':r})
+
                 rrr=copy.deepcopy(r)
 
                 failed_cases=r.get('failed_cases',[])
@@ -2094,19 +2098,19 @@ def run(i):
                 if r['return']>0: return r
                 results2=r.get('points',{})
 
+                ck.save_json_to_file({'json_file':'d:\\xyz-results2.json','dict':results2})
+
                 for k in results2:
                     kk=k.get('point_uid','')
-                    if kk!='' and kk not in points2:
+                    if kk!='' and kk not in points2 and k.get('features',{}).get('permanent','')!='yes':
                        points2.append(kk)
 
              ################################################################################
              # If prune or replay, do not continue
              if prune!='yes' and replay!='yes':
-                rp='New solution was not found ...'
-
+                # Prepare meta
                 pif=pi.get('features',{})
 
-                # Prepare meta
                 plat_uid=pif.get('platform_uid','')
                 plat_cpu_uid=pif.get('cpu_uid','')
                 plat_os_uid=pif.get('os_uid','')
@@ -2114,17 +2118,12 @@ def run(i):
 
                 import json
 
-                gpoints=points2
+                # Find if need to add points
+                points_to_add=[]
 
                 # Good points 
                 report=''
-                if len(gpoints)==0:
-                   report+='      New solutions were not found...\n'
-                else:
-                   report+='      FOUND SOLUTION(S)!\n'
-
-                   points_to_add=[]
-
+                if len(points2)>0:
                    if len(ik)>0:
                       keys=[]
                       for x in ik:
@@ -2141,10 +2140,11 @@ def run(i):
                           if len(k1)>il: il=len(k1)
 
                       # Find point in results
-                      for q in gpoints:
+                      qi=0
+                      for q in points2:
                           ppp={}
 
-                          report+='        '+q+'\n'
+                          print ('xyz=',q)
 
                           qq={}
                           for e in results2:
@@ -2157,55 +2157,70 @@ def run(i):
                              choices2=qq.get('features_flat',{})
                              ft=qq.get('features',{})
 
-                             choices_order2=ft.get('choices_order',[])
+                             suid=ft.get('features',{}).get('solution_uid','')
+                             if suid!='':
+                                report+='            Skipping pre-existing solution '+suid+' ...'
+                             else:
+                                choices_order2=ft.get('choices_order',[])
 
-                             rx=prune_choices({'choices':choices2,
-                                               'choices_order':choices_order2})
-                             if rx['return']>0: return rx
+                                rx=prune_choices({'choices':choices2,
+                                                  'choices_order':choices_order2})
+                                if rx['return']>0: return rx
 
-                             ppp['pruned_choices']=rx['pruned_choices']
-                             ppp['pruned_choices_order']=rx['pruned_choices_order']
-
-                             for k in keys:
-                                 dv=behavior2.get(k,None)
-
-                                 if dv!=None:
-                                    y=''
-                                    try:
-                                       y=('%.3f' % dv)
-                                    except Exception as e: 
-                                       y=dv
-                                       pass
-
-                                    k1=pdesc.get(k,{}).get('desc','')
-                                    if k1=='': k1=k
-
-                                    ix=len(k1)
-
-                                    report+='          * '+k1+(' ' * (il-ix))+' : '+y+'\n' 
+                                ppp['pruned_choices']=rx['pruned_choices']
+                                ppp['pruned_choices_order']=rx['pruned_choices_order']
 
 
-                             ppp['improvements']={}
-                             for k in ik:
-                                 dv=behavior2.get(k,None)
-                                 ppp['improvements'][k]=dv
+                                qi+=1
+                                report+='        '+str(qi)+':\n'
 
-                             ppp['misc']={}
-                             for k in pk:
-                                 dv=behavior2.get(k,None)
-                                 ppp['misc'][k]=dv
+                                for k in keys:
+                                    dv=behavior2.get(k,None)
 
-                             points_to_add.append(ppp)
+                                    if dv!=None:
+                                       y=''
+                                       try:
+                                          y=('%.3f' % dv)
+                                       except Exception as e: 
+                                          y=dv
+                                          pass
 
-                   if len(points_to_add)>0:
-                      # Sort here 
-                      points_to_add=sorted(points_to_add, key=lambda v: (v.get(ik0,0.0)), reverse=True)
+                                       k1=pdesc.get(k,{}).get('desc','')
+                                       if k1=='': k1=k
 
-                   if o=='con':
-                      ck.out('')
-                      ck.out(report)
+                                       ix=len(k1)
 
-                   r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report})
+                                       report+='          * '+k1+(' ' * (il-ix))+' : '+y+'\n' 
+
+                                ppp['improvements']={}
+                                for k in ik:
+                                    dv=behavior2.get(k,None)
+                                    ppp['improvements'][k]=dv
+
+                                ppp['misc']={}
+                                for k in pk:
+                                    dv=behavior2.get(k,None)
+                                    ppp['misc'][k]=dv
+
+                                points_to_add.append(ppp)
+
+                # Print report
+                if len(points_to_add)>0:
+                   report='      SOLUTION(S):\n'+report
+                else:
+                   report='      New solutions were not found...\n'+report
+
+                if o=='con':
+                   ck.out('')
+                   ck.out(report)
+
+                r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report})
+
+                # Continue processing solution(s)
+                if len(points_to_add)>0:
+
+                   # Sort here 
+                   points_to_add=sorted(points_to_add, key=lambda v: (v.get(ik0,0.0)), reverse=True)
 
                    if la!='yes':
                       # Packing new points
@@ -2537,6 +2552,7 @@ def get(i):
 
     # Check solution (should be one)
     psols=[] # pruned solutions
+    sols=[]
 
     fruoa=''
     fmuoa=''
@@ -2946,7 +2962,7 @@ def prune(i):
            if (pruned_influence[q].get(k0,0.0))!=None:
               pin[q]=pruned_influence[q]
 
-       for q in sorted(pin, key=lambda v: (float(pruned_influence[v].get(k0,0.0)))):
+       for q in sorted(pin, key=lambda v: (ck.safe_float(pruned_influence[v].get(k0,0.0),0.0))):
            qq=pruned_influence[q]
 
            qv=pruned_choices.get(q,None)
