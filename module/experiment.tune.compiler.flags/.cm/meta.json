@@ -68,8 +68,7 @@
   "frontier_keys": [], 
   "improvements_keys": [
     "##characteristics#run#execution_time_kernel_0#$#obj#$_imp", 
-    "##characteristics#compile#obj_size#$#obj#$_imp", 
-    "##characteristics#compile#md5_sum#$#obj#$_imp"
+    "##characteristics#compile#obj_size#$#obj#$_imp" 
   ], 
   "license": "See CK LICENSE.txt for licensing details", 
   "module_deps": {

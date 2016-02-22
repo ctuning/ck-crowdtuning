@@ -17,6 +17,7 @@ compiler_choices='#choices#compiler_flags#'
 line='================================================================'
 
 fsummary='summary.json'
+fclassification='classification.json'
 fgraph='tmp-reactions-graph.json'
 
 ##############################################################################
@@ -126,17 +127,30 @@ def html_viewer(i):
 
     url5=ck.cfg.get('wiki_data_web','')
 
-    if url5!='':
-       h+='<tr><td><b>Discuss:</b></td><td><a href="'+url5+x+'_'+duid+'">GitHub wiki</a></td></tr>\n'
-    if urld!='':
-       h+='<tr><td><b>Discuss:</b></td><td><a href="'+urld+'">Google group</a></td></tr>\n'
-
     if url5!='' or urld!='':
+       if url5!='':
+          x='<a href="'+url5+x+'_'+duid+'">GitHub wiki</a>'
+       if urld!='':
+          if x!='': x+=', '
+          x+='<a href="'+urld+'">Google group</a>' 
+
+       h+='<tr><td><b>Discuss:</b></td><td>'+x+'</td></tr>\n'
+
        h+='<tr><td><td></td></tr>\n'
 
     urlx=url0+'action=get&cid='+cfg['module_deps']['program.optimization']+':'+duid+'&scenario_module_uoa='+muid+'&out=json'
-    if urlx!='':
-       h+='<tr><td><b>Download:</b></td><td><a href="'+urlx+'">All solutions in JSON</a></td></tr>\n'
+    urls=url0+'action=pull&common_action=yes&cid='+muid+':'+duid+'&filename=summary.json'
+    urlc=url0+'action=pull&common_action=yes&cid='+muid+':'+duid+'&filename=classification.json'
+
+    x=''
+    if urls!='':
+       x+='[ <a href="'+urls+'">All solutions in JSON</a> ]'
+    if urlc!='':
+       if x!='': x+=', '
+       x+='[ <a href="'+urlc+'">Solutions\' classification in JSON</a> ]'
+
+    if x!='':
+       h+='<tr><td><b>Download:</b></td><td>'+x+'</td></tr>\n'
 
     h+='<tr><td><b>Reproduce all (with reactions):</b></td><td><i>ck replay '+cid+'</i></td></tr>\n'
 
@@ -185,8 +199,7 @@ def html_viewer(i):
     h+='<p>\n'
     h+='<center>\n'
 
-    # graph
-    graph={"0":[]}
+    bgraph={"0":[], "1":[]} # graph with highest improvements
 
     # Load summary
     sols=[]
@@ -196,6 +209,14 @@ def html_viewer(i):
        rx=ck.load_json_file({'json_file':psum})
        if rx['return']>0: return rx
        sols=rx['dict']
+
+    # Load classification file
+    classification={}
+    pcl=os.path.join(p, fclassification)
+    if os.path.isfile(pcl):
+       rx=ck.load_json_file({'json_file':pcl})
+       if rx['return']>0: return rx
+       classification=rx['dict']
 
     h+='<p>\n'
     h+='$#graph#$\n'
@@ -215,8 +236,8 @@ def html_viewer(i):
        h+='  <td colspan="1" style="background-color:#bfbfff;"></td>\n'
        h+='  <td colspan="'+str(len(ik))+'" align="center"><b>Improvements (<4% variation)</b></td>\n'
        h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"></td>\n'
-       h+='  <td colspan="2"></td>\n'
-       h+='  <td colspan="5" align="center" style="background-color:#bfbfff;"><b>Distinct workload</b></td>\n'
+       h+='  <td colspan="4"></td>\n'
+       h+='  <td colspan="4" align="center" style="background-color:#bfbfff;"><b>Distinct workload for highest improvement</b></td>\n'
        h+='  <td colspan="4"></td>\n'
        h+='  <td colspan="1" align="center" style="background-color:#bfbfff;"></td>\n'
        h+=' </tr>\n'
@@ -242,10 +263,16 @@ def html_viewer(i):
        h+='  </b></td>\n'
 
        h+='  <td align="center"><b>\n'
-       h+='   Validated\n'
+       h+='   Best species\n'
        h+='  </b></td>\n'
        h+='  <td align="center"><b>\n'
-       h+='   Explorations\n'
+       h+='   Worst species\n'
+       h+='  </b></td>\n'
+       h+='  <td align="center"><b>\n'
+       h+='   Touched\n'
+       h+='  </b></td>\n'
+       h+='  <td align="center"><b>\n'
+       h+='   Iters\n'
        h+='  </b></td>\n'
        h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   Program\n'
@@ -258,9 +285,6 @@ def html_viewer(i):
        h+='  </b></td>\n'
        h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   Dataset file\n'
-       h+='  </b></td>\n'
-       h+='  <td style="background-color:#bfbfff;" align="right"><b>\n'
-       h+='   Kernel repetitions\n'
        h+='  </b></td>\n'
        h+='  <td align="right"><b>\n'
        h+='   CPU freq (MHz)\n'
@@ -292,6 +316,8 @@ def html_viewer(i):
 
        em={}
 
+       cls={}
+
        while iq1<len(sols): # already sorted by most "interesting" solutions (such as highest speedups)
            if iq!=iq1:
               num+=1
@@ -302,6 +328,21 @@ def html_viewer(i):
               em=q.get('extra_meta',{})
 
               suid=q['solution_uid']
+
+              cls=classification.get(suid,{})
+
+              xcls=cls.get('highest_improvements_workload',{})
+              program_uoa=xcls.get('program_uoa','')
+              cmd=xcls.get('cmd_key','')
+              dataset_uoa=xcls.get('dataset_uoa','')
+              dataset_file=xcls.get('dataset_file','')
+
+              wl_best=len(cls.get('best',[]))
+              wl_worst=len(cls.get('worst',[]))
+
+              url_wl=url0+'action=get_workloads&cid='+cfg['module_deps']['program.optimization']+':'+duid+'&scenario_module_uoa='+muid+'&solution_uid='+suid+'&out=json'
+              url_wl_best=url_wl+'&key=best'
+              url_wl_worst=url_wl+'&key=worst'
 
               res={}
               ref_res={}
@@ -350,17 +391,13 @@ def html_viewer(i):
               ires+=1
 
               iterations=q.get('iterations',1)
-              validated=q.get('validatd',1)
+              touched=q.get('touched',1)
 
               choices=q['choices']
 
               ref_sol=q.get('ref_choices',{})
               ref_sol_order=q.get('ref_choices_order',[])
 
-              program_uoa=choices.get('data_uoa','')
-              cmd=choices.get('cmd_key','')
-              dataset_uoa=choices.get('dataset_uoa','')
-              dataset_file=choices.get('dataset_file','')
               target_os=choices.get('target_os','')
 
               speedup=''
@@ -383,11 +420,24 @@ def html_viewer(i):
 
               for k in range(0, len(ik)):
                   h+='  <td valign="top" align="right" style="background-color:#efefff;">\n'
-                  dv=rr.get('flat',{}).get(ik[k],'')
+
+#                  dv=rr.get('flat',{}).get(ik[k],'')
+
+                  dv=''
+                  dvw=''
+                  points=q.get('points',[])
+                  iresx=ires-1
+                  if iresx<len(points):
+                     dv=points[iresx].get('improvements_best',{}).get(ik[k],'')
+                     dvw=points[iresx].get('improvements_worst',{}).get(ik[k],'')
 
                   # Add to graph (first dimension and first solution)
-                  if k==0 and ires<2:
-                     graph['0'].append([ss,dv])
+                  if k==0 and ires==1:
+                     dv=cls.get('highest_improvements',{}).get(ik[k],'')
+                     dvw=cls.get('highest_degradations',{}).get(ik[k],'')
+
+                     bgraph['0'].append([ss,dv])
+                     bgraph['1'].append([ss,dvw])
 
                   y=''
                   if type(dv)==int or type(dv)==ck.type_long:
@@ -433,7 +483,17 @@ def html_viewer(i):
 
               h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
               if ires<2:
-                 h+='   '+str(validated)+'\n'
+                 h+='   <a href="'+url_wl_best+'">'+str(wl_best)+'</a>\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
+              if ires<2:
+                 h+='   <a href="'+url_wl_worst+'">'+str(wl_worst)+'</a>\n'
+              h+='  </td>\n'
+
+              h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
+              if ires<2:
+                 h+='   '+str(touched)+'\n'
               h+='  </td>\n'
 
               h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
@@ -461,10 +521,10 @@ def html_viewer(i):
                  h+='   <a href="'+url0+'action=pull&common_func=yes&cid=dataset:'+dataset_uoa+'&filename='+dataset_file+'">'+dataset_file+'</a>\n'
               h+='  </td>\n'
 
-              h+='  <td valign="top" align="right">\n'
-              if ires<2:
-                 h+='   '+str(em.get('kernel_repetitions',-1))+'\n'
-              h+='  </td>\n'
+#              h+='  <td valign="top" align="right">\n'
+#              if ires<2:
+#                 h+='   '+str(em.get('kernel_repetitions',-1))+'\n'
+#              h+='  </td>\n'
 
               h+='  <td valign="top" align="right" style="background-color:#efefff;">\n'
               if ires<2:
@@ -514,13 +574,15 @@ def html_viewer(i):
     hg=''
     ftmp=''
 
-    if len(graph['0'])>0:
+    if len(bgraph['0'])>0:
        ii={'action':'plot',
            'module_uoa':cfg['module_deps']['graph'],
 
-           "table":graph,
+           "table":bgraph,
 
-           "ymin":1,
+           "h_lines":[1.0],
+
+           "ymin":0,
 
            "ignore_point_if_none":"yes",
 
@@ -530,7 +592,7 @@ def html_viewer(i):
 
            "title":"Powered by Collective Knowledge",
 
-           "axis_x_desc":"Distinct optimization solutions",
+           "axis_x_desc":"Distinct optimization solutions (highest improvement vs highest degradation)",
            "axis_y_desc":"Max improvement ( IK1 = Ref / Solution )",
 
            "plot_grid":"yes",
@@ -669,7 +731,9 @@ def crowdsource(i):
        program_tags=cfg['program_tags']
 
     # Check that has minimal dependencies for this scenario ***********************************************************
-    sdeps=copy.deepcopy(cfg['deps'])
+    sdeps=i.get('dependencies',{}) # useful to preset inside crowd-tuning
+    if len(sdeps)==0:
+       sdeps=copy.deepcopy(cfg['deps'])
     if len(sdeps)>0:
        if o=='con':
           ck.out(line)

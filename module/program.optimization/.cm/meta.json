@@ -25,6 +25,10 @@
       "desc": "get solutions", 
       "for_web": "yes"
     }, 
+    "get_workloads": {
+      "desc": "get workloads for a given solution", 
+      "for_web": "yes"
+    }, 
     "initialize": {
       "desc": "initialize experiment"
     }, 
@@ -78,7 +82,7 @@
     "cfg": "b34231a3467566f8", 
     "env": "9b9b3208ac44b891", 
     "experiment": "bc0409fb61f0aa82", 
-    "experiment.tune.compiler.flags.gcc.e.x":"6b9845eca8aa7fa5",
+    "experiment.tune.compiler.flags.gcc.e.x": "6b9845eca8aa7fa5", 
     "math.conditions": "d5ac649c14325bca", 
     "module": "032630d041b4fd8a", 
     "pipeline": "db25414b48b4ffb3", 
@@ -86,8 +90,19 @@
     "program": "b0ac08fe1d3c2615", 
     "wfe": "1e4e644996b7f2a0"
   }, 
+  "opt_keys": [
+    "gcc", 
+    "llvm", 
+    "opencl", 
+    "opengl", 
+    "cuda", 
+    "icc", 
+    "pgi", 
+    "openmp", 
+    "mpi", 
+    "bugs"
+  ], 
   "solutions_modules_tags": "crowdsoure,experiments,program optimization", 
   "tags": [], 
-  "url_discuss": "https://groups.google.com/forum/#!forum/ctuning-discussions",
-  "opt_keys":["gcc","llvm","opencl","opengl","cuda","icc","pgi","openmp","mpi","bugs"]
+  "url_discuss": "https://groups.google.com/forum/#!forum/ctuning-discussions"
 }
