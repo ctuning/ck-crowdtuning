@@ -787,29 +787,30 @@ def show(i):
 def add_solution(i):
     """
     Input:  {
-              packed_solution       - new packed points
-              scenario_module_uoa   - scenario UID
-              meta                  - meta to search
-              (meta_extra)          - extra meta to add
+              packed_solution         - new packed points
+              scenario_module_uoa     - scenario UID
+              meta                    - meta to search
+              (meta_extra)            - extra meta to add
 
-              exchange_repo         - where to record (local or remote)
-              exchange_subrepo      - where to recrod (if remote, local repo in remote machine)
+              exchange_repo           - where to record (local or remote)
+              exchange_subrepo        - where to recrod (if remote, local repo in remote machine)
 
-              (packed_solution)     - new packed solution (experimental points ready to be sent via Internet 
-                                      if communicating with crowd-server)
-              (solution_uid)        - new solution UID (if found)
+              (packed_solution)       - new packed solution (experimental points ready to be sent via Internet 
+                                        if communicating with crowd-server)
 
-              solutions             - list of solutions (pre-existing and new with re-classification)
+              (solution_uid)          - new solution UID (if found)
 
-              (classification)      - classification of solutions (active learning or online learning 
-                                      or online classification to avoid big data)
+              solutions               - list of solutions (pre-existing and new with re-classification)
 
-              (workload)            - workload dict to classify distinct optimizations
-                                      (useful for collaborative machine learning and run-time adaptation)
+              (classification)        - classification of solutions (active learning or online learning 
+                                        or online classification to avoid big data)
 
-              (user)                - user email/ID to attribute found solutions (optional for privacy)          
+              (workload)              - workload dict to classify distinct optimizations
+                                        (useful for collaborative machine learning and run-time adaptation)
 
-              (first_key)           - first key (to record max speedup)
+              (user)                  - user email/ID to attribute found solutions (optional for privacy)          
+
+              (first_key)             - first key (to record max speedup)
             }
 
     Output: {
@@ -902,7 +903,7 @@ def add_solution(i):
     p=r['path']
     d=r['dict']
     
-    # Saving summary file
+    # Load summary file
     osols={}
     psum=os.path.join(p, fsummary)
     if os.path.isfile(psum):
@@ -920,38 +921,93 @@ def add_solution(i):
 
     # Classify
     best_suid=sc.get('best_solution_uid','')
+    worst_suid=sc.get('worst_solution_uid','')
+    wimp=sc.get('workload_improvements',{})
+    wdeg=sc.get('workload_degradations',{})
+    checked=sc.get('checked',[])
 
     if best_suid!='':
-       # First remove all old
+       # First remove the new best workload (exact match) from all best solutions
        for q in classification:
-           cc=classification[q]
+           cc=classification[q].get('best',[])
 
            for k in range(0, len(cc)):
-               ccx=cc[k]
+               ccx=cc[k].get('workload',{})
 
                rx=ck.compare_dicts({'dict1':ccx, 'dict2':workload})
                if rx['return']>0: return rx
                equal=rx['equal']
                if equal=='yes': 
+
+                  # If the same workload and the same optimization solution, increase validation number
+                  if best_suid==q:
+                     for ss in range(0, len(sols)):
+                         s=sols[ss]
+                         if s.get('solution_uid','')==best_suid:
+                            val=int(s.get('validated',1))
+                            val+=1
+                            s['validated']=val
+                            sols[ss]=s
+                            break
+
                   del(cc[k])
+
                   break
 
        # Add new
-       ce=classification.get(best_suid,[])
-       ce.append(workload)
-       classification[best_suid]=ce
+       if best_suid not in classification:
+          classification[best_suid]={'best':[], 'worst':[]}
+
+       ce=classification[best_suid].get('best',[])
+
+       # Check if the same program/cmd doesn't exist 
+       #  (may just differ in data set - it means that we already
+       #   have this optimization knowledge + representative data set)
+       to_add=True
+       for s in ce:
+           ww=s.get('workload',{})
+           if ww.get('program_uoa','')==workload.get('program_uoa','') and \
+              ww.get('cmd_key','')==workload.get('cmd_key',''):
+              to_add=False
+              break
+
+       if to_add:
+          ce.append({'workload':workload, 'improvements':wimp, 'checked':checked})
+
+       classification[best_suid]['best']=ce
+
+    if worst_suid!='':
+       if worst_suid not in classification:
+          classification[worst_suid]={'best':[], 'worst':[]}
+
+       ce=classification.get(worst_suid,{}).get('worst',[])
+
+       # Check if the same program/cmd doesn't exist 
+       #  (may just differ in data set - it means that we already
+       #   have this optimization knowledge + representative data set)
+       to_add=True
+       for s in ce:
+           ww=s.get('workload',{})
+           if ww.get('program_uoa','')==workload.get('program_uoa','') and \
+              ww.get('cmd_key','')==workload.get('cmd_key',''):
+              to_add=False
+              break
+
+       if to_add:
+          ce.append({'workload':workload, 'improvements':wdeg, 'checked':checked})
+
+       classification[worst_suid]['worst']=ce
 
     # Evict if empty (each access to remove orphans)!
     uids_to_delete=[]
 
     for q in classification:
-        cc=classification[q]
+        cc=classification[q].get('best',[])
         if len(cc)==0:
            uids_to_delete.append(q)
 
     for q in uids_to_delete:
         if q in classification:
-           print ('deleting',q)
            del(classification[q])
 
            p1=os.path.join(p, q)
@@ -965,6 +1021,7 @@ def add_solution(i):
                     ck.out('WARNING: can\'t fully erase tmp dir '+p1)
                     ck.out('')
                  pass
+
     # clean solutions (if no classification)
     solsx=[]
     for k in range(0,len(sols)):
@@ -1006,11 +1063,11 @@ def add_solution(i):
        if rx['return']>0: return rx
 
     # Saving classification file
-    rx=ck.save_json_to_file({'json_file':pcl, 'dict':classification})
+    rx=ck.save_json_to_file({'json_file':pcl, 'dict':classification, 'sort_keys':'yes'})
     if rx['return']>0: return rx
 
     # Saving summary file
-    rx=ck.save_json_to_file({'json_file':psum, 'dict':sols})
+    rx=ck.save_json_to_file({'json_file':psum, 'dict':sols, 'sort_keys':'yes'})
     if rx['return']>0: return rx
 
 
@@ -1100,7 +1157,7 @@ def add_solution(i):
     dd['meta']=mm
 
     # Saving stats
-    rx=ck.save_json_to_file({'json_file':px, 'dict':dd})
+    rx=ck.save_json_to_file({'json_file':px, 'dict':dd, 'sort_keys':'yes'})
     if rx['return']>0: return rx
 
     # Updating and unlocking entry *****************************************************
@@ -1401,6 +1458,11 @@ def run(i):
               (prune_invert)                  - prune all (turn off even swiched off)
 
               (replay)                     - if 'yes', replay
+
+              (record_reactions)            - if 'yes', record optimization reaction
+              (record_reactions_file)       - file to record reaction table for graph ...
+
+              (skip_pruning)                - if 'yes', do not prune best found result during crowdtuning
             }
 
     Output: {
@@ -1441,12 +1503,21 @@ def run(i):
 
     user=i.get('user','')
 
-    prune=i.get('prune','')
+    sp=i.get('skip_pruning','')
+
+    xprune=i.get('prune','')
     prune_md5=i.get('prune_md5','')
     prune_invert=i.get('prune_invert','')
     prune_invert_add_iters=i.get('prune_invert_add_iters','')
     prune_ignore_choices=i.get('prune_ignore_choices',[])
     result_conditions=i.get('result_conditions',[])
+
+    replay=i.get('replay','')
+
+    recr=i.get('record_reactions','')
+    recrf=i.get('record_reactions_file','')
+    if recr=='yes' and recrf=='':
+       recrf=os.path.join(curdir, fgraph)
 
     cd_uoa=i.get('compiler_description_uoa','')
     ftags=i.get('flag_tags','').strip()
@@ -1747,31 +1818,38 @@ def run(i):
 
        # ***************************************************************** Check if similar cases already found collaboratively
        last_sol_id=''
-       if len(sols)==0:
 
-          if o=='con':
-             ck.out('')
-             ck.out('Searching if collaborative solutions already exist ...')
+       osols=copy.deepcopy(sols)
 
-          ii={'action':'get',
-              'module_uoa':work['self_module_uid'],
-              'repo_uoa':er,
-              'remote_repo_uoa':esr,
-              'scenario_module_uoa':smuoa,
-              'meta':meta}
-          rz=ck.access(ii)
-          if rz['return']>0: return rz
+       if o=='con':
+          ck.out('')
+          ck.out('Searching if collaborative solutions already exist ...')
 
-          sols=rz['solutions']
-          isols=len(sols)
+       ii={'action':'get',
+           'module_uoa':work['self_module_uid'],
+           'repo_uoa':er,
+           'remote_repo_uoa':esr,
+           'scenario_module_uoa':smuoa,
+           'meta':meta}
+       rz=ck.access(ii)
+       if rz['return']>0: return rz
 
-          if isols>0:
-             ck.out('')
-             ck.out('  Found '+str(isols)+' solution(s) - trying them first ...')
+       sols=rz['solutions']
+       isols=len(sols)
 
-             time.sleep(2)
+       # Add user ones (remove solution UID to avoid mixing up with exising ones!)
+       for q in osols:
+           if 'solution_uid' in q: del(q['solution_uid'])
+           if 'last_touch_uid' in q: del(q['last_touch_uid'])
+           sols.append(q)
 
-             iterations+=isols
+       if isols>0:
+          ck.out('')
+          ck.out('  Found '+str(isols)+' solution(s) - trying them first ...')
+
+          time.sleep(2)
+
+          iterations+=isols
 
        lx=' ===============================================================================\n' \
           ' * Scenario:                 '+sdesc+'\n' \
@@ -2031,8 +2109,6 @@ def run(i):
 
                 pipeline=copy.deepcopy(pipeline_copy)
 
-
-
                 ii={'action':'autotune',
 
                     'module_uoa':cfg['module_deps']['pipeline'],
@@ -2059,6 +2135,7 @@ def run(i):
 
 # For Debugging
 #                    'ask_enter_after_choices':'yes',
+#                    'ask_enter_after_each_iteration':'yes',
 
                     'quiet':quiet,
 
@@ -2080,7 +2157,7 @@ def run(i):
 
                 if len(sols)>0:
                    ii['solutions']=sols
-                   if prune=='yes':
+                   if xprune=='yes':
                       ii['prune']=prune
                       ii['prune_md5']=prune_md5
                       ii['prune_invert']=prune_invert
@@ -2145,7 +2222,8 @@ def run(i):
 
              ################################################################################
              # If prune or replay, do not continue
-             if prune!='yes' and replay!='yes':
+
+             if prune!='yes':
                 # Prepare meta
                 pif=pi.get('features',{})
 
@@ -2238,37 +2316,70 @@ def run(i):
 
                                 points_to_add.append(ppp)
 
-                # Print report
-                suid=''
-                if len(points_to_add)>0:
-                   # Generate new solution UID
-                   r=ck.gen_uid({})
-                   if r['return']>0: return r
-                   suid=r['data_uid'] # solution UID
+                if replay!='yes':
+                   # remove user solutions (if there is a good solution, it will be added next here)
+                   solsx=[]
+                   for q in sols:
+                       if q.get('solution_uid','')!='': solsx.append(q)
+                   sols=solsx
 
-                   report='      New SOLUTION ('+suid+'):\n\n'+report
+                   suid=''
+                   if len(points_to_add)>0:
+                      # Generate new solution UID
+                      r=ck.gen_uid({})
+                      if r['return']>0: return r
+                      suid=r['data_uid'] # solution UID
 
-                   # Generate last touch UID
-                   r=ck.gen_uid({})
-                   if r['return']>0: return r
-                   ltuid=r['data_uid'] # solution UID
+                      report='      New SOLUTION ('+suid+'):\n\n'+report
 
-                   # Prepare new solution
-                   sol={'solution_uid':suid,
-                        'choices':choices,
-                        'ref_choices':pchoices1,
-                        'ref_choices_order':pchoices_order1,
-                        'points':points_to_add,
-                        'iterations':iterations,
-                        'extra_meta':emeta,
-                        'touched':1,
-                        'last_touch_uid':ltuid,
-                        'validated':1}
-                   if user!='' and user!='-':
-                      sol['user']=user
+                      # Generate last touch UID
+                      r=ck.gen_uid({})
+                      if r['return']>0: return r
+                      ltuid=r['data_uid'] # solution UID
 
-                   # Append new solution
-                   sols.append(sol)
+                      # Prepare new solution
+                      sol={'solution_uid':suid,
+                           'choices':choices,
+                           'ref_choices':pchoices1,
+                           'ref_choices_order':pchoices_order1,
+                           'points':points_to_add,
+                           'iterations':iterations,
+                           'extra_meta':emeta,
+                           'touched':1,
+                           'last_touch_uid':ltuid,
+                           'validated':1}
+                      if user!='' and user!='-':
+                         sol['user']=user
+
+                      # trying to prune
+                      if sp!='yes':
+                         if o=='con':
+                            ck.out('')
+                            ck.out('  !!! Starting pruning solution !!!')
+
+#                         raw_input('xyz')
+
+                         ii={'host_os':hos,
+                             'target_os':tos,
+                             'target_device_id':tdid,
+
+                             'module_uoa':smuoa,
+
+                             'solutions':[sol]
+                            }
+
+#                         ck.save_json_to_file({'json_file':'d:\\xyz0.json','dict':ii})
+#                         rx=prune(ii)
+#                         if rx['return']>0: return rx
+
+#                         ck.save_json_to_file({'json_file':'d:\\xyz1.json','dict':rx})
+
+
+#                         raw_input('xyz')
+
+
+                      # Append new solution
+                      sols.append(sol)
 
                 classification={}
                 if len(sols)>0:
@@ -2289,10 +2400,15 @@ def run(i):
                        sols[q]=qq
 
                    # Classify solutions
-                   rx=classify({'solutions':sols, 'key':ik0})
+                   ii={'solutions':sols, 'key':ik0, 'force_best_suid':suid, 'graph_file':recrf}
+                   if replay=='yes': ii['skip_clean']='yes'
+
+                   rx=classify(ii)
                    if rx['return']>0: return rx
                    classification=rx['classification']
+                   sols=rx['solutions']
 
+                   rrr['solutions']=sols
                 else:
                    report='      New solutions were not found...\n\n'+report
 
@@ -2328,7 +2444,7 @@ def run(i):
                       ps=rx['file_content_base64']
 
                 # Adding/updating solution
-                if len(sols)>0:
+                if replay!='yes' and len(sols)>0:
                    if o=='con':
                       ck.out('')
                       ck.out('       Adding/updating solution(s) in repository ...')
@@ -2690,13 +2806,14 @@ def replay(i):
 
                (solution_uid)       - solution UID, if known (otherwise all - useful to classify a given program by reactions to optimizations)
 
-               (graph)              - if 'yes', prepare local graph with reactions
- 
                (prune)              - if 'yes', prune solution
 
                (record_solutions)   - if 'yes', record solutions
                (solutions_file)     - output solutions to a file
-           }
+
+               (record_reactions)            - if 'yes', record optimization reaction
+               (record_reactions_file)       - file to record reaction table for graph ...
+            }
 
     Output: {
               return       - return code =  0, if successful
@@ -2719,7 +2836,7 @@ def replay(i):
     if sf=='':
        sf=os.path.join(curdir, fsolutions)
 
-    prune=i.get('prune','')
+    xprune=i.get('prune','')
 
     sols=ck.get_from_dicts(i, 'solutions', '', None)
     sols_info=ck.get_from_dicts(i, 'solutions_info', {}, None)
@@ -2753,8 +2870,6 @@ def replay(i):
     drx=rx['dict']
     
     duoa=ck.get_from_dicts(i, 'data_uoa', '', None)
-
-    graph=i.get('graph','')
 
     scenario=ck.get_from_dicts(i, 'scenario', '', None)
     if scenario=='-':
@@ -2808,7 +2923,7 @@ def replay(i):
        ic['new']='yes'
 
     if ic.get('iterations','')=='':
-       if prune=='yes':
+       if xprune=='yes':
           pp=sols[0].get('points',[])
           if len(pp)==0 or len(pp[0].get('pruned_choices',{}))==0:
              return {'return':1, 'error':'points in first solution are not found'}
@@ -2847,7 +2962,7 @@ def replay(i):
            ic[q]=choices[q]
 
     # If prune, check specific params (such as prune_md5)
-    if prune=='yes':
+    if xprune=='yes':
        ic.update(drx.get('prune_autotune_pipeline',{}))
     else:
        ic['replay']='yes'
@@ -2858,24 +2973,62 @@ def replay(i):
     # Check and classify solutions
     sols=rrr.get('solutions',[])
 
-    if prune!='yes':
-       ii={'solutions':sols}
-       if graph=='yes':
-          ii['graph_file']=os.path.join(curdir, fgraph)
-
-       r=classify(ii)
-       if r['return']>0: return r
-
-       rrr['solutions']=r['solutions']
-
-       if graph=='yes' and o=='con':
-          ck.out('')
-          ck.out('Note: graph with reactions to optimizations was recorded. Plot it via "ck graph @'+fgraph+'"')
-
     # Record solutions if needed
     if i.get('record_solutions','')=='yes':
        rx=ck.save_json_to_file({'json_file':sf,'dict':sols})
        if rx['return']>0: return rx
+
+    # Print results
+    if o=='con' and prune!='yes':
+       ck.out('')
+       ck.out('  Comparing original and new improvements:')
+
+       keys=[]
+       ll=0
+
+       for q in sols:
+           suid=q.get('solution_uid','')
+
+           ck.out('')
+           ck.out('    * Solution '+suid+':')
+
+           points=q.get('points',[])
+
+           ip=0
+           for p in points:
+
+               ip+=1
+
+               ck.out('')
+               ck.out('        Point: '+str(ip))
+
+               oimp=p.get('improvements',{})
+               imp=p.get('improvements_reaction',{})
+
+               if len(keys)==0:
+                  keys=sorted(list(oimp.keys()))
+                  for k in keys:
+                      if len(k)>ll: ll=len(k)
+
+               ck.out('')
+               for k in keys:
+                   ov=oimp.get(k, None)
+                   v=imp.get(k, None)
+
+                   x=''
+                   if ov!=None:
+                      j=ll-len(k)
+
+                      x+=('%2.2f' % ov)
+
+                      x+=' vs '
+
+                      if v!=None:
+                         x+=('%2.2f' % v)
+                      else:
+                         x+='None'
+
+                   ck.out('             '+k+(' '*j)+' : '+x) 
 
     return rrr
 
@@ -2885,9 +3038,11 @@ def replay(i):
 def classify(i):
     """
     Input:  {
-              solutions        - list of solutions with reactions
-              (key)            - key for classification analysis/sorting
-              (graph_file)     - output reactions as bar graph!
+              solutions         - list of solutions with reactions
+              key               - key for classification analysis/sorting
+              (graph_file)      - output reactions as bar graph!
+              (force_best_suid) - if !='', return it as best UID (when new solution found)
+              (skip_clean)      - if 'yes', do not remove reactions
             }
 
     Output: {
@@ -2898,21 +3053,32 @@ def classify(i):
 
     """
 
+    import copy
+
     sols=i['solutions']
     gf=i.get('graph_file','')
+
+    fbsuid=i.get('force_best_suid','')
 
     table_orig=[]
     table_new=[]
 
+    sclean=i.get('skip_clean','')
+
     cc={}
 
-    key=i.get('key','')
+    key=i['key']
 
     best_suid=''
     worst_suid=''
 
-    best_v=0.0
-    worst_v=0.0
+    best_v=1.0
+    worst_v=1.0
+
+    wimp={}
+    wdeg={}
+
+    checked=[]
 
     si=0
     for s in range(0, len(sols)):
@@ -2920,74 +3086,87 @@ def classify(i):
         si+=1
 
         suid=sol.get('solution_uid','')
+        checked.append(suid)
 
         points=sol.get('points',[])
         for p in range(0, len(points)):
             point=points[p]
 
-            # Original improvements
-            oimp=point.get('improvements',{})
-            odeg=point.get('degradations',{})
-            rimp=point.get('reaction_raw_flat',{})
+            # Check if reaction
+            imp=point.get('improvements',{})
+            oimp=copy.deepcopy(imp)
+
+            ov=imp.get(key,0.0) # Here we put 0.0 even if None for a graph
+
+            rrf=point.get('reaction_raw_flat',{})
+            nv=rrf.get(key,0.0) # Here we put 0.0 even if None for a graph
+
             nimp={}
+            for k in imp:
+                nimp[k]=rrf.get(k, None)
 
-            for k in oimp:
-                if k in rimp:
-                   nimp[k]=rimp[k]
-       
-            if 'reaction_raw_flat' in point:
-               del(point['reaction_raw_flat'])
+            imp=nimp
 
-            point['reaction_flat']=nimp
+            # clean reactions from original
+            if sclean!='yes':
+               if 'reaction_info' in point:
+                  del(point['reaction_info'])
+               if 'improvements_reaction' in point:
+                  del(point['improvements_reaction'])
+               if 'reaction_raw_flat' in point:
+                  del(point['reaction_raw_flat'])
 
-            ov=oimp.get(key,0.0)
+            # Check all keys for historical best/worst
+            best=point.get('improvements_best',{})
+            worst=point.get('improvements_worst',{})
 
-            if key in nimp:
-               nv=nimp.get(key,0.0)
-            else:
-               # If new optimization and no yet reactions ...
-               nv=ov
+            for k in imp:
+                v=imp.get(k, None)
 
-            if nv>best_v: 
-               best_v=ov
-               best_suid=suid
+                vbo=best.get(k, None)
+                vwo=worst.get(k, None)
+                
+                if v!=None and (vbo==None or v>vbo): best[k]=v
+                if v!=None and (vwo==None or v<vwo): worst[k]=v
 
-            if nv==0.0 and nv<worst_v: 
-               worst_v=ov
-               worst_suid=suid
+            if len(best)==0: best=oimp # if new solution
 
-            # Check degradations
-            vd=odeg.get(key,1.0)
-            if nv<vd:
-               odeg[key]=nv
+            point['improvements_best']=best
+            point['improvements_worst']=worst
 
-            # Clean solution
-            if 'reaction_info' in point:
-               del(point['reaction_info'])
-            if 'reaction_flat' in point:
-               del(point['reaction_flat'])
+            # If didn't fail, check best/worst by main key only for classification!
+            if point.get('reaction_info',{}).get('fail','')!='yes':
+               v=imp.get(key,None)
 
+               if v!=None: 
+                  if fbsuid=='' and v>best_v: 
+                     best_v=v
+                     best_suid=suid
+                     wimp=imp
 
+                  if v<worst_v and v<0.97: 
+                     worst_v=v
+                     worst_suid=suid
+                     wdeg=imp
 
-
+            if fbsuid!='' and fbsuid==suid:
+               wimp=imp
 
             # Check if graph
             if gf!='':
-               table_orig.append([si, oimp.get(key,0.0)])
-               table_new.append([si, nimp.get(key,0.0)])
+               table_orig.append([si, ov])
+               table_new.append([si, nv])
 
         points[p]=point
         sols[s]=sol
 
+    if fbsuid!='': best_suid=fbsuid
+
     cc['best_solution_uid']=best_suid
     cc['worst_solution_uid']=worst_suid
-
-
-
-
-
-
-
+    cc['workload_improvements']=wimp
+    cc['workload_degradations']=wdeg
+    cc['checked']=checked
 
     # Save graph
     if gf!='':
@@ -3006,7 +3185,7 @@ def classify(i):
            "title":"Powered by Collective Knowledge",
 
            "axis_x_desc":"Solution",
-           "axis_y_desc":"Improvement",
+           "axis_y_desc":"Improvement ("+key+")",
 
            "plot_grid":"yes",
 
@@ -3148,3 +3327,4 @@ def prune(i):
           ck.out('Note: graph with reactions to pruned optimizations was recorded. Plot it via "ck graph @'+fgraph+'"')
 
     return r
+
