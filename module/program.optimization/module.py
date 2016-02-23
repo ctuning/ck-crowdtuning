@@ -2601,8 +2601,11 @@ def run(i):
                             sol['points']=points
 
                       # Append new solution
-                      sol['solution_uid']=suid # renew (otherwise deleted by pipeline)
-                      sols.append(sol)
+                      points_to_add=sol.get('points',[])
+
+                      if len(points_to_add)>0:
+                         sol['solution_uid']=suid # renew (otherwise deleted by pipeline)
+                         sols.append(sol)
 
                 # Draw reactions, if needed
                 if recrf!='':
