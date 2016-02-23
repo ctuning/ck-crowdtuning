@@ -2759,7 +2759,7 @@ def run(i):
 
     # Record solutions if needed
     if i.get('record_solutions','')=='yes':
-       rx=ck.save_json_to_file({'json_file':sf,'dict':rrr['solutions']})
+       rx=ck.save_json_to_file({'json_file':sf,'dict':{"solutions":rrr['solutions']}})
        if rx['return']>0: return rx
 
     return rrr
