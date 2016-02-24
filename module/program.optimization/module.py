@@ -516,7 +516,8 @@ def show(i):
     # Listing available crowdsourcing scenarios ...
     scenario=i.get('scenario','')
     if scenario=='': 
-       scenario=cfg['module_deps']['experiment.tune.compiler.flags.llvm.e']
+#       scenario=cfg['module_deps']['experiment.tune.compiler.flags.llvm.e']
+       scenario=cfg['module_deps']['experiment.tune.compiler.flags.gcc.e']
 
     ii={'action':'search',
         'module_uoa':cfg['module_deps']['module'],
