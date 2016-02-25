@@ -678,7 +678,7 @@ def show(i):
 
              irl=len(rl)
              if irl==0:
-                h+='<b>No solutions found!</b>'
+                h+='<b>Public solutions are not yet shared/found!</b>'
              else:
 #                   h+=str(len(rl))+' entries found!</b>'
 
