@@ -167,6 +167,12 @@
       1.09
     ], 
     [
+      "##characteristics#run#execution_time_kernel_0$#objective#$", 
+      "_imp", 
+      "<", 
+      10.0
+    ], 
+    [
       "##characteristics#compile#obj_size$#objective#$", 
       "_imp", 
       ">", 

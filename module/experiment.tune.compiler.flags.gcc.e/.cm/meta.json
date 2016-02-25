@@ -166,6 +166,12 @@
       1.09
     ], 
     [
+      "##characteristics#run#execution_time_kernel_0$#objective#$", 
+      "_imp", 
+      "<", 
+      10.0
+    ], 
+    [
       "##characteristics#compile#md5_sum$#objective#$", 
       "_imp", 
       "==", 
@@ -198,7 +204,7 @@
          "##characteristics#run#execution_time_kernel_0$#objective#$", 
          "_imp", 
          "<", 
-         20.0
+         10.0
        ], 
        [
          "##characteristics#compile#obj_size$#objective#$", 
