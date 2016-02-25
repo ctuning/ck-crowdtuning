@@ -8,6 +8,10 @@
       "desc": "classify solutions", 
       "for_web": "yes"
     }, 
+    "log": {
+      "desc": "log events", 
+      "for_web": "no"
+    }, 
     "compare_results": {
       "desc": "compare results (if similar or not)"
     }, 

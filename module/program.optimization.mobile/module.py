@@ -64,7 +64,9 @@ def crowdsource(i):
     if r['return']>0: return r
     x=r['string']
 
-    r=log({'file_name':cfg['log_file_generate'], 'text':email+'\n'+x+'\n'})
+    r=ck.access({'action':'log',
+                 'module_uoa':cfg['module_deps']['program.optimization'],
+                 'text':email+'\n'+x+'\n'})
     if r['return']>0: return r
 
     # Prepare dummy pack

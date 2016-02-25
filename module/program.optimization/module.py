@@ -84,7 +84,7 @@ def init(i):
 def log(i):
     """
     Input:  {
-              file_name     - file name
+              (file_name)   - file name
               text          - text
               (skip_header) - if 'yes', do not add header
             }
@@ -101,7 +101,10 @@ def log(i):
 
     import os
 
-    fn=i['file_name']
+    fn=i.get('file_name','')
+    if fn=='':
+       fn=cfg['log_file_generate']
+
     txt=i.get('text','')
     sh=i.get('skip_header','')
 
