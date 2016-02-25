@@ -2875,7 +2875,7 @@ def links(i):
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.cpu">CPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpu">GPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpgpu">GPGPU</a>, \n'
-    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpgpu">NN</a> ], \n'
+    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.nn">NN</a> ], \n'
     h+='[ Vision papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a> ,\n'
     h+='  <a href="http://bit.ly/ck-date16">DATE\'16</a> ,\n'
     h+='  <a href="http://hal.inria.fr/hal-01054763">JSP\'14</a> ,\n'
