@@ -871,6 +871,7 @@ def add_solution(i):
     bsuid='' # best solution for this workload found
     bvv=None
     bimp={}
+    bchars={}
 
     wsuid='' # best solution for this workload found
     wvv=None
@@ -897,6 +898,7 @@ def add_solution(i):
            point=points[0]
 
            imp=point.get('improvements',{})
+           chars=point.get('characteristics',{})
 
            # If reaction exists, means that already not new - take it 
            rimp=point.get('improvements_reaction',{}) 
@@ -925,6 +927,7 @@ def add_solution(i):
                  bsuid=xuid
                  bvv=vv
                  bimp=imp
+                 bchars=chars
 
            # Check if worse
            if vv!=None and vv<0.96 and (vd==None or vv<vd):
@@ -981,7 +984,7 @@ def add_solution(i):
        cls=classification[bsuid]
        w=cls.get('best',[])
 
-       w1=[{'workload':workload, 'improvements':bimp, 'checked':checked}] # will add the latest info & checked list
+       w1=[{'workload':workload, 'improvements':bimp, 'characteristics':bchars, 'checked':checked}] # will add the latest info & checked list
        for wx in w:
            ww=wx.get('workload',{})
            if ww.get('program_uoa','')!=workload.get('program_uoa','') or \
@@ -2332,6 +2335,15 @@ def run(i):
                                        ix=len(k1)
 
                                        report+='          * '+k1+(' ' * (il-ix))+' : '+y+'\n' 
+
+                                ppp['characteristics']={}
+                                for k in ok:
+                                    dv=behavior2.get(k,None)
+                                    ppp['characteristics'][k]=dv
+                                    # temporally hardwire the following - later move the whole characteristics thing 
+                                    # to proper and sperate program.benchmarking
+                                    k='##characteristics#run#repeat#min'
+                                    ppp['characteristics'][k]=behavior2.get(k,None)
 
                                 ppp['improvements']={}
                                 for k in ik:
