@@ -49,7 +49,7 @@
     "choices_selection": [
       {
         "notags": "", 
-        "omit_probability": "0.90", 
+        "omit_probability": "0.85", 
         "tags": "basic,optimization", 
         "type": "random"
       }
