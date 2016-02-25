@@ -916,12 +916,12 @@ def add_solution(i):
            vv=imp.get(fk, None)
 
            # Check if better
-           if vv!=None:
+           if vv!=None and point.get('reaction_info',{}).get('fail','')!='yes':
               if vi==None or vv>vi:
                  hi=imp
                  hiw=workload
 
-              if (point.get('reaction_info',{}).get('fail','')!='yes') and (bvv==None or vv>bvv):
+              if bvv==None or vv>bvv:
                  bsuid=xuid
                  bvv=vv
                  bimp=imp
