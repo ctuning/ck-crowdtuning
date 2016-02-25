@@ -13,5 +13,5 @@
   "license": "See CK LICENSE.txt for licensing details",
   "module_deps": {
     "program.optimization": "27bc42ee449e880e"
-  }, 
+  } 
 }
