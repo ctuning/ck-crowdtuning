@@ -17,10 +17,6 @@
     "explore": {
       "desc": "explore program optimizations"
     }, 
-    "generate_for_remote": {
-      "desc": "generate experiment pack for crowdsourcing in remote hardware (mobile phones or tablets)", 
-      "for_web": "yes"
-    }, 
     "get": {
       "desc": "get solutions", 
       "for_web": "yes"
