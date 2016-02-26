@@ -330,7 +330,6 @@ def crowdsource(i):
                             rr['repeat']=5
                             rr['ct_repeat']=1
 
-                            ck.save_json_to_file({'json_file':'d:\\xyz88.json','dict':rr})
                             success=True
 
                 if not success:
