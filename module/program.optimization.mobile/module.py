@@ -325,7 +325,7 @@ def crowdsource(i):
                             rcm=rcm.replace('$#dataset_path#$','')
                             rcm=rcm.replace('$#dataset_filename#$',dfile)
 
-                            if rcm.find('$#')>=0 and rcm.find('#$')>=0:
+                            if rcm.find('$#')>=0 or rcm.find('#$')>=0 or rcm.find('<')>=0:
                                copied=False
 
                             if copied:
