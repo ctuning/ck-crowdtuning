@@ -314,24 +314,28 @@ def crowdsource(i):
                             rcm=rcm.replace('$#dataset_path#$','')
                             rcm=rcm.replace('$#dataset_filename#$',dfile)
 
-                            calibrate='no'
-                            if dd.get('run_vars',{}).get('CT_REPEAT_MAIN','')!='':
-                               calibrate='yes'
+                            if rcm.find('$#')>=0 and rcm.find('#$')>=0:
+                               success=False
 
-                            # finalize info
-                            rr['file_content_base64']=fx
-                            rr['size']=size 
-                            rr['md5sum']=md5
-                            rr['run_cmd_main']=rcm
-                            rr['bin_file0']=target_exe_0
-                            rr['bin_file1']=target_exe_1
-                            rr['calibrate']=calibrate
-                            rr['calibrate_max_iters']=10
-                            rr['calibrate_time']=10.0
-                            rr['repeat']=5
-                            rr['ct_repeat']=1
+                            if success:
+                               calibrate='no'
+                               if dd.get('run_vars',{}).get('CT_REPEAT_MAIN','')!='':
+                                  calibrate='yes'
 
-                            success=True
+                               # finalize info
+                               rr['file_content_base64']=fx
+                               rr['size']=size 
+                               rr['md5sum']=md5
+                               rr['run_cmd_main']=rcm
+                               rr['bin_file0']=target_exe_0
+                               rr['bin_file1']=target_exe_1
+                               rr['calibrate']=calibrate
+                               rr['calibrate_max_iters']=10
+                               rr['calibrate_time']=10.0
+                               rr['repeat']=5
+                               rr['ct_repeat']=1
+
+                               success=True
 
                 if not success:
                    if o=='con':
