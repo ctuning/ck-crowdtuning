@@ -146,7 +146,7 @@ def crowdsource(i):
               'iterations':1,
               'platform_info':pic,
               'once':'yes',
-              'static':'yes',
+#              'static':'yes',
 #              'program_uoa':'*susan',
               'no_run':'yes',
               'keep_experiments':'yes',
@@ -214,6 +214,27 @@ def crowdsource(i):
                 
                 rr['desc']=dsc
 
+                deps=lio.get('dependencies',{})
+                raw_input('xyz')
+                for kdp in deps:
+                    raw_input('xyz')
+                    dp=deps[kdp]
+                    z=dp.get('cus',{})
+                    dl=z.get('dynamic_lib','')
+                    pl=z.get('path_lib','')
+                    print (dl)
+
+                    if dl!='' and pl!='':
+                       pidl=os.path.join(pl, dl)
+                       print (pidl)
+                       if os.path.isfile(pidl):
+                          pidl1=os.path.join(p, dl)
+                          print (pidl1)
+                          try:
+                             shutil.copyfile(pidl, pidl1)
+                          except Exception as e: 
+                             pass
+                          
                 if o=='con':
                    ck.out('')
                    ck.out('  Crowd UID: '+cuid)
@@ -225,7 +246,34 @@ def crowdsource(i):
                 target_exe_0=rrr.get('original_target_exe','')
                 target_exe_1=lio.get('state',{}).get('target_exe','')
 
-                if ptmp!='' and target_exe_0!='' and target_exe_1!='':
+                duoa=choices.get('dataset_uoa','')
+                dfile=choices.get('dataset_file','')
+
+                # create cmd
+                prog_uoa=choices.get('data_uoa','')
+                cmd_key=choices.get('cmd_key','')
+                r=ck.access({'action':'load',
+                             'module_uoa':cfg['module_deps']['program'],
+                             'data_uoa':prog_uoa})
+                if r['return']>0: return r
+                dd=r['dict']
+                pp=r['path']
+
+                rcm=dd.get('run_cmds','').get(cmd_key,{}).get('run_time',{}).get('run_cmd_main','')
+                rcm=rcm.replace('$#BIN_FILE#$ ','')
+                rcm=rcm.replace('$#dataset_path#$','')
+                rcm=rcm.replace('$#dataset_filename#$',dfile)
+                rcm=rcm.replace('$#src_path#$','')
+
+                rif=dd.get('run_cmds','').get(cmd_key,{}).get('run_time',{}).get('run_input_files',[])
+
+                if o=='con':
+                   ck.out('Cmd: '+rcm)
+
+                if ptmp!='' and target_exe_0!='' and target_exe_1!='' and not (rcm.find('$#')>=0 or rcm.find('#$')>=0 or rcm.find('<')>=0):
+                   if o=='con':
+                      ck.out('Copying executables from '+ptmp+' ...')
+
                    te0=os.path.join(ptmp, target_exe_0)
                    te1=os.path.join(ptmp, target_exe_1)
 
@@ -237,15 +285,21 @@ def crowdsource(i):
                    try:
                       shutil.copyfile(te0, nte0)
                       shutil.copyfile(te1, nte1)
+
+                      for inp in rif:
+                          px1=os.path.join(pp, inp)
+                          px2=os.path.join(p, inp)
+                          shutil.copyfile(px1, px2)
+
                    except Exception as e: 
                       copied=False
                       pass
 
                    if copied:
-                      # Check dataset files
-                      duoa=choices.get('dataset_uoa','')
-                      dfile=choices.get('dataset_file','')
+                      if o=='con':
+                         ck.out('Copying datasets ...')
 
+                      # Check dataset files
                       rr['choices']=choices
 
                       copied=True
@@ -268,6 +322,9 @@ def crowdsource(i):
                             pass
 
                       if copied:
+                         if o=='con':
+                            ck.out('Preparing zip ...')
+
                          # Prepare archive
                          zip_method=zipfile.ZIP_DEFLATED
 
@@ -300,7 +357,9 @@ def crowdsource(i):
                             copied=False
 
                          if copied:
-                            # preparing zip file
+                            if o=='con':
+                               ck.out('Preparing cmd ...')
+
                             size=os.path.getsize(pfn) 
 
                             r=ck.convert_file_to_upload_string({'filename':pfn})
@@ -312,42 +371,27 @@ def crowdsource(i):
                             import hashlib
                             md5=hashlib.md5(fx.encode()).hexdigest()
 
-                            # create cmd
-                            prog_uoa=choices.get('data_uoa','')
-                            cmd_key=choices.get('cmd_key','')
-                            r=ck.access({'action':'load',
-                                         'module_uoa':cfg['module_deps']['program'],
-                                         'data_uoa':prog_uoa})
-                            if r['return']>0: return r
-                            dd=r['dict']
+                            if o=='con':
+                               ck.out('Finalizing ...')
 
-                            rcm=dd.get('run_cmds','').get(cmd_key,{}).get('run_time',{}).get('run_cmd_main','')
-                            rcm=rcm.replace('$#BIN_FILE#$ ','')
-                            rcm=rcm.replace('$#dataset_path#$','')
-                            rcm=rcm.replace('$#dataset_filename#$',dfile)
+                            calibrate='no'
+                            if dd.get('run_vars',{}).get('CT_REPEAT_MAIN','')!='':
+                               calibrate='yes'
 
-                            if rcm.find('$#')>=0 or rcm.find('#$')>=0 or rcm.find('<')>=0:
-                               copied=False
+                            # finalize info
+                            rr['file_content_base64']=fx
+                            rr['size']=size 
+                            rr['md5sum']=md5
+                            rr['run_cmd_main']=rcm
+                            rr['bin_file0']=target_exe_0
+                            rr['bin_file1']=target_exe_1
+                            rr['calibrate']=calibrate
+                            rr['calibrate_max_iters']=10
+                            rr['calibrate_time']=10.0
+                            rr['repeat']=5
+                            rr['ct_repeat']=1
 
-                            if copied:
-                               calibrate='no'
-                               if dd.get('run_vars',{}).get('CT_REPEAT_MAIN','')!='':
-                                  calibrate='yes'
-
-                               # finalize info
-                               rr['file_content_base64']=fx
-                               rr['size']=size 
-                               rr['md5sum']=md5
-                               rr['run_cmd_main']=rcm
-                               rr['bin_file0']=target_exe_0
-                               rr['bin_file1']=target_exe_1
-                               rr['calibrate']=calibrate
-                               rr['calibrate_max_iters']=10
-                               rr['calibrate_time']=10.0
-                               rr['repeat']=5
-                               rr['ct_repeat']=1
-
-                               success=True
+                            success=True
 
                 if not success:
                    if o=='con':
