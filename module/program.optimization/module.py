@@ -1403,6 +1403,9 @@ def run(i):
               (skip_pruning)                - if 'yes', do not prune best found result during crowdtuning
 
               (skip_collaborative)          - do not check collaborative solutions (useful for "clean" autotuning)
+
+              (no_run)                      - if 'yes', do not run program - useful for generating experiments pack
+                                              for crowtuning using Android mobile phones
             }
 
     Output: {
@@ -1429,6 +1432,8 @@ def run(i):
     hos=i.get('host_os','')
     tos=i.get('target_os','')
     tdid=i.get('target_device_id','')
+
+    sic=i.get('skip_info_collection','')
 
     eruoa=i.get('record_repo','')
     if eruoa=='': eruoa='local'
@@ -1457,6 +1462,8 @@ def run(i):
     result_conditions=i.get('result_conditions',[])
 
     replay=i.get('replay','')
+
+    no_run=i.get('no_run','')
 
     recr=i.get('record_reactions','')
     recrf=i.get('record_reactions_file','')
@@ -1597,6 +1604,7 @@ def run(i):
         'calibration_time':cat,
         'generate_rnd_tmp_dir':'yes', # to be able to run crowdtuning in parallel on the same machine ...
         'prepare':'yes',
+        'skip_info_collection':sic,
         'quiet':quiet,
         'out':oo}
     if apc!='yes':
@@ -1623,6 +1631,13 @@ def run(i):
        del(r['return'])
 
        pipeline=r
+
+       if no_run=='yes':
+          pipeline['no_run']='yes'
+          pipeline['add_rnd_extension_to_bin']='yes'
+          pipeline['skip_device_info']='yes'
+          pipeline['no_clean']='yes'
+          rep=1
 
        state=r['state']
        tmp_dir=state['tmp_dir']
@@ -1887,6 +1902,7 @@ def run(i):
 
        lio=r['last_iteration_output']
        fail=lio.get('fail','')
+       target_exe_0=''
        if fail=='yes':
           unexpected=True
           x='   WARNING: pipeline execution failed ('+lio.get('fail_reason','')+')'
@@ -1903,6 +1919,8 @@ def run(i):
           state=lio.get('state',{})
           repeat=state.get('repeat','')
           ftmp_dir=state.get('cur_dir','')
+
+          target_exe_0=state.get('target_exe','')
 
           ft=lio.get('features',{})
 
@@ -2034,6 +2052,8 @@ def run(i):
              if scfg.get('skip_autotuning','')!='yes':
                 # *************************************************************** PREPARE AUTOTUNING
                 # Prepare autotuning
+                pipeline=copy.deepcopy(pipeline_copy)
+
                 pup1=scfg.get('experiment_1_pipeline_update',{})
                 pup1['frontier_keys']=fk
 
@@ -2058,14 +2078,12 @@ def run(i):
                 if rep!='': pup1['repetitions']=rep
                 if seed!='': pup1['seed']=seed
 
-                ################################################################### Start autotuning !!!!!!!!!!
+                ################################################################### Start main autotuning !!!!!!!!!!
                 # Run autotuning
                 if o=='con':
                    ck.out(line)
                    ck.out('Running multi-dimensional and multi-objective autotuning ...')
                    ck.out('')
-
-                pipeline=copy.deepcopy(pipeline_copy)
 
                 ii={'action':'autotune',
 
@@ -2122,7 +2140,7 @@ def run(i):
                       ii['prune_ignore_choices']=prune_ignore_choices
                       ii['prune_result_conditions']=result_conditions
 
-                if xprune!='yes':
+                if xprune!='yes' and no_run!='yes':
                    ii['result_conditions']=scon
                    ii['prune_invert_add_iters']=prune_invert_add_iters
 
@@ -2148,8 +2166,6 @@ def run(i):
                 rrr=copy.deepcopy(r)
 
                 sols=r.get('solutions',[])
-
-#                ck.save_json_to_file({'json_file':'d:\\xyz1.json','dict':sols})
 
                 failed_cases=r.get('failed_cases',[])
                 if xprune!='yes' and len(failed_cases)>0:
@@ -2188,7 +2204,7 @@ def run(i):
                           points2.append(kk)
 
              # Prepare some meta
-             if xprune!='yes':
+             if xprune!='yes' and no_run!='yes':
                 # Prepare meta
                 pif=pi.get('features',{})
 
@@ -2596,9 +2612,15 @@ def run(i):
                    rx=ck.access(ii)
                    if rx['return']>0: return rx
 
+          if no_run=='yes':
+             rrr['original_target_exe']=target_exe_0
+
+          rrr['scenario_desc']=sdesc
+          rrr['subscenario_desc']=ssdesc
+
           ################################################################################
           # Clean temporal directory and entry
-          if ktmp!='yes':
+          if ktmp!='yes' and no_run!='yes':
              if o=='con':
                 ck.out('')
                 ck.out('Removing temporal directory '+ftmp_dir+' ...')

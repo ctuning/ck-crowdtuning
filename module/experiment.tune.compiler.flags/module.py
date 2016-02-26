@@ -849,14 +849,6 @@ def crowdsource(i):
        rr=ck.access(ii)
        if rr['return']>0: return rr
 
-
-
-
-
-
-
-
-
     rr['platform_info']=pi
 
     return rr
