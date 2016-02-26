@@ -126,7 +126,7 @@ def crowdsource(i):
 
        # Try to generate at least one experimental pack!
        n=0
-       nm=10
+       nm=16
 
        success=False
        while n<nm and not success:
