@@ -12,6 +12,8 @@
   "developer_webpage": "http://fursin.net", 
   "license": "See CK LICENSE.txt for licensing details",
   "module_deps": {
+    "env": "9b9b3208ac44b891" ,
+    "platform.os":"41e31cc4496b8a8e",
     "program.optimization": "27bc42ee449e880e"
   },
   "tags": [
@@ -19,14 +21,7 @@
     "experiments", 
     "program optimization" 
   ],
-  "deps": {
-    "compiler": {
-      "local": "yes", 
-      "sort": 10,
-      "tags": "compiler,lang-c"
-    } 
-  },
-  "module_deps": {
-    "env": "9b9b3208ac44b891" 
-  } 
+  "scenarios": [
+    "experiment.tune.compiler.flags.llvm.e"
+  ]
 }

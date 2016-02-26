@@ -38,12 +38,7 @@ def crowdsource(i):
     """
     Input:  {
               (email)             - email or person UOA
-              (features)          - remote device features
-              (features_uoa_list) - remote device features UOA list:
-                                       * platform_uoa
-                                       * platform_os_uoa
-                                       * platform_cpu_uoa
-                                       * platform_gpu_uoa
+              (platform_features) - remote device platform features
             }
 
     Output: {
@@ -55,6 +50,7 @@ def crowdsource(i):
     """
 
     import os
+    from random import randint
 
     curdir=os.getcwd()
 
@@ -68,27 +64,71 @@ def crowdsource(i):
     tdid=''
     hos=''
 
-    # Check available compilers
-    if o=='con':
-       ck.out(line)
-       ck.out('Resolving compiler dependencies ...')
-       ck.out('')
+    scenarios=cfg['scenarios']
+    ls=len(scenarios)
 
-    sdeps=cfg['deps']
+    print (cfg['module_deps'])
 
-    ii={'action':'resolve',
-        'module_uoa':cfg['module_deps']['env'],
-        'host_os':hos,
-        'target_os':tos,
-        'device_id':tdid,
-        'deps':sdeps,
-        'random':'yes',
-        'add_customize':'yes',
+    # Prepare platform info
+    ii={'action':'detect',
+        'module_uoa':cfg['module_deps']['platform.os'],
+        'skip_info_collection':'yes',
         'out':oo}
-    rx=ck.access(ii)
-    if rx['return']>0: return rx
+    pi=ck.access(ii)
+    if pi['return']>0: return pi
+    del(pi['return'])
 
-    sdeps=rx['deps'] # Update deps (add UOA)
+    # Merge with remote device platform features
+    pf=i.get('platform_features',{})
+    r=ck.merge_dicts({'dict1':pi['features'], 'dict2':pf})
+    if r['return']>0: return r
+
+    pf['features']=r['dict1']
+
+    ck.save_json_to_file({'json_file':'/tmp/xyz1.json','dict':pi})
+
+
+    return {'return':1, 'error':'not completed'}
+#    print (pi)
+#    exit(1)
+
+
+
+    # Try to generate at least one experimental pack!
+    n=0
+    nm=10
+
+    success=False
+    while n<nm and not success:
+       n+=1
+
+       # select scenario randomly
+       scenario=scenarios[randint(0,ls-1)]
+
+       ii={'action':'crowdsource',
+           'module_uoa':scenario,
+           'target_os':tos,
+           'local':'yes',
+           'quiet':'yes',
+           'iterations':1,
+           'once':'yes',
+           'out':oo}
+       r=ck.access(ii)
+       if r['return']>0: return r
+       if r['return']==0:
+          success=True
+
+
+
+
+    if not success:
+       return {'return':1, 'error':'could not create any valid expeirmental pack for your mobile - possibly internal error! Please, contact authors'}
+
+
+
+
+
+    # Prepare random pipeline
 
     import json
     print (json.dumps(sdeps, indent=2))
