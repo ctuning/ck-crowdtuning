@@ -146,6 +146,7 @@ def crowdsource(i):
               'iterations':1,
               'platform_info':pic,
               'once':'yes',
+              'parametric_flags':'yes',
 #              'static':'yes',
 #              'program_uoa':'*susan',
               'no_run':'yes',
