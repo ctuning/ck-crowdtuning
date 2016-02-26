@@ -18,5 +18,15 @@
     "crowdsource-via-mobile", 
     "experiments", 
     "program optimization" 
-  ]
+  ],
+  "deps": {
+    "compiler": {
+      "local": "yes", 
+      "sort": 10,
+      "tags": "compiler,lang-c"
+    } 
+  },
+  "module_deps": {
+    "env": "9b9b3208ac44b891" 
+  } 
 }

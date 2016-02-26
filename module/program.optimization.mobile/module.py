@@ -12,6 +12,7 @@ work={} # Will be updated by CK (temporal data)
 ck=None # Will be updated by CK (initialized CK kernel) 
 
 # Local settings
+line='********************************************************************'
 
 ##############################################################################
 # Initialize module
@@ -54,6 +55,53 @@ def crowdsource(i):
     """
 
     import os
+
+    curdir=os.getcwd()
+
+    # Setting output
+    o=i.get('out','')
+    oo=''
+    if o=='con': oo='con'
+
+    # Platform
+    tos='android19-arm'
+    tdid=''
+    hos=''
+
+    # Check available compilers
+    if o=='con':
+       ck.out(line)
+       ck.out('Resolving compiler dependencies ...')
+       ck.out('')
+
+    sdeps=cfg['deps']
+
+    ii={'action':'resolve',
+        'module_uoa':cfg['module_deps']['env'],
+        'host_os':hos,
+        'target_os':tos,
+        'device_id':tdid,
+        'deps':sdeps,
+        'random':'yes',
+        'add_customize':'yes',
+        'out':oo}
+    rx=ck.access(ii)
+    if rx['return']>0: return rx
+
+    sdeps=rx['deps'] # Update deps (add UOA)
+
+    import json
+    print (json.dumps(sdeps, indent=2))
+    exit(1)
+
+
+
+
+
+
+
+
+
 
     email=i.get('email','')
     ft=i.get('features','')
