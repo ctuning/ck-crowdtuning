@@ -196,8 +196,19 @@ def crowdsource(i):
                 cuid=r['data_uid'] # crowd experiment identifier
                 rr['crowd_uid']=cuid
 
-                rr['desc']=rrr.get('scenario_desc','')
-                rr['desc1']=rrr.get('subscenario_desc','')
+                x=lio.get('characteristics',{}).get('compiler',{}).get('joined_compiler_flags','')
+
+                dsc='Scenario: '+rrr.get('scenario_desc','')+'\n'
+                dsc+='Sub-scenario: '+rrr.get('subscenario_desc','')+'\n'
+                dsc+='Benchmark/codelet: '+choices.get('data_uoa','')+'\n'
+                dsc+='CMD key: '+choices.get('cmd_key','')+'\n'
+                dsc+='Dataset: '+choices.get('dataset_uoa','')+'\n'
+                dsc+='Dataset file: '+choices.get('dataset_file','')+'\n'
+                dsc+='Optimizations:\n'
+                dsc+='* OpenCl tuning: not used\n'
+                dsc+='* Compiler flags: -O3 vs '+x+'\n'
+                
+                rr['desc']=dsc
 
                 if o=='con':
                    ck.out('')
