@@ -1513,7 +1513,11 @@ def run(i):
     if iterations=='': iterations=30
     iterations=int(iterations)
 
+    # Turn no state check by default!
     nsc=i.get('no_state_check','')
+    xsc=i.get('state_check','')
+    if xsc=='yes': nsc='no'
+    if nsc=='': nsc='yes'
 
     cat=i.get('calibration_time','')
     if cat=='': cat=10.0
