@@ -183,6 +183,9 @@ def crowdsource(i):
 
              else:
                 # Prepare pack
+                ed=rrr.get('experiment_desc',{})
+                choices=ed.get('choices',{})
+
                 d={'experiment_uoa':ruid}
 
                 ii={'action':'add',
@@ -239,9 +242,6 @@ def crowdsource(i):
 
                    if copied:
                       # Check dataset files
-                      ed=rrr.get('experiment_desc',{})
-                      choices=ed.get('choices',{})
-
                       duoa=choices.get('dataset_uoa','')
                       dfile=choices.get('dataset_file','')
 
