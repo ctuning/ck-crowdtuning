@@ -85,7 +85,7 @@ def crowdsource(i):
 
     pf['features']=r['dict1']
 
-    ck.save_json_to_file({'json_file':'/tmp/xyz1.json','dict':pi})
+    ck.save_json_to_file({'json_file':'/tmp/xyz1.json','dict':pi, 'sort_keys':'yes'})
 
 
     return {'return':1, 'error':'not completed'}
