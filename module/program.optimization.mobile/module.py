@@ -215,21 +215,16 @@ def crowdsource(i):
                 rr['desc']=dsc
 
                 deps=lio.get('dependencies',{})
-                raw_input('xyz')
                 for kdp in deps:
-                    raw_input('xyz')
                     dp=deps[kdp]
                     z=dp.get('cus',{})
                     dl=z.get('dynamic_lib','')
                     pl=z.get('path_lib','')
-                    print (dl)
 
                     if dl!='' and pl!='':
                        pidl=os.path.join(pl, dl)
-                       print (pidl)
                        if os.path.isfile(pidl):
                           pidl1=os.path.join(p, dl)
-                          print (pidl1)
                           try:
                              shutil.copyfile(pidl, pidl1)
                           except Exception as e: 
