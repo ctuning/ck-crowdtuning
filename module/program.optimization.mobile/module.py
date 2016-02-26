@@ -199,7 +199,7 @@ def crowdsource(i):
                 cuid=r['data_uid'] # crowd experiment identifier
                 rr['crowd_uid']=cuid
 
-                x=lio.get('characteristics',{}).get('compiler',{}).get('joined_compiler_flags','')
+                x=lio.get('characteristics',{}).get('compile',{}).get('joined_compiler_flags','')
 
                 dsc='Scenario: '+rrr.get('scenario_desc','')+'\n'
                 dsc+='Sub-scenario: '+rrr.get('subscenario_desc','')+'\n'
