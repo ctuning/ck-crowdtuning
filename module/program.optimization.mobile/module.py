@@ -315,9 +315,9 @@ def crowdsource(i):
                             rcm=rcm.replace('$#dataset_filename#$',dfile)
 
                             if rcm.find('$#')>=0 and rcm.find('#$')>=0:
-                               success=False
+                               copied=False
 
-                            if success:
+                            if copied:
                                calibrate='no'
                                if dd.get('run_vars',{}).get('CT_REPEAT_MAIN','')!='':
                                   calibrate='yes'
