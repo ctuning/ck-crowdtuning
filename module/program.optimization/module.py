@@ -1454,6 +1454,8 @@ def run(i):
     if sf=='':
        sf=os.path.join(curdir, fsolutions)
 
+    static=i.get('static','')
+
     xprune=i.get('prune','')
     prune_md5=i.get('prune_md5','')
     prune_invert=i.get('prune_invert','')
@@ -1612,6 +1614,7 @@ def run(i):
     if cd_uoa!='':
        ii['compiler_description_uoa']=cd_uoa
     if nsc!='': ii['no_state_check']=nsc
+    if static!='': ii['static']=static
     r=ck.access(ii)
     if r['return']>0: return r
 
