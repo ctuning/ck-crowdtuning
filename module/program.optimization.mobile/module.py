@@ -85,15 +85,6 @@ def crowdsource(i):
 
     pf['features']=r['dict1']
 
-    ck.save_json_to_file({'json_file':'/tmp/xyz1.json','dict':pi, 'sort_keys':'yes'})
-
-
-    return {'return':1, 'error':'not completed'}
-#    print (pi)
-#    exit(1)
-
-
-
     # Try to generate at least one experimental pack!
     n=0
     nm=10
@@ -124,15 +115,6 @@ def crowdsource(i):
     if not success:
        return {'return':1, 'error':'could not create any valid expeirmental pack for your mobile - possibly internal error! Please, contact authors'}
 
-
-
-
-
-    # Prepare random pipeline
-
-    import json
-    print (json.dumps(sdeps, indent=2))
-    exit(1)
 
 
 

@@ -8,10 +8,6 @@
       "desc": "classify solutions", 
       "for_web": "yes"
     }, 
-    "log": {
-      "desc": "log events", 
-      "for_web": "no"
-    }, 
     "compare_results": {
       "desc": "compare results (if similar or not)"
     }, 
@@ -73,7 +69,6 @@
   "file_checked_solutions": "checked-", 
   "file_solution_extension": "s-", 
   "license": "See CK LICENSE.txt for licensing details", 
-  "log_file_generate": "log.generate.txt", 
   "log_file_own": "log.crowdsourced.experiments.txt", 
   "log_file_results": "log.results.txt", 
   "log_file_test": "log.test.txt", 

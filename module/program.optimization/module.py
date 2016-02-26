@@ -81,60 +81,6 @@ def init(i):
 ##############################################################################
 # test remote access
 
-def log(i):
-    """
-    Input:  {
-              (file_name)   - file name
-              text          - text
-              (skip_header) - if 'yes', do not add header
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-
-              (path)       - path to log file
-            }
-
-    """
-
-    import os
-
-    fn=i.get('file_name','')
-    if fn=='':
-       fn=cfg['log_file_generate']
-
-    txt=i.get('text','')
-    sh=i.get('skip_header','')
-
-    r=ck.get_current_date_time({})
-    if r['return']>0: return r
-
-    s=''
-    if sh!='yes': s+='********************************\n'+r['iso_datetime']+' ; '
-    s+=txt
-
-    # Prepare logging
-    r=get_path({})
-    if r['return']>0: return r
-
-    px=r['path']
-
-    path=os.path.join(px, fn)
-
-    try:
-       with open(path, "a") as f:
-          f.write(s+'\n')
-       f.close()
-    except Exception as e: 
-       return {'return':1, 'error':'problem logging ('+format(e)+')'}
-
-    return {'return':0, 'path':path}
-
-##############################################################################
-# test remote access
-
 def test(i):
     """
     Input:  {
@@ -159,48 +105,14 @@ def test(i):
 
     email=i.get('email','')
 
-    r=log({'file_name':cfg['log_file_test'], 'text':email})
+    ii={'action':'log', 'module_uoa':cfg['module_deps']['experiment'], 'file_name':cfg['log_file_test'], 'text':email}
+    r=ck.access(ii)
     if r['return']>0: return r
 
     if o=='con':
        ck.out(status)
 
     return {'return':0, 'status':status}
-
-##############################################################################
-# get path to internal/local/tmp crowdsourcing files
-
-def get_path(i):
-    """
-    Input:  {
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-            }
-
-    """
-
-    import os
-
-    rps=os.environ.get(cfg['env_key_crowdsource_path'],'').strip()
-    if rps=='': 
-       # Get home user directory
-       from os.path import expanduser
-       home = expanduser("~")
-
-       # In the original version, if path to repos was not defined, I was using CK path,
-       # however, when installed as root, it will fail
-       # rps=os.path.join(work['env_root'],cfg['subdir_default_repos'])
-       # hence I changed to <user home dir>/CK
-       rps=os.path.join(home, cfg['crowdsource_path'])
-
-    if not os.path.isdir(rps):
-       os.makedirs(rps)
-
-    return {'return':0, 'path':rps}
 
 ##############################################################################
 # explore program optimizations
@@ -263,7 +175,8 @@ def submit_from_remote(i):
     if r['return']>0: return r
     y=r['string']
 
-    r=log({'file_name':cfg['log_file_results'], 'text':email+'\n'+x+'\n'+y+'\n'})
+    ii={'action':'log', 'module_uoa':cfg['module_deps']['experiment'], 'file_name':cfg['log_file_results'], 'text':email+'\n'+x+'\n'+y+'\n'}
+    r=ck.access(ii)
     if r['return']>0: return r
 
     status='Successfully recorded!'
@@ -1220,6 +1133,8 @@ def initialize(i):
               (exchange_subrepo)           - if remote, remote repo UOA
 
               (force_platform_name)        - if !='', use this for platform name
+
+              (skip_info_collection)       - if 'yes', skip info collection - useful when running scenarios remotly for mobile devices
             }
 
     Output: {
@@ -1263,6 +1178,8 @@ def initialize(i):
 
     sw=i.get('skip_welcome','')
 
+    sic=i.get('skip_info_collection','')
+
     #**************************************************************************************************************
     # Welcome info
     if o=='con' and (i.get('welcome','')=='yes' or (quiet!='yes' and sw!='yes')):
@@ -1274,7 +1191,8 @@ def initialize(i):
           r=ck.inp({'text':'Press Enter to continue'})
 
     # Prepare log
-    r=log({'file_name':cfg['log_file_own'], 'text':''})
+    ii={'action':'log', 'module_uoa':cfg['module_deps']['experiment'], 'file_name':cfg['log_file_own'], 'text':''}
+    r=ck.access(ii)
     if r['return']>0: return r
     p=r['path']
 
@@ -1355,6 +1273,7 @@ def initialize(i):
         'exchange':exc,
         'exchange_repo':er,
         'exchange_subrepo':esr,
+        'skip_info_collection':sic,
         'force_platform_name':fpn}
     rpp=ck.access(ii)
     if rpp['return']>0: return rpp
@@ -1692,7 +1611,8 @@ def run(i):
        ck.out('')
        ck.out(x+' ...')
 
-       rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':x+'\n'})
+       gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':x+'\n'}
+       rx=ck.access(gg)
     else:
        ################################################################################
        # Continue
@@ -1884,7 +1804,8 @@ def run(i):
           ' * Existing solutions:       '+str(len(sols))+'\n' \
           ' * Number of iterations:     '+str(iterations)+'\n'+lx
 
-       r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':lx})
+       gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':lx}
+       r=ck.access(gg)
        if r['return']>0: return r
 
        # ***************************************************************** FIRST EXPERIMENT !!!!!!!!!!!!!!
@@ -1954,7 +1875,8 @@ def run(i):
 
        r=ck.access(ii)
        if r['return']>0: 
-          rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'   FAILURE: '+r['error']+'\n'})
+          gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'   FAILURE: '+r['error']+'\n'}
+          rx=ck.access(gg)
           return r
 
        rrr=copy.deepcopy(r)
@@ -1968,7 +1890,8 @@ def run(i):
           ck.out('')
           ck.out(x+' ...')
 
-          rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':x+'\n'})
+          gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':x+'\n'}
+          rx=ck.access(gg)
        else:
           # get flat dict from last stat analysis to calculate improvements of all characteristics
           fdfi=r.get('last_stat_analysis',{}).get('dict_flat',{})
@@ -1999,7 +1922,8 @@ def run(i):
              ck.out('')
              ck.out(x+' ...')
 
-             rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':x+'\n'})
+             gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':x+'\n'}
+             rx=ck.access(gg)
           else:
              # Check if need to run extra experiments
              # (for example when crowdsourcing program benchmarking or compiler bug detection,
@@ -2014,7 +1938,8 @@ def run(i):
              # Load default point info
              r=ck.access(iii)
              if r['return']>0: 
-                rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'   FAILURE: '+r['error']+'\n'})
+                gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'   FAILURE: '+r['error']+'\n'}
+                rx=ck.access(gg)
                 return r
 
              results1=r.get('points',{})
@@ -2070,7 +1995,8 @@ def run(i):
                    ck.out('')
                    ck.out(x+' ...')
 
-                   rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':x+'\n'})
+                   gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':x+'\n'}
+                   rx=ck.access(gg)
 
                    return {'return':0}
                 else:
@@ -2211,7 +2137,8 @@ def run(i):
 
                 r=ck.access(ii)
                 if r['return']>0: 
-                   rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'   FAILURE: '+r['error']+'\n'})
+                   gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'   FAILURE: '+r['error']+'\n'}
+                   rx=ck.access(gg)
                    return r
 
                 rrr=copy.deepcopy(r)
@@ -2236,7 +2163,8 @@ def run(i):
                        sfc+='     relaxed replay: '+repl+'\n\n'
 
                    if sfc!='':
-                      rx=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'\n FAILED CASES:\n'+sfc+'\n'})
+                      gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':'\n FAILED CASES:\n'+sfc+'\n'}
+                      rx=ck.access(gg)
 
 #               If no frontier, points will not be added, so will not use it
 #                ri=r['recorded_info']
@@ -2405,7 +2333,8 @@ def run(i):
                             ck.out('')
                             ck.out(report)
 
-                         r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report})
+                         gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report}
+                         r=ck.access(gg)
 
                          report=''
 
@@ -2435,7 +2364,8 @@ def run(i):
                          rx=ck.access(ii)
                          if rx['return']>0: return rx
 
-                         ry=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':rx.get('report','')})
+                         gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':rx.get('report','')}
+                         ry=ck.access(gg)
 
                          # removing pruning experiment entry if needed
                          if kexp!='yes':
@@ -2611,7 +2541,8 @@ def run(i):
                    ck.out('')
                    ck.out(report)
 
-                r=log({'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report})
+                gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report}
+                r=ck.access(gg)
 
                 # Pack solution(s) if new ****************************************************************
                 ps=''
