@@ -76,8 +76,8 @@
     "##characteristics#compile#obj_size#$#obj#$_imp"
   ], 
   "improvements_keys": [
-    "##characteristics#run#execution_time_kernel_0#$#obj#$", 
-    "##characteristics#compile#obj_size#$#obj#$_imp" 
+    "##characteristics#compile#obj_size#$#obj#$_imp",
+    "##characteristics#run#execution_time_kernel_0#$#obj#$" 
   ], 
   "license": "See CK LICENSE.txt for licensing details", 
   "module_deps": {
@@ -91,8 +91,8 @@
     "soft": "5e1100048ab875d7"
   }, 
   "original_keys": [
-    "##characteristics#run#execution_time_kernel_0#$#obj#$", 
-    "##characteristics#compile#obj_size#$#obj#$"
+    "##characteristics#compile#obj_size#$#obj#$",
+    "##characteristics#run#execution_time_kernel_0#$#obj#$"
   ], 
   "plot": {
     "add_x_loop": "no", 
