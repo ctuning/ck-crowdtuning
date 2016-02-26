@@ -209,6 +209,7 @@ def crowdsource(i):
                 dsc+='Dataset file: '+choices.get('dataset_file','')+'\n'
                 dsc+='Optimizations:\n'
                 dsc+='* OpenCl tuning: not used\n'
+                dsc+='* Compiler description: '+choices.get('compiler_description_uoa','')+'\n'
                 dsc+='* Compiler flags: -O3 vs '+x+'\n'
                 
                 rr['desc']=dsc
