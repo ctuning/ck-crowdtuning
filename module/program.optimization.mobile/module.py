@@ -273,7 +273,7 @@ def crowdsource(i):
                       ck.out(' * '+target_exe_0)
                       ck.out(' * '+target_exe_1)
 
-                   raw_input('xyz')
+#                   raw_input('xyz')
 
                    te0=os.path.join(ptmp, target_exe_0)
                    te1=os.path.join(ptmp, target_exe_1)
