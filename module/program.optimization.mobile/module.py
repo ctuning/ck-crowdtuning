@@ -70,7 +70,7 @@ def crowdsource(i):
 
     email=i.get('email','')
 
-    ruoa=u.get('record_repo_uoa','')
+    ruoa=i.get('record_repo_uoa','')
     if ruoa=='': ruoa='upload'
 
     # Check if processing started experiments
