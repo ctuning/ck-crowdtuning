@@ -304,6 +304,17 @@ def crowdsource(i):
                       pass
 
                    if copied:
+                      # clean dirs
+                      try:
+                         shutil.rmtree(target_path_0, ignore_errors=True)
+                         shutil.rmtree(target_path_1, ignore_errors=True)
+                      except Exception as e: 
+                         if o=='con':
+                            ck.out('')
+                            ck.out('WARNING: can\'t fully erase tmp dir')
+                            ck.out('')
+                         pass
+
                       if o=='con':
                          ck.out('Copying datasets ...')
 
