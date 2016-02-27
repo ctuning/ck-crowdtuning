@@ -1638,8 +1638,9 @@ def run(i):
        if no_run=='yes':
           pipeline['no_run']='yes'
           pipeline['add_rnd_extension_to_bin']='yes'
+          pipeline['add_save_extension_to_bin']='yes'
           pipeline['skip_device_info']='yes'
-          pipeline['no_clean']='yes'
+#          pipeline['no_clean']='yes'
           rep=1
 
        state=r['state']

@@ -270,6 +270,10 @@ def crowdsource(i):
                 if ptmp!='' and target_exe_0!='' and target_exe_1!='' and not (rcm.find('$#')>=0 or rcm.find('#$')>=0 or rcm.find('<')>=0):
                    if o=='con':
                       ck.out('Copying executables from '+ptmp+' ...')
+                      ck.out(' * '+target_exe_0)
+                      ck.out(' * '+target_exe_1)
+
+                   raw_input('xyz')
 
                    te0=os.path.join(ptmp, target_exe_0)
                    te1=os.path.join(ptmp, target_exe_1)
