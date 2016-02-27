@@ -70,6 +70,9 @@ def crowdsource(i):
 
     email=i.get('email','')
 
+    ruoa=u.get('record_repo_uoa','')
+    if ruoa=='': ruoa='upload'
+
     # Check if processing started experiments
     cuid=i.get('crowd_uid','')
     if cuid!='':
@@ -195,6 +198,7 @@ def crowdsource(i):
 
                 ii={'action':'add',
                     'module_uoa':work['self_module_uid'],
+                    'repo_uoa':ruoa,
                     'dict':d}
                 r=ck.access(ii)
                 if r['return']>0: return r
