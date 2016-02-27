@@ -1638,7 +1638,7 @@ def run(i):
        if no_run=='yes':
           pipeline['no_run']='yes'
           pipeline['add_rnd_extension_to_bin']='yes'
-          pipeline['add_save_extension_to_bin']='yes'
+#          pipeline['add_save_extension_to_bin']='yes'
           pipeline['skip_device_info']='yes'
 #          pipeline['no_clean']='yes'
           rep=1
@@ -1858,6 +1858,8 @@ def run(i):
 
            "tmp_dir":tmp_dir,
 
+           "skip_clean_after":"yes",
+
            "record":"yes",
            "record_uoa":euoa0,
            "record_repo":eruoa,
@@ -1907,6 +1909,8 @@ def run(i):
        lio=r['last_iteration_output']
        fail=lio.get('fail','')
        target_exe_0=''
+       target_path_0=''
+       target_path_1=''
        if fail=='yes':
           unexpected=True
           x='   WARNING: pipeline execution failed ('+lio.get('fail_reason','')+')'
@@ -1925,6 +1929,7 @@ def run(i):
           ftmp_dir=state.get('cur_dir','')
 
           target_exe_0=state.get('target_exe','')
+          target_path_0=ftmp_dir
 
           ft=lio.get('features',{})
 
@@ -2125,6 +2130,15 @@ def run(i):
 
                     'out':oo
                    }
+
+                if no_run=='yes':   # during crowdtuning for mobile phones need to save original exe
+                   import tempfile
+                   xfd, xfn=tempfile.mkstemp(suffix='', prefix='tmp-ck-')
+                   os.close(xfd)
+                   os.remove(xfn)
+                   target_path_1=os.path.basename(xfn)
+
+                   ii['tmp_dir']=target_path_1
 
                 if i.get('save_to_file','')!='':
                    ii['save_to_file']=i['save_to_file']
@@ -2618,6 +2632,8 @@ def run(i):
 
           if no_run=='yes':
              rrr['original_target_exe']=target_exe_0
+             rrr['original_path_exe']=target_path_0
+             rrr['new_path_exe']=target_path_1
 
           rrr['scenario_desc']=sdesc
           rrr['subscenario_desc']=ssdesc

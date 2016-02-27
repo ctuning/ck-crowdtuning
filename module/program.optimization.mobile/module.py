@@ -149,7 +149,9 @@ def crowdsource(i):
               'skip_collaborative':'yes',
               'parametric_flags':'yes',
 #              'static':'yes',
-#              'program_uoa':'*susan',
+              'program_uoa':'*susan',
+              'cmd_key':'edges',
+              'dataset_uoa':'image-pgm-0001',
               'no_run':'yes',
               'keep_experiments':'yes',
               'new':'yes',
@@ -237,11 +239,20 @@ def crowdsource(i):
                    ck.out('  Crowd UID: '+cuid)
 
                 # Copying binaries and inputs here
-                sd=lio.get('state',{})
-                ptmp=sd.get('cur_dir','')
-
                 target_exe_0=rrr.get('original_target_exe','')
+                target_path_0=rrr.get('original_path_exe','')
                 target_exe_1=lio.get('state',{}).get('target_exe','')
+                tp1=rrr.get('new_path_exe','')
+
+                tp0=os.path.dirname(target_path_0)
+                target_path_1=os.path.join(tp0,tp1)
+
+                if o=='con':
+                   ck.out('')
+                   ck.out('Copying executables:')
+                   ck.out(' * '+target_path_0+'  /  '+target_exe_0)
+                   ck.out(' * '+target_path_1+'  /  '+target_exe_1)
+                   ck.out('')
 
                 duoa=choices.get('dataset_uoa','')
                 dfile=choices.get('dataset_file','')
@@ -267,16 +278,11 @@ def crowdsource(i):
                 if o=='con':
                    ck.out('Cmd: '+rcm)
 
-                if ptmp!='' and target_exe_0!='' and target_exe_1!='' and not (rcm.find('$#')>=0 or rcm.find('#$')>=0 or rcm.find('<')>=0):
-                   if o=='con':
-                      ck.out('Copying executables from '+ptmp+' ...')
-                      ck.out(' * '+target_exe_0)
-                      ck.out(' * '+target_exe_1)
+                if target_path_0!='' and target_path_1!='' and target_exe_0!='' and target_exe_1!='' and \
+                   not (rcm.find('$#')>=0 or rcm.find('#$')>=0 or rcm.find('<')>=0):
 
-#                   raw_input('xyz')
-
-                   te0=os.path.join(ptmp, target_exe_0)
-                   te1=os.path.join(ptmp, target_exe_1)
+                   te0=os.path.join(target_path_0, target_exe_0)
+                   te1=os.path.join(target_path_1, target_exe_1)
 
                    nte0=os.path.join(p, target_exe_0)
                    nte1=os.path.join(p, target_exe_1)
@@ -398,7 +404,7 @@ def crowdsource(i):
                    if o=='con':
                       ck.out('')
                       ck.out('WARNING: some files are missing - removing crowd entry ('+cuid+') ...')
-                   
+
                    ii={'action':'rm',
                        'module_uoa':work['self_module_uid'],
                        'data_uoa':cuid}
