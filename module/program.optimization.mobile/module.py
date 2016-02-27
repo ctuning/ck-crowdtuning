@@ -150,6 +150,7 @@ def crowdsource(i):
               'parametric_flags':'yes',
 #              'static':'yes',
               'program_uoa':'*susan',
+              'any_flag_tags':'arm-specific',
               'cmd_key':'edges',
               'dataset_uoa':'image-pgm-0001',
               'no_run':'yes',
