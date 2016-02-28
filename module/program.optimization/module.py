@@ -618,6 +618,8 @@ def add_solution(i):
               return       - return code =  0, if successful
                                          >  0, if error
               (error)      - error text if return > 0
+
+              (recorded) - if 'yes', submitted solution was recorded
             }
 
     """
@@ -699,7 +701,7 @@ def add_solution(i):
 
     p=r['path']
     d=r['dict']
-    
+
     # Unpack new solution (may be pruned later)
     if suid!='' and ps!='':
        p1=os.path.join(p, suid)
@@ -828,7 +830,7 @@ def add_solution(i):
                   vv=int(vv)
                   vv+=1
                   osol['iterations']=vv
-                  
+
                   found=True
                   break
 
@@ -1061,9 +1063,13 @@ def add_solution(i):
     r=ck.access(ii)
     if r['return']>0: return r
 
+    rr={'return':0}
 
+    x=classification.get(suid,{})
+    if len(x)>0:
+       rr['recorded']='yes'
 
-    return {'return':0}
+    return rr
 
 ##############################################################################
 # initialize experiment
@@ -2318,6 +2324,8 @@ def run(i):
                       if no_run=='yes':
                          rrr['off_line']={'solutions':[sol],
                                           'module_uoa':work['self_module_uid'],
+                                          'repo_uoa':er,
+                                          'remote_repo_uoa':esr,
                                           'scenario_module_uoa':smuoa,
                                           'meta':meta,
                                           'meta_extra':emeta,

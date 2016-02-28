@@ -81,22 +81,133 @@ def crowdsource(i):
     # Check if processing started experiments
     cuid=i.get('crowd_uid','')
     if cuid!='':
+       ###################################################################################################################
        #Log
        r=ck.access({'action':'log',
                     'module_uoa':cfg['module_deps']['experiment'],
                     'text':'Finishing crowd experiment: '+cuid+'\n'})
        if r['return']>0: return r
 
+       # Load info
+       r=ck.access({'action':'load',
+                    'module_uoa':work['self_module_uid'],
+                    'data_uoa':cuid})
+       if r['return']>0: return r
+       d=r['dict']
 
-       ck.save_json_to_file({'json_file':'/home/fursin/xyz1.json','dict',i})
+       euoa=d['experiment_uoa']
+       ol=d['off_line']
 
-       
+       scenario_uoa=ol['scenario_module_uoa']
+       condition_objective='#'+ol['meta']['objective']
 
+       xstatus=''
 
-       rr['status']='Success!'
+       results=i.get('results',{})
+       if len(results)>0:
+          repeat=results.get('ct_repeat','')
+          if repeat=='': repeat=1
 
+          cpu_freq0=results.get('cpu_freq0',{})
+          cpu_freq1=results.get('cpu_freq1',{})
+
+          ch0=results.get('characteristics0',{})
+          ch1=results.get('characteristics1',{})
+
+          # TBD: improve stat analysis -> use CK module (here quick prototyping)
+          fch0min=-1
+          fch0max=-1
+          for q in ch0:
+              v=ch0[q]
+              if fch0min==-1 or v<fch0min:
+                 fch0min=v
+              if fch0max==-1 or v>fch0max:
+                 fch0max=v
+
+          var=(fch0max-fch0min)/fch0min
+
+          fch1min=-1
+          fch1max=-1
+          for q in ch1:
+              v=ch1[q]
+              if fch1min==-1 or v<fch1min:
+                 fch1min=v
+              if fch1max==-1 or v>fch1max:
+                 fch1max=v
+
+          impr=0.0
+          if fch1min!=0: impr=fch0min/fch1min
+
+          ol["meta_extra"]["cpu_cur_freq"]=cpu_freq1
+
+          sol=ol["solutions"][0]
+          sol["extra_meta"]["cpu_cur_freq"]=cpu_freq1
+
+          point=sol["points"][0]
+
+          point["characteristics"]["##characteristics#run#execution_time_kernel_0#min"]=fch0min
+          point["characteristics"]["##characteristics#run#repeat#min"]=repeat
+
+          point["improvements"]["##characteristics#run#execution_time_kernel_0#min_imp"]=impr
+
+#          Hack: don't write for now, otherwise most of the time ignored ...
+          var=-1
+          point["misc"]["##characteristics#run#execution_time_kernel_0#range_percent"]=var
+
+          # Get conditions from a scenario
+          r=ck.access({'action':'load',
+                       'module_uoa':cfg['module_deps']['module'],
+                       'data_uoa':scenario_uoa})
+          if r['return']>0: return r
+          ds=r['dict']
+
+          scon=ds.get('solution_conditions',[])
+          if len(scon)>0:
+             con=copy.deepcopy(point["characteristics"])
+             con.update(point["improvements"])
+             con.update(point["misc"])
+             # Hack
+             con["##characteristics#compile#md5_sum#min_imp"]=0
+
+             ii={'action':'check',
+                 'module_uoa':cfg['module_deps']['math.conditions'],
+                 'new_points':['0'],
+                 'results':[{'point_uid':'0', 'flat':con}],
+                 'conditions':scon,
+                 'middle_key':condition_objective,
+                 'out':oo}
+             ry=ck.access(ii)
+             if ry['return']>0: return ry 
+
+             xdpoints=ry['points_to_delete']
+             if len(xdpoints)>0:
+                xstatus='*** Your explored solution is not better than existing ones (code 1) ***\n' 
+                if o=='con':
+                   ck.out('')
+                   ck.out('    WARNING: conditions on characteristics were not met!')
+             else:
+                # Submitting solution
+                ii=copy.deepcopy(ol)
+                ii['action']='add_solution'
+                ii['module_uoa']=cfg['module_deps']['program.optimization']
+                rx=ck.access(ii)
+                if rx['return']>0: return rx
+
+                if rx.get('recorded','')=='yes':
+                   xstatus='*** Your explored solution is BETTER than existing and was RECORDED! ***\n'
+                else:
+                   xstatus='*** Your explored solution is not better than existing ones (code 2) ***\n' 
+
+       status='Crowdsourced results from your mobile device were successfully processed by Collective Knowledge Aggregator!\n\n'+xstatus
+
+       if o=='con':
+          ck.out('')
+          ck.out(status)
+
+       rr['status']=status
 
     else:
+       ###################################################################################################################
        # Initialize platform
        tos='android19-arm'
        tdid=''
@@ -229,7 +340,7 @@ def crowdsource(i):
                 dsc+='* OpenCl tuning: not used\n'
                 dsc+='* Compiler description: '+choices.get('compiler_description_uoa','')+'\n'
                 dsc+='* Compiler flags: -O3 vs '+x+'\n'
-                
+
                 rr['desc']=dsc
 
                 deps=lio.get('dependencies',{})
@@ -247,7 +358,7 @@ def crowdsource(i):
                              shutil.copyfile(pidl, pidl1)
                           except Exception as e: 
                              pass
-                          
+
                 if o=='con':
                    ck.out('')
                    ck.out('  Crowd UID: '+cuid)
