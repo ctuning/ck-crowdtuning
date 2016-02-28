@@ -576,42 +576,44 @@ def show(i):
 
                     ns=qqm.get('solutions','')
 
-                    h+='<tr>'
-                    h+=' <td>'+str(iq)+'</td>'
-                    h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">Click to see solutions ('+duid+')</a>\n'
+                    if ns!='' and int(ns)>0:
 
-                    h+=' <td align="center">'
-                    if url5!='': h+='<a href="'+url5+scenario+'_'+duid+'">Wiki</a>'
-                    h+='\n'
+                       h+='<tr>'
+                       h+=' <td>'+str(iq)+'</td>'
+                       h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">Click to see solutions ('+duid+')</a>\n'
 
-                    h+=' <td align="center">'+str(ns)+'</td>'
+                       h+=' <td align="center">'
+                       if url5!='': h+='<a href="'+url5+scenario+'_'+duid+'">Wiki</a>'
+                       h+='\n'
 
-                    dv=qqm.get('max_improvement_first_key',None)
-                    y=''
-                    if dv!=None:
-                       try:
-                          y=('%.2f' % dv)
-                       except Exception as e: 
-                          pass
+                       h+=' <td align="center">'+str(ns)+'</td>'
 
-                    h+=' <td align="center">'+y+'</td>'
-                    for k in pr:
-                        qd=k.get('desc','')
-                        qi=k.get('id','')
-                        qr=k.get('ref_uid','')
-                        qm=k.get('ref_module_uoa','')
+                       dv=qqm.get('max_improvement_first_key',None)
+                       y=''
+                       if dv!=None:
+                          try:
+                             y=('%.2f' % dv)
+                          except Exception as e: 
+                             pass
 
-                        x=dm.get(qi,'')
-                        if x!='' and qm!='' and qr!='':
-                           xuid=dm.get(qr,'')
-                           if xuid!='':
-                              x='<a href="'+url0+'wcid='+qm+':'+xuid+'">'+x+'</a>'
+                       h+=' <td align="center">'+y+'</td>'
+                       for k in pr:
+                           qd=k.get('desc','')
+                           qi=k.get('id','')
+                           qr=k.get('ref_uid','')
+                           qm=k.get('ref_module_uoa','')
 
-                        h+='  <td>'
-                        h+='   '+x
-                        h+='  </td>'
+                           x=dm.get(qi,'')
+                           if x!='' and qm!='' and qr!='':
+                              xuid=dm.get(qr,'')
+                              if xuid!='':
+                                 x='<a href="'+url0+'wcid='+qm+':'+xuid+'">'+x+'</a>'
 
-                    h+='</tr>'
+                           h+='  <td>'
+                           h+='   '+x
+                           h+='  </td>'
+
+                       h+='</tr>'
 
                 h+='</table>\n'
                 h+='</center>\n'
