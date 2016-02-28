@@ -60,6 +60,7 @@ def crowdsource(i):
     import copy
     import shutil
     import zipfile
+    import json
 
     # Setting output
     o=i.get('out','')
@@ -82,12 +83,6 @@ def crowdsource(i):
     cuid=i.get('crowd_uid','')
     if cuid!='':
        ###################################################################################################################
-       #Log
-       r=ck.access({'action':'log',
-                    'module_uoa':cfg['module_deps']['experiment'],
-                    'text':'Finishing crowd experiment: '+cuid+'\n'})
-       if r['return']>0: return r
-
        # Load info
        r=ck.access({'action':'load',
                     'module_uoa':work['self_module_uid'],
@@ -104,7 +99,15 @@ def crowdsource(i):
        xstatus=''
 
        results=i.get('results',{})
+
+       #Log
+       r=ck.access({'action':'log',
+                    'module_uoa':cfg['module_deps']['experiment'],
+                    'text':'Finishing crowd experiment: '+cuid+' ('+json.dumps(results,indent=2,sort_keys=True)+')\n'})
+       if r['return']>0: return r
+
        if len(results)>0:
+
           repeat=results.get('ct_repeat','')
           if repeat=='': repeat=1
 
