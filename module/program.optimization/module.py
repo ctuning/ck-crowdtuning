@@ -2486,11 +2486,36 @@ def run(i):
                          sol['solution_uid']=suid # renew (otherwise deleted by pipeline)
                          sols.append(sol)
 
+                # Pack solution(s) if new ****************************************************************
+                ps=''
+                if len(points_to_add)>0:
+                   # Sort here 
+                   if la!='yes':
+                      # Packing new points
+                      if o=='con':
+                         ck.out('')
+                         ck.out('       Packing good points of solution(s) ...')
+
+                      # Add original points and remove delete ones
+                      ppoints=[]
+                      for q in points2:
+                          ppoints.append(q)
+                      for q in points2p: # add reference too to be able to reproduce result or find discriminating features!
+                          ppoints.append(q)
+
+                      rx=ck.access({'action':'pack',
+                                    'module_uoa':cfg['module_deps']['experiment'],
+                                    'data_uoa':euoa0,
+                                    'points':ppoints})
+                      if rx['return']>0: return rx
+                      ps=rx['file_content_base64']
+
                 # Draw reactions, if needed
                 if no_run=='yes':
                    rrr['original_target_exe']=target_exe_0
                    rrr['original_path_exe']=target_path_0
                    rrr['new_path_exe']=target_path_1
+                   rrr['off_line']['packed_solution']=ps
 
                 else:
                    if recrf!='':
@@ -2555,30 +2580,6 @@ def run(i):
 
                    gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report}
                    r=ck.access(gg)
-
-                   # Pack solution(s) if new ****************************************************************
-                   ps=''
-                   if len(points_to_add)>0:
-                      # Sort here 
-                      if la!='yes':
-                         # Packing new points
-                         if o=='con':
-                            ck.out('')
-                            ck.out('       Packing good points of solution(s) ...')
-
-                         # Add original points and remove delete ones
-                         ppoints=[]
-                         for q in points2:
-                             ppoints.append(q)
-                         for q in points2p: # add reference too to be able to reproduce result or find discriminating features!
-                             ppoints.append(q)
-
-                         rx=ck.access({'action':'pack',
-                                       'module_uoa':cfg['module_deps']['experiment'],
-                                       'data_uoa':euoa0,
-                                       'points':ppoints})
-                         if rx['return']>0: return rx
-                         ps=rx['file_content_base64']
 
                    # Add/update solution ********************************************************************
                    if replay!='yes' and len(sols)>0:
