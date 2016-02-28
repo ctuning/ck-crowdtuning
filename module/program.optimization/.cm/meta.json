@@ -47,10 +47,6 @@
       "desc": "show results via web service", 
       "for_web": "yes"
     }, 
-    "submit_from_remote": {
-      "desc": "submit results from remote device (for example, mobile phone)", 
-      "for_web": "yes"
-    }, 
     "test": {
       "desc": "test remote access", 
       "for_web": "yes"

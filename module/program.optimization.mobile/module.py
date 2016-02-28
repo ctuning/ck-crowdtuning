@@ -88,10 +88,12 @@ def crowdsource(i):
        if r['return']>0: return r
 
 
+       ck.save_json_to_file({'json_file':'/home/fursin/xyz1.json','dict',i})
+
+       
 
 
-
-
+       rr['status']='Success!'
 
 
     else:
@@ -196,10 +198,12 @@ def crowdsource(i):
 
              else:
                 # Prepare pack
+                ol=rrr['off_line']
                 ed=rrr.get('experiment_desc',{})
                 choices=ed.get('choices',{})
 
-                d={'experiment_uoa':ruid}
+                d={'experiment_uoa':ruid,
+                   'off_line':ol}
 
                 ii={'action':'add',
                     'module_uoa':work['self_module_uid'],

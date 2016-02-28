@@ -142,48 +142,6 @@ def explore(i):
     return {'return':0}
 
 ##############################################################################
-# submit results from remote device (for example, mobile phone)
-
-def submit_from_remote(i):
-    """
-    Input:  {
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-            }
-
-    """
-
-
-    import os
-
-    email=i.get('email','')
-    ft=i.get('features','')
-    if ft=='': ft={}
-    results=i.get('results','')
-    if results=='': results={}
-
-    # Logging
-    r=ck.dumps_json({'dict':results, 'skip_indent':'yes', 'sort_keys':'yes'})
-    if r['return']>0: return r
-    x=r['string']
-
-    r=ck.dumps_json({'dict':ft, 'skip_indent':'yes', 'sort_keys':'yes'})
-    if r['return']>0: return r
-    y=r['string']
-
-    ii={'action':'log', 'module_uoa':cfg['module_deps']['experiment'], 'file_name':cfg['log_file_results'], 'text':email+'\n'+x+'\n'+y+'\n'}
-    r=ck.access(ii)
-    if r['return']>0: return r
-
-    status='Successfully recorded!'
-
-    return {'return':0, 'status':status}
-
-##############################################################################
 # crowdsource program optimization
 
 def crowdsource(i):
@@ -648,9 +606,6 @@ def add_solution(i):
 
               solutions               - list of solutions (pre-existing and new with re-classification)
 
-              (classification)        - classification of solutions (active learning or online learning 
-                                        or online classification to avoid big data)
-
               (workload)              - workload dict to classify distinct optimizations
                                         (useful for collaborative machine learning and run-time adaptation)
 
@@ -677,8 +632,6 @@ def add_solution(i):
     ps=i.get('packed_solution','')
     sols=i.get('solutions',[])
     suid=i.get('solution_uid','')
-
-    sc=i.get('classification',{})
 
     ruoa=i.get('repo_uoa','')
     smuoa=i['scenario_module_uoa']
@@ -2224,7 +2177,7 @@ def run(i):
                           points2.append(kk)
 
              # Prepare some meta
-             if xprune!='yes' and no_run!='yes':
+             if xprune!='yes':
                 # Prepare meta
                 pif=pi.get('features',{})
 
@@ -2340,8 +2293,6 @@ def run(i):
                       if r['return']>0: return r
                       suid=r['data_uid'] # solution UID
 
-                      report='      New SOLUTION ('+suid+'):\n\n'+report
-
                       # Generate last touch UID
                       r=ck.gen_uid({})
                       if r['return']>0: return r
@@ -2364,8 +2315,23 @@ def run(i):
                       if user!='' and user!='-':
                          sol['user']=user
 
+                      if no_run=='yes':
+                         rrr['off_line']={'solutions':[sol],
+                                          'module_uoa':work['self_module_uid'],
+                                          'scenario_module_uoa':smuoa,
+                                          'meta':meta,
+                                          'meta_extra':emeta,
+                                          'solutions':sols,
+                                          'solution_uid':suid,
+                                          'workload':workload,
+                                          'iterations':iterations,
+                                          'first_key':ik0}
+
+                      else:
+                         report='      New SOLUTION ('+suid+'):\n\n'+report
+
                       # trying to prune (unless skiping)
-                      if sp!='yes':
+                      if sp!='yes' and no_run!='yes':
                          # Flash report
                          report=report+'\n    ****** Starting pruning new solution ... ******\n\n'
 
@@ -2521,121 +2487,122 @@ def run(i):
                          sols.append(sol)
 
                 # Draw reactions, if needed
-                if recrf!='':
-                   table_orig=[]
-                   table_new=[]
+                if no_run=='yes':
+                   rrr['original_target_exe']=target_exe_0
+                   rrr['original_path_exe']=target_path_0
+                   rrr['new_path_exe']=target_path_1
 
-                   si=0
-                   for s in range(0, len(sols)):
-                       sol=sols[s]
-                       si+=1
+                else:
+                   if recrf!='':
+                      table_orig=[]
+                      table_new=[]
 
-                       points=sol.get('points',[])
-                       for p in range(0, len(points)):
-                           point=points[p]
+                      si=0
+                      for s in range(0, len(sols)):
+                          sol=sols[s]
+                          si+=1
 
-                           # Check if reaction
-                           imp=point.get('improvements',{})
-                           ov=imp.get(ik0,0.0) # Here we put 0.0 even if None for a graph
+                          points=sol.get('points',[])
+                          for p in range(0, len(points)):
+                              point=points[p]
 
-                           rrf=point.get('reaction_raw_flat',{})
-                           nv=rrf.get(ik0,0.0) # Here we put 0.0 even if None for a graph
+                              # Check if reaction
+                              imp=point.get('improvements',{})
+                              ov=imp.get(ik0,0.0) # Here we put 0.0 even if None for a graph
 
-                           table_orig.append([si, ov])
-                           table_new.append([si, nv])
+                              rrf=point.get('reaction_raw_flat',{})
+                              nv=rrf.get(ik0,0.0) # Here we put 0.0 even if None for a graph
 
-                       d={
-                           "module_uoa":"graph",
+                              table_orig.append([si, ov])
+                              table_new.append([si, nv])
 
-                           "table":{"0": table_orig, "1":table_new},
+                          d={
+                              "module_uoa":"graph",
 
-                           "ignore_point_if_none":"yes",
+                              "table":{"0": table_orig, "1":table_new},
 
-                           "plot_type":"mpl_2d_bars",
+                              "ignore_point_if_none":"yes",
 
-                           "display_y_error_bar":"no",
+                              "plot_type":"mpl_2d_bars",
 
-                           "title":"Powered by Collective Knowledge",
+                              "display_y_error_bar":"no",
 
-                           "axis_x_desc":"Solution",
-                           "axis_y_desc":"Improvement ("+ik0+")",
+                              "title":"Powered by Collective Knowledge",
 
-                           "plot_grid":"yes",
+                              "axis_x_desc":"Solution",
+                              "axis_y_desc":"Improvement ("+ik0+")",
 
-                           "mpl_image_size_x":"12",
-                           "mpl_image_size_y":"6",
-                           "mpl_image_dpi":"100"
-                         }
+                              "plot_grid":"yes",
 
-                       rx=ck.save_json_to_file({'json_file':recrf, 'dict':d})
-                       if rx['return']>0: return rx
+                              "mpl_image_size_x":"12",
+                              "mpl_image_size_y":"6",
+                              "mpl_image_dpi":"100"
+                            }
 
-                # Report ****************************************************************
-                rrr['solutions']=sols
+                          rx=ck.save_json_to_file({'json_file':recrf, 'dict':d})
+                          if rx['return']>0: return rx
 
-                if len(sols)==0:
-                   report='      New solutions were not found...\n\n'+report
+                   # Report ****************************************************************
+                   rrr['solutions']=sols
 
-                # Finish report
-                if o=='con' and report!='':
-                   ck.out('')
-                   ck.out(report)
+                   if len(sols)==0:
+                      report='      New solutions were not found...\n\n'+report
 
-                gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report}
-                r=ck.access(gg)
+                   # Finish report
+                   if o=='con' and report!='':
+                      ck.out('')
+                      ck.out(report)
 
-                # Pack solution(s) if new ****************************************************************
-                ps=''
-                if len(points_to_add)>0:
-                   # Sort here 
-                   if la!='yes':
-                      # Packing new points
+                   gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':report}
+                   r=ck.access(gg)
+
+                   # Pack solution(s) if new ****************************************************************
+                   ps=''
+                   if len(points_to_add)>0:
+                      # Sort here 
+                      if la!='yes':
+                         # Packing new points
+                         if o=='con':
+                            ck.out('')
+                            ck.out('       Packing good points of solution(s) ...')
+
+                         # Add original points and remove delete ones
+                         ppoints=[]
+                         for q in points2:
+                             ppoints.append(q)
+                         for q in points2p: # add reference too to be able to reproduce result or find discriminating features!
+                             ppoints.append(q)
+
+                         rx=ck.access({'action':'pack',
+                                       'module_uoa':cfg['module_deps']['experiment'],
+                                       'data_uoa':euoa0,
+                                       'points':ppoints})
+                         if rx['return']>0: return rx
+                         ps=rx['file_content_base64']
+
+                   # Add/update solution ********************************************************************
+                   if replay!='yes' and len(sols)>0:
                       if o=='con':
                          ck.out('')
-                         ck.out('       Packing good points of solution(s) ...')
+                         ck.out('       Adding/updating solution(s) in repository ...')
 
-                      # Add original points and remove delete ones
-                      ppoints=[]
-                      for q in points2:
-                          ppoints.append(q)
-                      for q in points2p: # add reference too to be able to reproduce result or find discriminating features!
-                          ppoints.append(q)
-
-                      rx=ck.access({'action':'pack',
-                                    'module_uoa':cfg['module_deps']['experiment'],
-                                    'data_uoa':euoa0,
-                                    'points':ppoints})
+                      # Adding solution
+                      ii={'action':'add_solution',
+                          'module_uoa':work['self_module_uid'],
+                          'repo_uoa':er,
+                          'remote_repo_uoa':esr,
+                          'scenario_module_uoa':smuoa,
+                          'meta':meta,
+                          'meta_extra':emeta,
+                          'solutions':sols,
+                          'solution_uid':suid,
+                          'workload':workload,
+                          'packed_solution':ps,
+                          'iterations':iterations,
+                          'first_key':ik0,
+                          'out':oo}
+                      rx=ck.access(ii)
                       if rx['return']>0: return rx
-                      ps=rx['file_content_base64']
-
-                # Add/update solution ********************************************************************
-                if replay!='yes' and len(sols)>0:
-                   if o=='con':
-                      ck.out('')
-                      ck.out('       Adding/updating solution(s) in repository ...')
-
-                   # Adding solution
-                   ii={'action':'add_solution',
-                       'module_uoa':work['self_module_uid'],
-                       'repo_uoa':er,
-                       'remote_repo_uoa':esr,
-                       'scenario_module_uoa':smuoa,
-                       'meta':meta,
-                       'meta_extra':emeta,
-                       'solutions':sols,
-                       'solution_uid':suid,
-                       'workload':workload,
-                       'packed_solution':ps,
-                       'iterations':iterations,
-                       'first_key':ik0,
-                       'out':oo}
-                   rx=ck.access(ii)
-                   if rx['return']>0: return rx
-
-          if no_run=='yes':
-             rrr['original_target_exe']=target_exe_0
-             rrr['original_path_exe']=target_path_0
-             rrr['new_path_exe']=target_path_1
 
           rrr['scenario_desc']=sdesc
           rrr['subscenario_desc']=ssdesc
