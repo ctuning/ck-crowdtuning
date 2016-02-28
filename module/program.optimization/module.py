@@ -2523,7 +2523,8 @@ def run(i):
                    rrr['original_target_exe']=target_exe_0
                    rrr['original_path_exe']=target_path_0
                    rrr['new_path_exe']=target_path_1
-                   rrr['off_line']['packed_solution']=ps
+                   if 'off_line' in rrr:
+                      rrr['off_line']['packed_solution']=ps
 
                 else:
                    if recrf!='':
