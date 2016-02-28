@@ -154,6 +154,9 @@ def crowdsource(i):
           var=-1
           point["misc"]["##characteristics#run#execution_time_kernel_0#range_percent"]=var
 
+          sol["points"][0]=point
+          ol["solutions"][0]=sol
+
           # Get conditions from a scenario
           r=ck.access({'action':'load',
                        'module_uoa':cfg['module_deps']['module'],
@@ -181,7 +184,7 @@ def crowdsource(i):
 
              xdpoints=ry['points_to_delete']
              if len(xdpoints)>0:
-                xstatus='*** Your explored solution is not better than existing ones (code 1) ***\n' 
+                xstatus='*** Your explored solution is not better than existing ones (conditions are not met) ***\n' 
                 if o=='con':
                    ck.out('')
                    ck.out('    WARNING: conditions on characteristics were not met!')
@@ -190,14 +193,28 @@ def crowdsource(i):
                 ii=copy.deepcopy(ol)
                 ii['action']='add_solution'
                 ii['module_uoa']=cfg['module_deps']['program.optimization']
+                ii['repo_uoa']='upload' # Hack 
                 rx=ck.access(ii)
                 if rx['return']>0: return rx
 
                 if rx.get('recorded','')=='yes':
                    xstatus='*** Your explored solution is BETTER than existing and was RECORDED! ***\n'
                 else:
-                   xstatus='*** Your explored solution is not better than existing ones (code 2) ***\n' 
+                   xstatus='*** Your explored solution is not better than existing ones ***\n' 
 
+       # Cleaning experiment entry
+       r=ck.access({'action':'delete',
+                    'module_uoa':cfg['module_deps']['experiment'],
+                    'data_uoa':euoa})
+       if r['return']>0: return r
+
+       # Cleaning crowd entry
+       r=ck.access({'action':'delete',
+                    'module_uoa':work['self_module_uid'],
+                    'data_uoa':cuid})
+       if r['return']>0: return r
+
+       # Finishing
        status='Crowdsourced results from your mobile device were successfully processed by Collective Knowledge Aggregator!\n\n'+xstatus
 
        if o=='con':
