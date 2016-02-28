@@ -15,6 +15,8 @@
     "env": "9b9b3208ac44b891", 
     "experiment": "bc0409fb61f0aa82", 
     "platform.os": "41e31cc4496b8a8e", 
+    "module": "032630d041b4fd8a",
+    "math.conditions": "d5ac649c14325bca", 
     "program.optimization": "27bc42ee449e880e",
     "dataset":"8a7141c59cd335f5",
     "program":"b0ac08fe1d3c2615"

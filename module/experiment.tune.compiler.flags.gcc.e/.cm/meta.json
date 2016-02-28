@@ -172,11 +172,11 @@
       10.0
     ], 
     [
-      "##characteristics#compile#md5_sum$#objective#$", 
-      "_imp", 
-      "==", 
+      "##characteristics#compile#md5_sum$#objective#$",
+      "_imp",
+      "==",
       0
-    ], 
+    ],
     [
       "##characteristics#run#execution_time_kernel_0#range_percent", 
       "", 
