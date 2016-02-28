@@ -71,7 +71,12 @@ def crowdsource(i):
     email=i.get('email','')
 
     ruoa=i.get('record_repo_uoa','')
-    if ruoa=='': ruoa='upload'
+#    if ruoa=='': ruoa='upload'
+    # Hack
+    ck.cfg["forbid_writing_to_local_repo"]="no"
+    ck.cfg["allow_writing_only_to_allowed"]="no"
+    ck.cfg["forbid_global_delete"]="no"
+#    ck.cfg["allow_run_only_from_allowed_repos"]="yes"
 
     # Check if processing started experiments
     cuid=i.get('crowd_uid','')
