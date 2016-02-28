@@ -103,7 +103,7 @@ def crowdsource(i):
        #Log
        r=ck.access({'action':'log',
                     'module_uoa':cfg['module_deps']['experiment'],
-                    'text':'Finishing crowd experiment: '+cuid+' ('+json.dumps(results,indent=2,sort_keys=True)+')\n'})
+                    'text':'Finishing crowd experiment: '+cuid+' ('+email+')\n'+json.dumps(results,indent=2,sort_keys=True)+'\n'})
        if r['return']>0: return r
 
        if len(results)>0:
@@ -204,6 +204,12 @@ def crowdsource(i):
                    xstatus='*** Your explored solution is BETTER than existing and was RECORDED! ***\n'
                 else:
                    xstatus='*** Your explored solution is not better than existing ones ***\n' 
+
+             r=ck.access({'action':'log',
+                          'module_uoa':cfg['module_deps']['experiment'],
+                          'text':'Result of crowd experiment: '+cuid+' ('+email+'): '+xstatus+'\n'})
+             if r['return']>0: return r
+
 
        # Cleaning experiment entry
        r=ck.access({'action':'delete',
