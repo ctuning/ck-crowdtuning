@@ -111,7 +111,7 @@ def html_viewer(i):
 
     h+='\n\n<script language="JavaScript">function copyToClipboard (text) {window.prompt ("Copy to clipboard: Ctrl+C, Enter", text);}</script>\n\n' 
 
-    h+='<H2>Distinct solutions: '+cfg['desc']+'</H2>\n'
+    h+='<H2>Distinct solutions after online classification ('+cfg['desc']+')</H2>\n'
     h+='</center>\n'
 
     h+='<p>\n'

@@ -422,7 +422,7 @@ def show(i):
 
                    h+='<center>\n'
                    h+='<div id="ck_box_with_shadow1">\n'
-                   h+='<center><b>Prune solutions:</b></small>\n'
+                   h+='<center><b>Prune solutions by </b></small>\n'
 
 #                   h+='<table border="0" cellpadding="5" cellspacing="0">\n'
                    for q in pr:
@@ -579,6 +579,11 @@ def show(i):
                        h+='</tr>'
 
                 h+='</table>\n'
+
+                x=ck.cfg.get('extra_browser_text_ct','')
+                if x!='':
+                   h+=x+'\n'
+
                 h+='</center>\n'
 
     return {'return':0, 'html':h}
@@ -2766,8 +2771,8 @@ def links(i):
     """
 
     h ='<center>[ <a href="https://github.com/ctuning/ck/wiki/Crowdsource_Experiments">How to participate and plans</a> ], \n'
-    h+='[ <a href="https://github.com/ctuning/ck">CK framework</a> ], \n'
-    h+='[ <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments">Android app to crowdsource experiments</a> ]<br> \n'
+    h+='[ <a href="https://github.com/ctuning/ck">open research SDK</a> ], \n'
+    h+='[ <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments">Android app to crowdsource experiments using mobile devices</a> ]<br> \n'
     h+='[ Participated <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform">Platforms</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.os">OS</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.cpu">CPU</a>, \n'
