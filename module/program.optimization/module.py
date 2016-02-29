@@ -421,10 +421,10 @@ def show(i):
                    mm=dd.get('meta',{})
 
                    h+='<center>\n'
-                   h+='<div id="ck_box_with_shadow">\n'
-                   h+='<center><small><b>Prune solutions:</b></small></center>\n'
+                   h+='<div id="ck_box_with_shadow1">\n'
+                   h+='<center><b>Prune solutions:</b></small>\n'
 
-                   h+='<table border="0" cellpadding="5" cellspacing="0">\n'
+#                   h+='<table border="0" cellpadding="5" cellspacing="0">\n'
                    for q in pr:
                        qd=q.get('desc','')
                        qi=q.get('id','')
@@ -451,10 +451,12 @@ def show(i):
                        r=ck.access(ii)
                        if r['return']>0: return r
 
-                       h+=' <tr><td>'+qd+':</td><td>'+r['html']+'</td></tr>\n'
+#                       h+=' <tr><td>'+qd+':</td><td>'+r['html']+'</td></tr>\n'
+                       h+=qd+': '+r['html']+' \n'
 
-                   h+='</table>\n'
-                   h+='</div>\n'
+
+#                   h+='</table>\n'
+                   h+='</center></div>\n'
                    h+='<p>\n'
                    h+='</center>\n'
 
