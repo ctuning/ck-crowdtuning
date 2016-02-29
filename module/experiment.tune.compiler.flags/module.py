@@ -59,6 +59,8 @@ def html_viewer(i):
     import os
     global cfg, work
 
+    orig_module_uid=work['self_module_uid']
+
     mcfg=i.get('module_cfg',{})
     if len(mcfg)>0: cfg=mcfg
 
@@ -560,10 +562,13 @@ def html_viewer(i):
            else:
               iq1+=1
 
+
        h+='</table>\n'
+       h+='<img src="'+url0+'action=pull&common_action=yes&cid='+cfg['module_deps']['module']+':'+orig_module_uid+'&filename=images/image-workflow.png">\n'
+
     h+='</center>\n'
 
-    h+='<p>&nbsp;<p>\n'
+    h+='<br><br>\n'
 
     rx=ck.access({'action':'links',
                   'module_uoa':cfg['module_deps']['program.optimization']})
