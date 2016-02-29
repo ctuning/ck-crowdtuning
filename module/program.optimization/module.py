@@ -283,7 +283,7 @@ def show(i):
     if rx['return']>0: return rx
     h+=rx['html']
 
-    h+='<br>\n'
+    h+='\n'
 
     # Check host URL prefix and default module/action
     url0=ck.cfg.get('wfe_url_prefix','')
@@ -2774,13 +2774,13 @@ def links(i):
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpu">GPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpgpu">GPGPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.nn">NN</a> ], \n'
-    h+='[ Vision papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a> ,\n'
+    h+='[ Vision papers (<a href="https://raw.githubusercontent.com/ctuning/ck-guide-images/master/collective-knowledge-refs.bib">BibTex</a>): <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a> ,\n'
     h+='  <a href="http://bit.ly/ck-date16">DATE\'16</a> ,\n'
     h+='  <a href="http://cknowledge.org/interactive-report">interactive</a> ,\n'
     h+='  <a href="http://hal.inria.fr/hal-01054763">JSP\'14</a> ,\n'
     h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST@PLDI\'14</a> ,\n'
-    h+='  <a href="https://hal.inria.fr/inria-00436029">GCC\'09</a> , \n'
-    h+='  <b><a href="https://raw.githubusercontent.com/ctuning/ck-guide-images/master/collective-knowledge-refs.bib">bibtex</a></b>]</center>\n'
+    h+='  <a href="https://hal.inria.fr/inria-00436029">GCC\'09</a> \n'
+    h+='  ]</center>\n'
 
     return {'return':0, 'html':h}
 
