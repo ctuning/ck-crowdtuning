@@ -429,15 +429,16 @@ def html_viewer(i):
                   dvw=''
                   points=q.get('points',[])
                   iresx=ires-1
-                  if iresx<len(points):
-                     dv=points[iresx].get('improvements_best',{}).get(ik[k],'')
-                     dvw=points[iresx].get('improvements_worst',{}).get(ik[k],'')
+#                  if iresx<len(points):
+#                     dv=points[iresx].get('improvements_best',{}).get(ik[k],'')
+#                     dvw=points[iresx].get('improvements_worst',{}).get(ik[k],'')
 
                   # Add to graph (first dimension and first solution)
-                  if k==0 and ires==1:
-                     dv=cls.get('highest_improvements',{}).get(ik[k],'')
-                     dvw=cls.get('highest_degradations',{}).get(ik[k],'')
+#                  if k==0 and ires==1:
+                  dv=cls.get('highest_improvements',{}).get(ik[k],'')
+                  dvw=cls.get('highest_degradations',{}).get(ik[k],'')
 
+                  if k==0:
                      bgraph['0'].append([ss,dv])
                      bgraph['1'].append([ss,dvw])
 
