@@ -2779,7 +2779,7 @@ def links(i):
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpu">GPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpgpu">GPGPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.nn">NN</a> ], \n'
-    h+='[ A few papers: <a href="http://bit.ly/ck-date16">DATE\'16</a>, <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a> ,\n'
+    h+='[ A few papers: <a href="http://cknowledge.org/interactive-report">interactive</a>, <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a>, <a href="http://bit.ly/ck-date16">DATE\'16</a> \n'
     h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST@PLDI\'14</a>\n'
     h+='  ]</center>\n'
 
