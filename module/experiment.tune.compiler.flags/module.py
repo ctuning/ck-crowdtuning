@@ -131,7 +131,7 @@ def html_viewer(i):
 
     if url5!='' or urld!='':
        if url5!='':
-          x='<a href="'+url5+x+'_'+duid+'">GitHub wiki</a>'
+          x='<a href="'+url5+muid+'_'+duid+'">GitHub wiki</a>'
        if urld!='':
           if x!='': x+=', '
           x+='<a href="'+urld+'">Google group</a>' 

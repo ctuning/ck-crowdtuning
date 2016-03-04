@@ -580,6 +580,8 @@ def show(i):
 
                 h+='</table>\n'
 
+                h+='<a href="http://arxiv.org/abs/1506.06256"><img src="'+url0+'action=pull&common_action=yes&cid='+cfg['module_deps']['module']+':'+work['self_module_uid']+'&filename=images/image-workflow.png"></a>\n'
+
                 x=ck.cfg.get('extra_browser_text_ct','')
                 if x!='':
                    h+=x+'\n'
