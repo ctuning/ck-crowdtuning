@@ -2783,7 +2783,9 @@ def links(i):
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.nn">NN</a> ], \n'
     h+='[ A few papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a>, <a href="http://bit.ly/ck-date16">DATE\'16</a>, \n'
     h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST@PLDI\'14</a>, <a href="http://cknowledge.org/interactive-report">interactive</a>\n'
-    h+='  ]</center>\n'
+    h+='  ], \n'
+    h+='[ <a href="http://cTuning.org/reproducibility-wiki">Reproducible experimentation initiative</a> ]\n'
+    h+='</center>\n'
 
     return {'return':0, 'html':h}
 
