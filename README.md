@@ -1,7 +1,11 @@
 Status
 ======
-This is an unstable, heavily evolving repository 
-please, do not use it until official announcement.
+This is a relatively stable repository for customizable
+experiment crowdsourcing across platforms provided by voluteers
+(such as mobile devices and data centers).
+Currently implemented scenarios include universal,
+customizable, multi-dimensional, multi-objective 
+GCC/LLVM crowd-tuning.
 
 Description
 ===========
@@ -37,17 +41,10 @@ Prerequisites
 =============
 * Collective Knowledge Framework: http://github.com/ctuning/ck
 
-Installation
-============
+Usage
+=====
 
-> ck pull repo:ck-crowdtuning
-
-Modules with actions
-====================
-
-scenario.compiler.flags - collective experiment: compiler flag tuning
-
-  * crowdtune - crowd-tune compiler flags (on-going)
+See https://github.com/ctuning/ck/wiki/Crowdsource_Experiments
 
 Notes
 =====
