@@ -1,3 +1,5 @@
+* 2016.03.07 * adding extra data set tags to select small data sets during collaborative optimization using mobile devices
+
 * 2016.02.22 * major crowdtuning update (cleaned up classification of species) and eviction of old results
 
 * 2016.02.18 * first version of the online classification of the workloads vs distinct optimizations

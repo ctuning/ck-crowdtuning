@@ -188,6 +188,7 @@ def crowdsource(i):
               (cmd_key)                    - CMD key
               (dataset_uoa)                - dataset UOA
               (dataset_file)               - dataset filename (if more than one inside one entry - suggest to have a UID in name)
+              (extra_dataset_tags)         - list of extra data set tags (useful to set "small" during mobile phone crowdtuning)
 
               (calibration_time)           - change calibration time (deafult 10 sec.)
 
@@ -1320,6 +1321,7 @@ def run(i):
               (dataset_uoa)                - dataset UOA
               (dataset_file)               - dataset filename (if more than one inside one entry - suggest to have a UID in name)
 
+              (extra_dataset_tags)         - list of extra data set tags (useful to set "small" during mobile phone crowdtuning)
 
               (calibration_time)           - change calibration time (deafult 10 sec.)
 
@@ -1475,6 +1477,7 @@ def run(i):
     cmd_key=i.get('cmd_key','')
     dataset_uoa=i.get('dataset_uoa','')
     dataset_file=i.get('dataset_file','')
+    edt=i.get('extra_dataset_tags',[])
 
     sdeps=i.get('dependencies',{})
 
@@ -1579,8 +1582,12 @@ def run(i):
        ii['random']='yes'
     if cd_uoa!='':
        ii['compiler_description_uoa']=cd_uoa
-    if nsc!='': ii['no_state_check']=nsc
-    if static!='': ii['static']=static
+    if len(edt)>0:
+       ii[ 'extra_dataset_tags']=edt
+    if nsc!='': 
+       ii['no_state_check']=nsc
+    if static!='': 
+       ii['static']=static
     r=ck.access(ii)
     if r['return']>0: return r
 

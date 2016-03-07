@@ -15,6 +15,7 @@ ck=None # Will be updated by CK (initialized CK kernel)
 line='********************************************************************'
 
 fpack='crowd-pack.zip'
+max_size_pack=1200000
 
 ##############################################################################
 # Initialize module
@@ -273,7 +274,7 @@ def crowdsource(i):
 
        # Try to generate at least one experimental pack!
        n=0
-       nm=16
+       nm=20
 
        success=False
        while n<nm and not success:
@@ -300,6 +301,7 @@ def crowdsource(i):
               'any_flag_tags':'arm-specific',
 #              'cmd_key':'edges',
 #              'dataset_uoa':'image-pgm-0001',
+              'extra_dataset_tags':['small'],
               'no_run':'yes',
               'keep_experiments':'yes',
               'new':'yes',
@@ -547,20 +549,27 @@ def crowdsource(i):
                             if dd.get('run_vars',{}).get('CT_REPEAT_MAIN','')!='':
                                calibrate='yes'
 
-                            # finalize info
-                            rr['file_content_base64']=fx
-                            rr['size']=size 
-                            rr['md5sum']=md5
-                            rr['run_cmd_main']=rcm
-                            rr['bin_file0']=target_exe_0
-                            rr['bin_file1']=target_exe_1
-                            rr['calibrate']=calibrate
-                            rr['calibrate_max_iters']=10
-                            rr['calibrate_time']=10.0
-                            rr['repeat']=5
-                            rr['ct_repeat']=1
+                            if len(fx)>max_size_pack:
+                               if o=='con':
+                                  ck.out('')
+                                  ck.out('WARNING: pack is too large ('+str(len(fx))+')')
+                                  ck.out('')
+                            
+                            else:
+                               # finalize info
+                               rr['file_content_base64']=fx
+                               rr['size']=size 
+                               rr['md5sum']=md5
+                               rr['run_cmd_main']=rcm
+                               rr['bin_file0']=target_exe_0
+                               rr['bin_file1']=target_exe_1
+                               rr['calibrate']=calibrate
+                               rr['calibrate_max_iters']=10
+                               rr['calibrate_time']=10.0
+                               rr['repeat']=5
+                               rr['ct_repeat']=1
 
-                            success=True
+                               success=True
 
                 if not success:
                    if o=='con':
