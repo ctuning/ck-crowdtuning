@@ -97,7 +97,7 @@ def show(i):
            user=q.get('user','')
 
            a=''
-           if nu=='yes': a='new user'
+           if nu=='yes': a='New user'
            else:
               suid=q.get('solution_uid','')
               scenario_uoa=q.get('scenario_uoa','')
