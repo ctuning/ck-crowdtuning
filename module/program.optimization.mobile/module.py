@@ -94,6 +94,8 @@ def crowdsource(i):
        euoa=d['experiment_uoa']
        ol=d['off_line']
 
+       suid=ol.get('solution_uid','') # should normally be prepared in advance!
+
        scenario_uoa=ol['scenario_module_uoa']
        condition_objective='#'+ol['meta']['objective']
 
@@ -198,17 +200,27 @@ def crowdsource(i):
                 ii['action']='add_solution'
                 ii['module_uoa']=cfg['module_deps']['program.optimization']
                 ii['repo_uoa']='upload' # Hack 
+                ii['user']=email
                 rx=ck.access(ii)
                 if rx['return']>0: return rx
 
                 if rx.get('recorded','')=='yes':
-                   xstatus='*** Your explored solution is BETTER than existing and was RECORDED! ***\n'
+                   ri=rx.get('recorded_info',{})
+                   xstatus=ri.get('status','')
+                   xlog=ri.get('log','')
+
+                   rz=ck.access({'action':'log',
+                                 'module_uoa':cfg['module_deps']['experiment'],
+                                 'file_name':cfg['log_file_results'],
+                                 'text':xlog})
+                   if rz['return']>0: return rz
+
                 else:
                    xstatus='*** Your explored solution is not better than existing ones ***\n' 
 
              r=ck.access({'action':'log',
                           'module_uoa':cfg['module_deps']['experiment'],
-                          'text':'Result of crowd experiment: '+cuid+' ('+email+'): '+xstatus+'\n'})
+                          'text':'Result of crowd experiment (UID='+suid+') : '+cuid+' ('+email+'): '+xstatus+'\n'})
              if r['return']>0: return r
 
 
@@ -236,7 +248,22 @@ def crowdsource(i):
     else:
        ###################################################################################################################
        # Initialize platform
-       tos='android19-arm'
+       pf=i.get('platform_features',{})
+
+       cpu_abi=pf.get('features',{}).get('cpu',{}).get('cpu_abi','')
+       os_bits=pf.get('features',{}).get('os',{}).get('bits','')
+
+       tos=''
+       if cpu_abi.startswith('armeabi-'):
+          tos='android19-arm'
+       elif cpu_abi=='x86':
+          tos='android19-x86'
+          if os_bits=='64':
+             tos='android21-x86_64'
+
+       if tos=='':
+          return {'return':1, 'error':'ABI of your mobile device is not yet supported for crowdtuning - please contact authors to check if it\'s in development'}
+
        tdid=''
        hos=''
 
@@ -256,7 +283,6 @@ def crowdsource(i):
        del(pi['return'])
 
        # Merge with remote device platform features
-       pf=i.get('platform_features',{})
        r=ck.merge_dicts({'dict1':pi['features'], 'dict2':pf})
        if r['return']>0: return r
 

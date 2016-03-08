@@ -621,11 +621,14 @@ def add_solution(i):
             }
 
     Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
+              return              - return code =  0, if successful
+                                                >  0, if error
+              (error)             - error text if return > 0
 
-              (recorded) - if 'yes', submitted solution was recorded
+              (recorded)          - if 'yes', submitted solution was recorded
+
+              if recorded=='yes':
+              (recorded_info)     - dict with recorded entry {'repo_uoa', 'module_uoa', 'data_uoa'}
             }
 
     """
@@ -648,6 +651,8 @@ def add_solution(i):
 
     er=i.get('exchange_repo','')
     esr=i.get('exchange_subrepo','')
+
+    user=i.get('user','')
 
     choices=i.get('choices',{})
     ft=i.get('features',{})
@@ -964,6 +969,13 @@ def add_solution(i):
     ls=len(sols)
     d['solutions']=ls
 
+    # Checking if new solution and record user if needed
+    x=classification.get(suid,{})
+    if len(x)>0:
+       if x.get('user','')=='' and user!='':
+          x['user']=user
+          classification[suid]=x
+
     # Saving classification file
     rx=ck.save_json_to_file({'json_file':pcl, 'dict':classification, 'sort_keys':'yes'})
     if rx['return']>0: return rx
@@ -1074,6 +1086,85 @@ def add_solution(i):
     x=classification.get(suid,{})
     if len(x)>0:
        rr['recorded']='yes'
+       rr['recorded_info']={'repo_uoa': ruoa, 'module_uoa': smuoa, 'data_uoa':duid}
+
+       url0=ck.cfg.get('wfe_url_prefix','')
+
+       x=url0+'wcid='+smuoa+':'+duid
+
+       xstatus='*** Your explored solution (UID='+suid+') is BETTER than existing ones and was RECORDED! ***\n'
+       xstatus+='You should be able to see it at '+x+'\n'
+
+       s='Good solution!\n\n'
+       s+='  User:         '+user+'\n\n'
+       s+='  URL:          '+x+'\n\n'
+       s+='  Solution UID: '+suid+'\n'
+       s+='  Scenario UOA: '+smuoa+'\n'
+       s+='  Data UOA:     '+duid+'\n'
+
+       rr['recorded_info']['status']=xstatus
+       rr['recorded_info']['log']=s
+
+       # Record stats for non anonymous user
+#       if user!='' and user!='-':
+       if True:
+          if o=='con':
+             ck.out('')
+             ck.out('Updating user statistics ...')
+
+          # Time
+          r=ck.get_current_date_time({})
+          if r['return']>0: return r
+
+          idt=r['iso_datetime']
+
+          pack={'iso_datetime':idt,
+                'solution_uid':suid,
+                'scenario_uoa':smuoa,
+                'data_uoa':duid}
+
+          # Load/create and lock
+          ii={'action':'load',
+              'common_func':'yes',
+              'repo_uoa': ruoa,
+              'module_uoa': cfg['module_deps']['experiment.user'],
+              'data_uoa':'all',
+              'get_lock':'yes',
+              'create_if_not_found':'yes',
+              'lock_expire_time':20
+             }
+          r=ck.access(ii)
+
+          d=r['dict']
+          lock_uid=r['lock_uid']
+
+          du=d.get('users',{})
+          dt=d.get('timeline',[])
+
+          if user not in du:
+             du[user]={}
+
+          du[user]=pack
+          d['users']=du
+
+          pack['user']=user
+          dt.append(pack)
+
+          d['timeline']=dt
+
+          ii={'action':'update',
+              'common_func':'yes',
+              'repo_uoa': ruoa,
+              'module_uoa': cfg['module_deps']['experiment.user'],
+              'data_uoa':'all',
+              'ignore_update':'yes',
+              'sort_keys':'yes',
+              'dict':d,
+              'substitute':'yes',
+              'unlock_uid':lock_uid
+             }
+          r=ck.access(ii)
+          if r['return']>0: return r
 
     return rr
 
@@ -1796,7 +1887,8 @@ def run(i):
 
        lx=' ===============================================================================\n' \
           ' * Scenario:                 '+sdesc+'\n' \
-          ' * Sub scenarion:            '+ssdesc+'\n' \
+          ' * Sub scenario:             '+ssdesc+'\n' \
+          ' * User:                     '+user+'\n' \
           ' * Existing solutions:       '+str(len(sols))+'\n' \
           ' * Number of iterations:     '+str(iterations)+'\n'+lx
 
@@ -2622,9 +2714,20 @@ def run(i):
                           'packed_solution':ps,
                           'iterations':iterations,
                           'first_key':ik0,
+                          'user':user,
                           'out':oo}
                       rx=ck.access(ii)
                       if rx['return']>0: return rx
+
+                      if rx.get('recorded','')=='yes':
+                         ri=rx.get('recorded_info',{})
+                         xlog=ri.get('log','')
+
+                         rz=ck.access({'action':'log',
+                                       'module_uoa':cfg['module_deps']['experiment'],
+                                       'file_name':cfg['log_file_results'],
+                                       'text':xlog})
+                         if rz['return']>0: return rz
 
           rrr['scenario_desc']=sdesc
           rrr['subscenario_desc']=ssdesc
