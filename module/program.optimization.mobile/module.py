@@ -254,12 +254,12 @@ def crowdsource(i):
        os_bits=pf.get('features',{}).get('os',{}).get('bits','')
 
        tos=''
-       if cpu_abi.startswith('armeabi-'):
+       if cpu_abi.startswith('armeabi'):
           tos='android19-arm'
-       elif cpu_abi=='x86':
-          tos='android19-x86'
-          if os_bits=='64':
-             tos='android21-x86_64'
+#       elif cpu_abi=='x86':
+#          tos='android19-x86'
+#          if os_bits=='64':
+#             tos='android21-x86_64'
 
        if tos=='':
           return {'return':1, 'error':'ABI of your mobile device is not yet supported for crowdtuning - please contact authors to check if it\'s in development'}
