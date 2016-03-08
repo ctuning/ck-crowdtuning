@@ -250,11 +250,11 @@ def crowdsource(i):
        # Initialize platform
        pf=i.get('platform_features',{})
 
-       cpu_abi=pf.get('features',{}).get('cpu',{}).get('cpu_abi','')
-       os_bits=pf.get('features',{}).get('os',{}).get('bits','')
+       cpu_abi=pf.get('cpu',{}).get('cpu_abi','')
+       os_bits=pf.get('os',{}).get('bits','')
 
        tos=''
-       if cpu_abi.startswith('armeabi'):
+       if cpu_abi.startswith('armeabi-'):
           tos='android19-arm'
 #       elif cpu_abi=='x86':
 #          tos='android19-x86'
