@@ -118,8 +118,11 @@ def test(i):
 
     # Load/create and lock
     # Hack
-    bak=ck.cfg["forbid_writing_to_local_repo"]
+    bak1=ck.cfg["forbid_writing_to_local_repo"]
     ck.cfg["forbid_writing_to_local_repo"]="no"
+
+    bak2=ck.cfg["allow_writing_only_to_allowed"]
+    ck.cfg["allow_writing_only_to_allowed"]="no"
 
     ii={'action':'load',
         'common_func':'yes',
@@ -162,7 +165,8 @@ def test(i):
     r=ck.access(ii)
     if r['return']>0: return r
 
-    ck.cfg["forbid_writing_to_local_repo"]=bak
+    ck.cfg["forbid_writing_to_local_repo"]=bak1
+    ck.cfg["allow_writing_only_to_allowed"]=bak2
 
     if o=='con':
        ck.out(status)
