@@ -74,7 +74,7 @@ def show(i):
        xdt=sorted(dt, key=lambda v: (v.get('iso_datetime','')))
 
        h+='<center>\n'
-       h+='<table class="ck_table" border="0">\n'
+       h+='<table class="ck_table" border="0" cellpadding="5">\n'
 
        h+=' <tr style="background-color:#cfcfff;">\n'
        h+='  <td><b>\n'
@@ -101,9 +101,9 @@ def show(i):
 
            h+='<tr>'
 
-           h+=' <td align="center">'+idt.replace('T',' ')+'</td>'
-           h+=' <td align="center">'+user+'</td>'
-           h+=' <td align="center">'+a+'</td>'
+           h+=' <td align="left">'+idt.replace('T',' ')+'</td>'
+           h+=' <td align="left">'+user+'</td>'
+           h+=' <td align="left">'+a+'</td>'
 
            h+='</tr>'
 
