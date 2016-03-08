@@ -98,6 +98,12 @@ def show(i):
 
            a=''
            if nu=='yes': a='new user'
+           else:
+              suid=q.get('solution_uid','')
+              scenario_uoa=q.get('scenario_uoa','')
+              duoa=q.get('data_uoa','')
+
+              a='<a href="'+url+'wcid='+scenario_uoa+':'+duoa+'">'+Better solution found (UID='+suid+')</a>'
 
            h+='<tr>'
 
