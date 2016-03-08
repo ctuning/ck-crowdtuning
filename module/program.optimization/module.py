@@ -1174,7 +1174,6 @@ def add_solution(i):
           # Load/create and lock
           ii={'action':'load',
               'common_func':'yes',
-              'repo_uoa': ruoa,
               'module_uoa': cfg['module_deps']['experiment.user'],
               'data_uoa':'all',
               'get_lock':'yes',
@@ -1202,7 +1201,6 @@ def add_solution(i):
 
           ii={'action':'update',
               'common_func':'yes',
-              'repo_uoa': ruoa,
               'module_uoa': cfg['module_deps']['experiment.user'],
               'data_uoa':'all',
               'ignore_update':'yes',
