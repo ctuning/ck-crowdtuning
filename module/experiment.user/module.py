@@ -103,7 +103,7 @@ def show(i):
               scenario_uoa=q.get('scenario_uoa','')
               duoa=q.get('data_uoa','')
 
-              a='<a href="'+url+'wcid='+scenario_uoa+':'+duoa+'">Better solution found (UID='+suid+')</a>'
+              a='<a href="'+url0+'wcid='+scenario_uoa+':'+duoa+'">Better solution found (UID='+suid+')</a>'
 
            h+='<tr>'
 
