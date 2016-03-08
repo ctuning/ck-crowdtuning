@@ -1106,8 +1106,7 @@ def add_solution(i):
        rr['recorded_info']['log']=s
 
        # Record stats for non anonymous user
-#       if user!='' and user!='-':
-       if True:
+       if user!='' and user!='-':
           if o=='con':
              ck.out('')
              ck.out('Updating user statistics ...')
