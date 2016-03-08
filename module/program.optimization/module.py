@@ -2929,8 +2929,9 @@ def links(i):
     """
 
     h ='<center>[ <a href="https://github.com/ctuning/ck/wiki/Crowdsource_Experiments">How to participate and plans</a> ], \n'
-    h+='[ <a href="https://github.com/ctuning/ck">open research SDK</a> ], \n'
-    h+='[ <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments">Android app to crowdsource experiments using mobile devices</a> ]<br> \n'
+    h+='[ <a href="https://github.com/ctuning/ck"><b>open research SDK</b></a> ], \n'
+    h+='[ <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments"><b>Android app to crowdsource experiments using mobile devices</b></a> ], \n'
+    h+='[ <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=experiment.user">User timeline</a> ]<br> \n'
     h+='[ Participated <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform">Platforms</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.os">OS</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.cpu">CPU</a>, \n'

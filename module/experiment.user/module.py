@@ -29,3 +29,86 @@ def init(i):
 
     """
     return {'return':0}
+
+##############################################################################
+# show users
+
+def show(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+
+              html         - generated HTML
+            }
+
+    """
+
+    import os
+
+    h='<center>'
+    h+='<h2>Collective Knowledge Timeline<BR>(non-anonumous participation in collaborative experiments)</h2>\n'
+
+    # Load all
+    rx=ck.access({'action':'load',
+                  'module_uoa':work['self_module_uid'],
+                  'data_uoa':'all'})
+    if rx['return']>0:
+       if rx['return']!=16:
+          return rx
+       else:
+          h+='<b>Timeline is empty ...</b>'
+    else:
+       d=rx['dict']
+
+       du=d.get('users',{})
+       dt=d.get('timeline',[])
+
+       # Check host URL prefix and default module/action
+       url0=ck.cfg.get('wfe_url_prefix','')
+
+       xdt=sorted(dt, key=lambda v: (v.get('iso_datetime','')))
+
+       h+='<center>\n'
+       h+='<table class="ck_table" border="0">\n'
+
+       h+=' <tr style="background-color:#cfcfff;">\n'
+       h+='  <td><b>\n'
+       h+='   Date / time\n'
+       h+='  </b></td>\n'
+
+       h+='  <td><b>\n'
+       h+='   User\n'
+       h+='  </b></td>\n'
+
+       h+='  <td align="center"><b>\n'
+       h+='   Action\n'
+       h+='  </b></td>\n'
+
+       h+=' </tr>\n'
+
+       for q in dt:
+           idt=q.get('iso_datetime','')
+           nu=q.get('new_user','')
+           user=q.get('user','')
+
+           a=''
+           if nu=='yes': a='new user'
+
+           h+='<tr>'
+
+           h+=' <td align="center">'+idt.replace('T',' ')+'</td>'
+           h+=' <td align="center">'+user+'</td>'
+           h+=' <td align="center">'+a+'</td>'
+
+           h+='</tr>'
+
+       h+='</table>\n'
+
+       h+='</center>\n'
+
+    return {'return':0, 'html':h}

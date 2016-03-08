@@ -1,5 +1,10 @@
 {
-  "actions": {}, 
+  "actions": {
+    "show": {
+      "desc": "show users", 
+      "for_web": "yes"
+    }
+  }, 
   "copyright": "See CK COPYRIGHT.txt for copyright details", 
   "desc": "experiment participants and their stats", 
   "developer": "Grigori Fursin", 
