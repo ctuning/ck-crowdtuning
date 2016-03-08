@@ -51,7 +51,7 @@ def show(i):
     import os
 
     h='<center>'
-    h+='<h2>Collective Knowledge Timeline<BR>(non-anonumous participation in collaborative experiments)</h2>\n'
+    h+='<h2>Collective Knowledge Timeline<BR>(non-anonymous participation in collaborative experiments)</h2>\n'
 
     # Load all
     rx=ck.access({'action':'load',
