@@ -117,6 +117,10 @@ def test(i):
     idt=r['iso_datetime']
 
     # Load/create and lock
+    # Hack
+    bak=ck.cfg["forbid_writing_to_local_repo"]
+    ck.cfg["forbid_writing_to_local_repo"]="no"
+
     ii={'action':'load',
         'common_func':'yes',
         'module_uoa': cfg['module_deps']['experiment.user'],
@@ -157,6 +161,8 @@ def test(i):
        }
     r=ck.access(ii)
     if r['return']>0: return r
+
+    ck.cfg["forbid_writing_to_local_repo"]=bak
 
     if o=='con':
        ck.out(status)
