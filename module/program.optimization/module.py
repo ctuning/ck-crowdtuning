@@ -104,8 +104,57 @@ def test(i):
     status="CK server works fine!";
 
     email=i.get('email','')
+    user=email
 
     ii={'action':'log', 'module_uoa':cfg['module_deps']['experiment'], 'file_name':cfg['log_file_test'], 'text':email}
+    r=ck.access(ii)
+    if r['return']>0: return r
+
+    # Time
+    r=ck.get_current_date_time({})
+    if r['return']>0: return r
+
+    idt=r['iso_datetime']
+
+    # Load/create and lock
+    ii={'action':'load',
+        'common_func':'yes',
+        'module_uoa': cfg['module_deps']['experiment.user'],
+        'data_uoa':'all',
+        'get_lock':'yes',
+        'create_if_not_found':'yes',
+        'lock_expire_time':20
+       }
+    r=ck.access(ii)
+
+    d=r['dict']
+    lock_uid=r['lock_uid']
+
+    du=d.get('users',{})
+    dt=d.get('timeline',[])
+
+    if user!='' and user!='-' and user not in du:
+       du[user]={}
+       d['users']=du
+
+       pack={}
+       pack['user']=user
+       pack['iso_datetime']=idt
+       pack['new_user']='yes'
+       dt.append(pack)
+
+       d['timeline']=dt
+
+    ii={'action':'update',
+        'common_func':'yes',
+        'module_uoa': cfg['module_deps']['experiment.user'],
+        'data_uoa':'all',
+        'ignore_update':'yes',
+        'sort_keys':'yes',
+        'dict':d,
+        'substitute':'yes',
+        'unlock_uid':lock_uid
+       }
     r=ck.access(ii)
     if r['return']>0: return r
 
