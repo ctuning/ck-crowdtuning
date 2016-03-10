@@ -261,8 +261,8 @@ def crowdsource(i):
           extra_tags='arm-specific'
        elif cpu_abi=='x86':
           tos='android19-x86'
-#          static='yes'
-          max_size_pack=1500000
+          static='yes'
+          max_size_pack=2200000
 #          if os_bits=='64':
 #             tos='android21-x86_64'
 
