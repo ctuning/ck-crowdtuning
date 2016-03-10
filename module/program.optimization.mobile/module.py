@@ -255,12 +255,14 @@ def crowdsource(i):
        tos=''
        static=''
        max_size_pack=1200000
+       extra_tags=''
        if cpu_abi.startswith('armeabi-'):
           tos='android19-arm'
+          extra_tags='arm-specific'
        elif cpu_abi=='x86':
           tos='android19-x86'
-          static='yes'
-          max_size_pack=2200000
+#          static='yes'
+          max_size_pack=1500000
 #          if os_bits=='64':
 #             tos='android21-x86_64'
 
@@ -327,7 +329,7 @@ def crowdsource(i):
               'parametric_flags':'yes',
 #              'static':'yes',
 #              'program_uoa':'*susan',
-              'any_flag_tags':'arm-specific',
+              'any_flag_tags':extra_tags,
 #              'cmd_key':'edges',
 #              'dataset_uoa':'image-pgm-0001',
               'extra_dataset_tags':['small'],
