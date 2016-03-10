@@ -15,7 +15,6 @@ ck=None # Will be updated by CK (initialized CK kernel)
 line='********************************************************************'
 
 fpack='crowd-pack.zip'
-max_size_pack=1200000
 
 ##############################################################################
 # Initialize module
@@ -254,12 +253,16 @@ def crowdsource(i):
        os_bits=pf.get('os',{}).get('bits','')
 
        tos=''
+       static=''
+       max_size_pack=1200000
        if cpu_abi.startswith('armeabi-'):
           tos='android19-arm'
        elif cpu_abi=='x86':
           tos='android19-x86'
-          if os_bits=='64':
-             tos='android21-x86_64'
+          static='yes'
+          max_size_pack=2200000
+#          if os_bits=='64':
+#             tos='android21-x86_64'
 
        if tos=='':
           return {'return':1, 'error':'ABI of your mobile device is not yet supported for crowdtuning ('+cpu_abi+') - please contact authors to check if it\'s in development'}
@@ -331,6 +334,7 @@ def crowdsource(i):
               'no_run':'yes',
               'keep_experiments':'yes',
               'new':'yes',
+              'static':static,
               'skip_pruning':'yes',
               'skip_info_collection':'yes',
               'out':oo}
