@@ -1,3 +1,5 @@
+* 2016.03.16 * adding support for ARM64-based Android mobile devices
+
 * 2016.03.09 * adding beta support for Intel-based Android (x86 and x86_64)
 
 * 2016.03.08 * adding user statistics logging

@@ -259,6 +259,9 @@ def crowdsource(i):
        if cpu_abi.startswith('armeabi-'):
           tos='android19-arm'
           extra_tags='arm-specific'
+       elif cpu_abi.startswith('arm64'):
+          tos='android21-arm64'
+#          extra_tags='arm-specific'
        elif cpu_abi=='x86':
           tos='android19-x86'
           static='yes'
@@ -586,7 +589,6 @@ def crowdsource(i):
                                   ck.out('')
                                   ck.out('WARNING: pack is too large ('+str(len(fx))+')')
                                   ck.out('')
-                            
                             else:
                                # finalize info
                                rr['file_content_base64']=fx
