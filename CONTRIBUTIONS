@@ -30,3 +30,9 @@ H:
 O: 
 C: testing collaborative program optimization on Intel-based Android
 W: 
+
+N: Toomas Remmelg
+E:
+H:
+O: University of Edinburgh, UK
+C: helping test ARM64-based Android (flags and OpenCL)
