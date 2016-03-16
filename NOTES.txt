@@ -5,3 +5,4 @@ Solutions: best distinct optimization cases for distinct workload.
 Even if we find higher improvements on another workload, we use classification
 to write best/worst improvments... 
 
+GCC for ARM64 based Android should have "-fPIE -pie" flags
