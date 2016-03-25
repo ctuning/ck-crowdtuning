@@ -96,6 +96,10 @@ def show(i):
            nu=q.get('new_user','')
            user=q.get('user','')
 
+           ix=user.find('@')
+           if ix>1:
+              user=user[:ix-2]+'***'+user[ix+1:]
+
            a=''
            if nu=='yes': a='New user'
            else:
