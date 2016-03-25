@@ -3697,3 +3697,41 @@ def get_workloads(i):
     ww=classification.get(suid,{}).get(key,{})
 
     return {'return':0, 'workloads':ww}
+
+##############################################################################
+# record problems (for example, when impossible to detect CPU during mobile device crowdtuning)
+
+def problem(i):
+    """
+    Input:  {
+               (problem)      - problem info
+               (problem_data) - aux problem data
+               (email)        - user ID
+
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    import os
+
+    o=i.get('out','')
+
+    email=i.get('email','')
+    user=email
+
+    problem=i.get('problem','')
+    problem_data=i.get('problem_data','')
+
+    err='\nProblem: '+problem+'\n\n'+problem_data+'\n\n'
+
+    ii={'action':'log', 'module_uoa':cfg['module_deps']['experiment'], 'file_name':cfg['log_file_error'], 'text':err}
+    r=ck.access(ii)
+    if r['return']>0: return r
+
+    return {'return':0}

@@ -32,6 +32,9 @@
       "desc": "prepare links", 
       "for_web": "yes"
     }, 
+    "problem": {
+      "desc": "record problems (for example, when impossible to detect CPU during mobile device crowdtuning)"
+    }, 
     "prune": {
       "desc": "prune solutions", 
       "for_web": "yes"
@@ -66,15 +69,16 @@
   "log_file_own": "log.crowdsourced.experiments.txt", 
   "log_file_results": "log.results.txt", 
   "log_file_test": "log.test.txt", 
+  "log_file_error": "log.error.txt", 
   "min_kernel_dep": "1.6.12x", 
   "module_deps": {
     "cfg": "b34231a3467566f8", 
     "env": "9b9b3208ac44b891", 
     "experiment": "bc0409fb61f0aa82", 
-    "experiment.user": "4e9cb28c86306b7f",
-    "experiment.tune.compiler.flags.gcc.e.x": "6b9845eca8aa7fa5", 
     "experiment.tune.compiler.flags.gcc.e": "8289e0cf24346aa7", 
-    "experiment.tune.compiler.flags.llvm.e":"2aaed4c520956635",
+    "experiment.tune.compiler.flags.gcc.e.x": "6b9845eca8aa7fa5", 
+    "experiment.tune.compiler.flags.llvm.e": "2aaed4c520956635", 
+    "experiment.user": "4e9cb28c86306b7f", 
     "math.conditions": "d5ac649c14325bca", 
     "module": "032630d041b4fd8a", 
     "pipeline": "db25414b48b4ffb3", 
