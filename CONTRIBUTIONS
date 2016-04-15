@@ -31,8 +31,14 @@ O:
 C: testing collaborative program optimization on Intel-based Android
 W: 
 
+N: Michael Haidl
+E:
+H:
+O: 
+C: helping test ARM64-based mobile phone to crowdsource optimizations
+
 N: Toomas Remmelg
 E:
 H:
 O: University of Edinburgh, UK
-C: helping test ARM64-based Android (flags and OpenCL)
+C: helping test ARM64-based Android mobile devices (flags and OpenCL)

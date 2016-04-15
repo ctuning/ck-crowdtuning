@@ -31,17 +31,10 @@ welcome1  = "NOTE: this program will send some anonymized info about your hardwa
             " or validate previously found optimizations!\n\n" \
             "You can find more info about optimization crowdsourcing including results here:\n" \
             " * http://cTuning.org/crowdsource-optimization\n\n" \
+            "We would like to appologize in advance if this program will crash your system (very rare when using OpenCL/OpenGL)!\n" \
             "We would like to sincerely thank you for participating in this community effort" \
             " and help us optimize computer systems to accelerate knowledge discovery and boost innovation " \
             " in science and technology while making our planet greener!\n\n" \
-            "Also, note that we use some platform specific scripts to set/check system state (CPU/GPU freq, etc)." \
-            " You can find the most close scripts to yours by executing \"ck list platform.init\"" \
-            " and then setting environment variable CK_PLATFORM_INIT_UOA to the most close entry alias." \
-            " Alternatively, you can copy those scripts to your local bin and customize them if needed.\n\n" \
-            "Finally, performance of some systems may be chaotic (due to internal adaptation such as in Intel Core processors)!" \
-            "In such cases, you can try to add flag \"--no_state_check\" - " \
-            "if variation is high, we will skip such results. However, when running such experiments, the system may stabilize the frequency itself." \
-            "Later we will add more plugins for statistical comparison of empirical results from our past R&D!\n"
 
 form_name='ck_cresults_form'
 onchange='document.'+form_name+'.submit();'
