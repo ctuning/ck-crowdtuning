@@ -23,7 +23,8 @@
   }, 
   "log_file_results": "log.results.txt", 
   "scenarios": [
-    "experiment.tune.compiler.flags.gcc.e"
+    "experiment.tune.compiler.flags.gcc.e",
+    "experiment.tune.compiler.flags.llvm.e"
   ], 
   "tags": [
     "crowdsource-via-mobile", 
