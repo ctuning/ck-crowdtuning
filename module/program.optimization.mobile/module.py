@@ -347,7 +347,7 @@ def crowdsource(i):
           if rrr['return']>0:
              if o=='con':
                 ck.out('')
-                ck.out('WARNING: '+rrr['error'])
+                ck.out('WARNING: '+rrr['error']+' - can\'t continue this sub-scenario ...')
                 ck.out('')
           else:
              # Prepare pack ...
