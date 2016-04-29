@@ -89,12 +89,17 @@ def show(i):
        h+='   Action\n'
        h+='  </b></td>\n'
 
+       h+='  <td align="center"><b>\n'
+       h+='   Scenario\n'
+       h+='  </b></td>\n'
+
        h+=' </tr>\n'
 
        for q in dt:
            idt=q.get('iso_datetime','')
            nu=q.get('new_user','')
            user=q.get('user','')
+           tp=q.get('type','')
 
            ix=user.find('@')
            if ix>1:
@@ -114,6 +119,7 @@ def show(i):
            h+=' <td align="left">'+idt.replace('T',' ')+'</td>'
            h+=' <td align="left">'+user+'</td>'
            h+=' <td align="left">'+a+'</td>'
+           h+=' <td align="left">'+tp+'</td>'
 
            h+='</tr>'
 

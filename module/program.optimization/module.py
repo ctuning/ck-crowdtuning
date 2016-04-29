@@ -78,6 +78,7 @@ def test(i):
     """
     Input:  {
               (email)      - optional email
+              (type)       - crowdtuning type (mobile,compiler/OpenCL)
             }
 
     Output: {
@@ -98,6 +99,8 @@ def test(i):
 
     email=i.get('email','')
     user=email
+
+    tp=i.get('type','')
 
     ii={'action':'log', 'module_uoa':cfg['module_deps']['experiment'], 'file_name':cfg['log_file_test'], 'text':email}
     r=ck.access(ii)
@@ -139,6 +142,7 @@ def test(i):
 
        pack={}
        pack['user']=user
+       pack['type']=tp
        pack['iso_datetime']=idt
        pack['new_user']='yes'
        dt.append(pack)
@@ -1358,6 +1362,7 @@ def initialize(i):
            'module_uoa':work['self_module_uid'],
            'out':'',
            'email':user,
+           'type':'random-crowdtuning',
            'repo_uoa':er}
        r=ck.access(ii)
        if r['return']>0: return r
