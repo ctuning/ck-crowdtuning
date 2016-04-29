@@ -620,3 +620,77 @@ def crowdsource(i):
           rr={'return':1, 'error':'could not create any valid expeirmental pack for your mobile - possibly internal error! Please, contact authors'}
 
     return rr
+
+##############################################################################
+# start server to process tasks
+
+def server(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    import time
+    import os
+
+    o=i.get('out','')
+
+    # Get path
+    ii={'action':'find',
+        'module_uoa':cfg['module_deps']['tmp'],
+        'data_uoa':cfg['tmp-server']}
+    r=ck.access(ii)
+    if r['return']>0:
+       if r['return']!=16: return r
+          ii['action']='add'
+          r=ck.access(ii)
+          if r['return']>0: return r
+
+    pp=r['path'] 
+
+    fmr=cfg['file-mobile-request']
+
+    while True:
+       if o=='con':
+          ck.out('Quering for tasks ...')
+
+       dirList=os.listdir(pp)
+       for q in dirList:
+           p=os.path.join(pp,q)
+           if os.path.isfile(p) and q.startswith(fmr):
+              if o=='con':
+                 ck.out('  * '+q)
+
+              r=ck.load_json_file({'json_file':p})
+              if r['return']==0:
+                 d=r['dict']
+
+       time.sleep(10)
+
+    return {'return':0}
+
+##############################################################################
+# request experiment pack for mobile device
+
+def request(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+
+    return {'return':0}
