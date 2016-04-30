@@ -645,6 +645,8 @@ def server(i):
     oo=''
     if o=='con': oo='con'
 
+    cur_dir=os.getcwd()
+
     # Get path
     ii={'action':'find',
         'module_uoa':cfg['module_deps']['tmp'],
@@ -664,6 +666,8 @@ def server(i):
        if o=='con':
           ck.out('Quering for tasks ...')
 
+       os.chdir(cur_dir) # restore path that may be changed during crowd-pack generation
+
        dirList=os.listdir(pp)
        for q in dirList:
            p=os.path.join(pp,q)
@@ -671,13 +675,6 @@ def server(i):
               r=ck.load_json_file({'json_file':p})
               if r['return']==0:
                  ic=r['dict']
-
-                 if ic.get('status_ongoing','')=='yes' or ic.get('status_finished','')=='yes':
-                    continue
-
-                 if o=='con':
-                    ck.out('**************************************')
-                    ck.out('Found request: '+q)
 
                  pr=os.path.join(pp,'result-'+q) # result file
 
@@ -699,7 +696,7 @@ def server(i):
 
                  if dt>600:
                     if o=='con':
-                       ck.out('Outdated (created '+str(dt)+' secs. ago) - removing ...')
+                       ck.out('Found outdated request (created '+str(dt)+' secs. ago) - removing ...')
 
                     if os.path.isfile(p):
                        os.remove(p)
@@ -710,6 +707,14 @@ def server(i):
                     if os.path.isfile(px):
                        os.remove(p)
                  else:
+
+                    if ic.get('status_ongoing','')=='yes' or ic.get('status_finished','')=='yes':
+                       continue
+
+                    if o=='con':
+                       ck.out('**************************************')
+                       ck.out('Found request: '+q)
+
                     # Updating file
                     ic['status_ongoing']='yes'
 
