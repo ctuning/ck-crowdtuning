@@ -800,35 +800,6 @@ def crowdsource(i):
     return {'return':0, 'queue_uid':quid}
 
 ##############################################################################
-# check if crowd pack is ready
-
-def check(i):
-    """
-    Input:  {
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-            }
-
-    """
-
-    ck.out('check if crowd pack is ready')
-
-    ck.out('')
-    ck.out('Command line: ')
-    ck.out('')
-
-    import json
-    cmd=json.dumps(i, indent=2)
-
-    ck.out(cmd)
-
-    return {'return':0}
-
-##############################################################################
 # check if crowd-pack is ready
 
 def check(i):
