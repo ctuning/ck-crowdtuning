@@ -36,7 +36,7 @@ def init(i):
 ##############################################################################
 # prepare experiments for crowdsourcing using mobile phones
 
-def crowdsource(i):
+def request(i):
     """
     Input:  {
               (crowd_uid)         - if !='', processing results and possibly chaining experiments
@@ -270,7 +270,7 @@ def crowdsource(i):
 #             tos='android21-x86_64'
 
        if tos=='':
-          return {'return':1, 'error':'ABI of your mobile device is not yet supported for crowdtuning ('+cpu_abi+') - please contact authors to check if it\'s in development'}
+          return {'return':1, 'error':'ABI of your mobile device is not yet supported for crowdtuning ('+cpu_abi+') - please contact author (Grigori.Fursin@cTuning.org) to check if it\'s in development'}
 
        tdid=''
        hos=''
@@ -639,8 +639,11 @@ def server(i):
 
     import time
     import os
+    import datetime
 
     o=i.get('out','')
+    oo=''
+    if o=='con': oo='con'
 
     # Get path
     ii={'action':'find',
@@ -649,9 +652,9 @@ def server(i):
     r=ck.access(ii)
     if r['return']>0:
        if r['return']!=16: return r
-          ii['action']='add'
-          r=ck.access(ii)
-          if r['return']>0: return r
+       ii['action']='add'
+       r=ck.access(ii)
+       if r['return']>0: return r
 
     pp=r['path'] 
 
@@ -665,12 +668,71 @@ def server(i):
        for q in dirList:
            p=os.path.join(pp,q)
            if os.path.isfile(p) and q.startswith(fmr):
-              if o=='con':
-                 ck.out('  * '+q)
-
               r=ck.load_json_file({'json_file':p})
               if r['return']==0:
-                 d=r['dict']
+                 ic=r['dict']
+
+                 if ic.get('status_ongoing','')=='yes' or ic.get('status_finished','')=='yes':
+                    continue
+
+                 if o=='con':
+                    ck.out('**************************************')
+                    ck.out('Found request: '+q)
+
+                 pr=os.path.join(pp,'result-'+q) # result file
+
+                 xt1=ic.get('iso_datetime_of_request','')
+
+                 r=ck.get_current_date_time({})
+                 xt2=r['iso_datetime']
+
+                 # Check that not outdated
+                 r=ck.convert_iso_time({'iso_datetime':xt1})
+                 if r['return']>0: return r
+                 t1=r['datetime_obj']
+
+                 r=ck.convert_iso_time({'iso_datetime':xt2})
+                 if r['return']>0: return r
+                 t2=r['datetime_obj']
+
+                 dt=(t2-t1).total_seconds()
+
+                 if dt>600:
+                    if o=='con':
+                       ck.out('Outdated (created '+str(dt)+' secs. ago) - removing ...')
+
+                    if os.path.isfile(p):
+                       os.remove(p)
+
+                    pf, pff = os.path.split(p)
+                    px=os.path.join(pf,'result-',pff)
+
+                    if os.path.isfile(px):
+                       os.remove(p)
+                 else:
+                    # Updating file
+                    ic['status_ongoing']='yes'
+
+                    r=ck.save_json_to_file({'json_file':p, 'dict':ic})
+                    if r['return']>0: return r
+
+                    if o=='con':
+                       ck.out('Preparing experiment pack ...')
+
+                    ic['out']=oo
+
+                    r=request(ic)
+
+                    if o=='con':
+                       ck.out('Updating request file - saying that ready for download !')
+
+                    # Record outcome for the request
+                    r=ck.save_json_to_file({'json_file':pr, 'dict':r})
+                    if r['return']>0: return r
+
+                    ic['status_finished']='yes'
+                    r=ck.save_json_to_file({'json_file':p, 'dict':ic})
+                    if r['return']>0: return r
 
        time.sleep(10)
 
@@ -679,7 +741,7 @@ def server(i):
 ##############################################################################
 # request experiment pack for mobile device
 
-def request(i):
+def crowdsource(i):
     """
     Input:  {
             }
@@ -692,5 +754,125 @@ def request(i):
 
     """
 
+    import time
+    import os
+    import copy
+
+    # Test that new version
+    if i.get('new_engine','')!='yes':
+       return {'return':1, 'error':'your CK application to crowdsource experiments is OUTDATED - update it please!'}
+
+    ic=copy.deepcopy(i)
+
+    o=i.get('out','')
+
+    # Get path
+    ii={'action':'find',
+        'module_uoa':cfg['module_deps']['tmp'],
+        'data_uoa':cfg['tmp-server']}
+    r=ck.access(ii)
+    if r['return']>0: return r
+
+    pp=r['path'] 
+
+    rx=ck.gen_uid({})
+    if rx['return']>0: return rx
+    quid=rx['data_uid']
+
+    fmr=cfg['file-mobile-request']+'-'+quid+'.json'
+    pf=os.path.join(pp,fmr)
+
+    r=ck.get_current_date_time({})
+    ic['iso_datetime_of_request']=r['iso_datetime']
+
+    ll=['cid','out','web','out_file','cids', 'xcids', 'con_encoding', 'action']
+    for q in ll:
+        if q in ic: del(ic[q])
+
+    r=ck.save_json_to_file({'json_file':pf, 'dict':ic})
+    if r['return']>0: return r
+
+    return {'return':0, 'queue_uid':quid}
+
+##############################################################################
+# check if crowd pack is ready
+
+def check(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    ck.out('check if crowd pack is ready')
+
+    ck.out('')
+    ck.out('Command line: ')
+    ck.out('')
+
+    import json
+    cmd=json.dumps(i, indent=2)
+
+    ck.out(cmd)
 
     return {'return':0}
+
+##############################################################################
+# check if crowd-pack is ready
+
+def check(i):
+    """
+    Input:  {
+              queue_uid - check this task (if crowd pack is ready)
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    import os
+
+    quid=i.get('queue_uid','')
+    if quid=='':
+       return {'return':1, 'error':'queue_uid is not specified - possibly corrupted or outdated app to crowdsource experiments'}
+
+    cuid=''
+
+    o=i.get('out','')
+
+    # Get path
+    ii={'action':'find',
+        'module_uoa':cfg['module_deps']['tmp'],
+        'data_uoa':cfg['tmp-server']}
+    r=ck.access(ii)
+    if r['return']>0: return r
+    p=r['path']
+
+    rr={'return':0, 'crowd_uid':''}
+
+    ff=cfg['file-mobile-request']+'-'+quid+'.json'
+    pp=os.path.join(p,'result-'+ff)
+    if os.path.isfile(pp):
+       r=ck.load_json_file({'json_file':pp})
+       if r['return']==0:
+          rr=r['dict']
+
+          # Removing files
+          pp1=os.path.join(p,ff)
+          if os.path.isfile(pp1):
+             os.remove(pp1)
+
+          if os.path.isfile(pp):
+             os.remove(pp)
+
+    return rr

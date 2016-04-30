@@ -1,5 +1,9 @@
 {
   "actions": {
+    "check": {
+      "desc": "check if crowd-pack is ready", 
+      "for_web": "yes"
+    }, 
     "crowdsource": {
       "desc": "prepare experiments for crowdsourcing using mobile phones", 
       "for_web": "yes"
