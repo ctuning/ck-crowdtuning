@@ -129,6 +129,7 @@ def test(i):
         'lock_expire_time':20
        }
     r=ck.access(ii)
+    if r['return']>0: return r
 
     d=r['dict']
     lock_uid=r['lock_uid']
