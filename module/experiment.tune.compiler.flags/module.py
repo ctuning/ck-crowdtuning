@@ -69,7 +69,7 @@ def html_viewer(i):
 
     st=''
 
-    url0=ck.cfg.get('wfe_url_prefix','')
+    url0=i['url_base']
 
     ap=i.get('all_params',{})
 
@@ -110,6 +110,7 @@ def html_viewer(i):
        pdesc=pdesc.get(xxkey,{})
 
     h='<center>\n'
+    h+='xyz='+url0+'\n'
 
     h+='\n\n<script language="JavaScript">function copyToClipboard (text) {window.prompt ("Copy to clipboard: Ctrl+C, Enter", text);}</script>\n\n' 
 
@@ -229,8 +230,6 @@ def html_viewer(i):
        h+='<h2>No distinct solutions found!</h2>\n'
     else:
        # Check host URL prefix and default module/action
-       url0=ck.cfg.get('wfe_url_prefix','')
-
        h+='<table class="ck_table" border="0">\n'
 
        h+=' <tr style="background-color:#cfcfff;">\n'
@@ -609,7 +608,9 @@ def html_viewer(i):
            "d3_div":"ck_interactive",
 
            "image_width":"900",
-           "image_height":"400"}
+           "image_height":"400",
+
+           "wfe_url":url0}
 
        # Trick to save to file (for interactive/live articles)
        if ap.get('fgg_save_graph_to_file','')=='yes':

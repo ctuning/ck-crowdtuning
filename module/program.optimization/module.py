@@ -344,14 +344,13 @@ def show(i):
     h+='\n'
 
     # Check host URL prefix and default module/action
-    url0=ck.cfg.get('wfe_url_prefix','')
-
-    # However, if using CK server - automatically substitute server_host and port!
-    if i.get('server_host','')!='':
-       url0='http://'+i['server_host']
-       if i.get('server_port','')!='':
-          url0+=':'+str(i['server_port'])
-       url0+='?'
+    rx=ck.access({'action':'form_url_prefix',
+                  'module_uoa':'wfe',
+                  'host':i.get('host',''), 
+                  'port':i.get('port',''), 
+                  'template':i.get('template','')})
+    if rx['return']>0: return rx
+    url0=rx['url']
 
     url00=url0
     if ck.cfg.get('wfe_url_prefix_subst','')!='': url00=ck.cfg['wfe_url_prefix_subst']
@@ -550,7 +549,7 @@ def show(i):
                    irl=100
 
                # Check host URL prefix and default module/action
-                url0=ck.cfg.get('wfe_url_prefix','')
+#                url0=ck.cfg.get('wfe_url_prefix','')
 
                 h+='<center>\n'
                 h+='<table class="ck_table" border="0">\n'
@@ -1145,16 +1144,10 @@ def add_solution(i):
        rr['recorded']='yes'
        rr['recorded_info']={'repo_uoa': ruoa, 'module_uoa': smuoa, 'data_uoa':duid}
 
-       url0=ck.cfg.get('wfe_url_prefix','')
-
-       x=url0+'wcid='+smuoa+':'+duid
-
        xstatus='*** Your explored solution (UID='+suid+') is BETTER than existing ones and was RECORDED! ***\n'
-       xstatus+='You should be able to see it at '+x+'\n'
 
        s='Good solution!\n\n'
        s+='  User:         '+user+'\n\n'
-       s+='  URL:          '+x+'\n\n'
        s+='  Solution UID: '+suid+'\n'
        s+='  Scenario UOA: '+smuoa+'\n'
        s+='  Data UOA:     '+duid+'\n'

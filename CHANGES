@@ -1,5 +1,8 @@
+* 2016.05.30 * support for new CK web server
+
 * 2016.03.30 * major update of crowdtuning engine - now using queues!
                Required for Android crowd-tuning app v2.0+!
+
 
 * 2016.03.29 * adding scenario to user timeline
 

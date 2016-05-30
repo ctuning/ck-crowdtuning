@@ -69,7 +69,13 @@ def show(i):
        dt=d.get('timeline',[])
 
        # Check host URL prefix and default module/action
-       url0=ck.cfg.get('wfe_url_prefix','')
+       rx=ck.access({'action':'form_url_prefix',
+                     'module_uoa':'wfe',
+                     'host':i.get('host',''), 
+                     'port':i.get('port',''), 
+                     'template':i.get('template','')})
+       if rx['return']>0: return rx
+       url0=rx['url']
 
        xdt=sorted(dt, key=lambda v: (v.get('iso_datetime','')))
 
