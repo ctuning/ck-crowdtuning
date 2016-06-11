@@ -1388,7 +1388,7 @@ def initialize(i):
         'exchange_subrepo':esr,
         'skip_info_collection':sic,
         'quiet':quiet,
-        'skip_gpu_info',sgi,
+        'skip_gpu_info':sgi,
         'platform_init_uoa':piuoa,
         'force_platform_name':fpn}
     rpp=ck.access(ii)
