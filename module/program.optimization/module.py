@@ -1231,6 +1231,9 @@ def initialize(i):
               (skip_exchange)              - if 'yes', do not exchange platform info
                                             (development mode)
 
+              (skip_gpu_info)              - if 'yes', do not collect GPU info
+              (platform_init_uoa)          - if !='', use these platform.init scripts
+
               (change_user)                - if yes', change user
 
               (local)                      - if 'yes', use local repo for exchange (local autotuning/benchmarking)
@@ -1284,6 +1287,10 @@ def initialize(i):
     sw=i.get('skip_welcome','')
 
     sic=i.get('skip_info_collection','')
+
+    sgi=i.get('skip_gpu_info','')
+    pscripts=i.get('platform_scripts','')
+    piuoa=i.get('platform_init_uoa','')
 
     #**************************************************************************************************************
     # Welcome info
@@ -1380,6 +1387,9 @@ def initialize(i):
         'exchange_repo':er,
         'exchange_subrepo':esr,
         'skip_info_collection':sic,
+        'quiet':quiet,
+        'skip_gpu_info',sgi,
+        'platform_init_uoa':piuoa,
         'force_platform_name':fpn}
     rpp=ck.access(ii)
     if rpp['return']>0: return rpp

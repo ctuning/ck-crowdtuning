@@ -1,3 +1,5 @@
+* 2016.06.11 * added support to skip collection of GPU info and force platform scripts
+
 * 2016.05.30 * support for new CK web server
 
 * 2016.03.30 * major update of crowdtuning engine - now using queues!
