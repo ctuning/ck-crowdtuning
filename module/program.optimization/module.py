@@ -1338,7 +1338,7 @@ def initialize(i):
 
     user=dcfg.get('user_email','')
 
-    if (user=='' and o=='con' and quiet!='yes') or cu!='':
+    if (user=='' and o=='con' and quiet!='yes') or (cu!='' and cu!='-'):
        if cu=='':
           ck.out(line)
           r=ck.inp({'text':'If you would like to identify your contributions as well as participate in monthly prize draws, please enter your email: '})
@@ -1363,7 +1363,7 @@ def initialize(i):
           r=ck.access(ii)
           if r['return']>0: return r
 
-    if user!='' and o=='con' and quiet!='yes':
+    if o=='con':
        ck.out(line)
        ck.out('Your crowsourcing ID : '+user)
 

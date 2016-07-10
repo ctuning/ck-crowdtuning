@@ -110,8 +110,6 @@ def html_viewer(i):
        pdesc=pdesc.get(xxkey,{})
 
     h='<center>\n'
-    h+='xyz='+url0+'\n'
-
     h+='\n\n<script language="JavaScript">function copyToClipboard (text) {window.prompt ("Copy to clipboard: Ctrl+C, Enter", text);}</script>\n\n' 
 
     h+='<H2>Distinct solutions after online classification ('+cfg['desc']+')</H2>\n'
