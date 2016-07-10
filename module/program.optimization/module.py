@@ -1554,7 +1554,11 @@ def run(i):
     import os
     import time
 
-    curdir=os.getcwd()
+    try:
+       curdir=os.getcwd()
+    except OSError:
+       os.chdir('..')
+       curdir=os.getcwd()
 
     # Setting output
     o=i.get('out','')
