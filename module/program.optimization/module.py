@@ -1336,6 +1336,12 @@ def initialize(i):
        else:
           xuser=cu.strip()
 
+       if xuser=='':
+          # If user is not specified, generate user UID
+          rx=ck.gen_uid({})
+          if rx['return']>0: return rx
+          xuser=rx['data_uid']
+
        if xuser!=user:
           user=xuser
           dcfg['user_email']=user
@@ -1346,12 +1352,6 @@ def initialize(i):
               'dict':dcfg}
           r=ck.access(ii)
           if r['return']>0: return r
-
-    if user=='':
-       # If user is not specified, generate user UID
-       rx=ck.gen_uid({})
-       if rx['return']>0: return rx
-       user=rx['data_uid']
 
     if user!='' and o=='con' and quiet!='yes':
        ck.out(line)
