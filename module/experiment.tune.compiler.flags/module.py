@@ -693,7 +693,27 @@ def crowdsource(i):
 
     la=i.get('local_autotuning','')
 
+    # Get user 
     user=''
+
+    mcfg={}
+    ii={'action':'load',
+        'module_uoa':'module',
+        'data_uoa':cfg['module_deps']['program.optimization']}
+    r=ck.access(ii)
+    if r['return']==0:
+       mcfg=r['dict']
+
+       dcfg={}
+       ii={'action':'load',
+           'module_uoa':mcfg['module_deps']['cfg'],
+           'data_uoa':mcfg['cfg_uoa']}
+       r=ck.access(ii)
+       if r['return']>0 and r['return']!=16: return r
+       if r['return']!=16:
+          dcfg=r['dict']
+
+       user=dcfg.get('user_email','')
 
     ceuoa=i.get('compiler_env_uoa', '')
 
