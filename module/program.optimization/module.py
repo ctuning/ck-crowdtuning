@@ -1171,6 +1171,13 @@ def add_solution(i):
                 'scenario_uoa':smuoa,
                 'data_uoa':duid}
 
+          # Hack
+          bak1=ck.cfg["forbid_writing_to_local_repo"]
+          ck.cfg["forbid_writing_to_local_repo"]="no"
+
+          bak2=ck.cfg["allow_writing_only_to_allowed"]
+          ck.cfg["allow_writing_only_to_allowed"]="no"
+
           # Load/create and lock
           ii={'action':'load',
               'common_func':'yes',
@@ -1211,6 +1218,9 @@ def add_solution(i):
              }
           r=ck.access(ii)
           if r['return']>0: return r
+
+          ck.cfg["forbid_writing_to_local_repo"]=bak1
+          ck.cfg["allow_writing_only_to_allowed"]=bak2
 
     return rr
 
