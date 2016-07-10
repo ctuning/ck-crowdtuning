@@ -1,3 +1,5 @@
+* 2016.07.09 * added UID to specify user, if no user-specified ID or email (to distinguish experiments)
+
 * 2016.06.11 * added support to skip collection of GPU info and force platform scripts
 
 * 2016.05.30 * support for new CK web server

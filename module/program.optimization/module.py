@@ -14,8 +14,7 @@ ck=None # Will be updated by CK (initialized CK kernel)
 # Local settings
 line='****************************************************************'
 
-welcome   = "Dear friends!\n\n" \
-            "Computer systems become very inefficient" \
+welcome   = "Computer systems become very inefficient" \
             " due to too many design and optimization choices available - " \
             " optimizing compilers are simply not keeping pace with all this complexity and rapidly evolving hardware and software." \
             " It is possible to speed up code from 15% to more than 10x while considerably reducing energy usage and code size" \
@@ -1347,6 +1346,12 @@ def initialize(i):
               'dict':dcfg}
           r=ck.access(ii)
           if r['return']>0: return r
+
+    if user=='':
+       # If user is not specified, generate user UID
+       rx=ck.gen_uid({})
+       if rx['return']>0: return rx
+       user=rx['data_uid']
 
     if user!='' and o=='con' and quiet!='yes':
        ck.out(line)
