@@ -809,7 +809,7 @@ def crowdsource(i):
        ck.out(line)
        ck.out('Detecting compiler version ...')
 
-    ii={'action':'detect',
+    ii={'action':'internal_detect',
         'module_uoa':cfg['module_deps']['soft'],
         'data_uoa':compiler_soft_uoa,
         'host_os':hos,
