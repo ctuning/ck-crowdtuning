@@ -356,7 +356,7 @@ def request(i):
 
              lio=rrr.get('last_iteration_output',{})
              fail=lio.get('fail','')
-             if fail=='yes':
+             if fail=='yes' or 'off_line' not in rrr: # sometimes off_line not in rrr, why I don't know yet
                 if o=='con':
                    ck.out('')
                    ck.out('WARNING: Pipeline failed ('+lio.get('fail_reason','')+')')
