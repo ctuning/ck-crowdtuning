@@ -5,7 +5,8 @@ experiment crowdsourcing across platforms provided by voluteers
 (such as mobile devices and data centers).
 Currently implemented scenarios include universal,
 customizable, multi-dimensional, multi-objective 
-GCC/LLVM crowd-tuning.
+GCC/LLVM crowd-tuning. See public crowd-tuning
+results in the [http://cknowledge.org/repo CK live repository]!
 
 Description
 ===========
