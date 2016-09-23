@@ -745,11 +745,6 @@ def crowdsource(i):
     tosd=pi['os_dict']
     tbits=tosd.get('bits','')
 
-    hosz=hosd.get('base_uoa','')
-    if hosz=='': hosz=hos
-    tosz=tosd.get('base_uoa','')
-    if tosz=='': tosz=tos
-
     remote=tosd.get('remote','')
 
     tdid=pi['device_id']

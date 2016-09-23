@@ -1,3 +1,5 @@
+* 2016.09.23 * major update to support --target ('device' module)
+
 * 2016.09.05 * changed soft functions 'detect' to 'internal_detect' and 'check' to 'detect'
 
 * 2016.07.09 * added UID to specify user, if no user-specified ID or email (to distinguish experiments)

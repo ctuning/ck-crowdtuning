@@ -1234,6 +1234,11 @@ def initialize(i):
               (target_os)                  - OS module to check (if omitted, analyze host)
               (device_id)                  - device id if remote (such as adb)
 
+                  or
+
+              (target)                     - if specified, use info from 'device' module to set up target platform
+              (device_cfg)                 - extra device cfg (if empty, will be filled in from 'device' description)
+
               (quiet)                      - do not ask questions, but select random ...
               (skip_welcome)               - if 'yes', do not print welcome header
 
@@ -1279,6 +1284,8 @@ def initialize(i):
     hos=i.get('host_os','')
     tos=i.get('target_os', '')
     tdid=i.get('device_id', '')
+    target=i.get('target','')
+    device_cfg=i.get('device_cfg',{})
 
     exc='yes'
     se=i.get('skip_exchange','')
@@ -1396,6 +1403,8 @@ def initialize(i):
         'module_uoa':cfg['module_deps']['platform'],
         'out':oo,
         'host_os':hos,
+        'target':target,
+        'device_cfg':device_cfg,
         'target_os':tos,
         'target_device_id':tdid,
         'exchange':exc,
@@ -1415,11 +1424,6 @@ def initialize(i):
     tos=rpp['os_uoa']
     tosd=rpp['os_dict']
     tbits=tosd.get('bits','')
-
-    hosz=hosd.get('base_uoa','')
-    if hosz=='': hosz=hos
-    tosz=tosd.get('base_uoa','')
-    if tosz=='': tosz=tos
 
     remote=tosd.get('remote','')
 
@@ -1788,6 +1792,12 @@ def run(i):
        tmp_dir=state['tmp_dir']
 
        choices=r['choices']
+
+       hos=choices.get('host_os','')
+       tos=choices.get('target_os','')
+       tdid=choices.get('device_id','')
+       tcfg=choices.get('device_cfg','')
+
        ft=r['features']
 
        prog_uoa=choices['data_uoa']
@@ -2015,6 +2025,7 @@ def run(i):
 
            'out':oo
           }
+
 
        if i.get('save_to_file','')!='':
           ii['save_to_file']=i['save_to_file']
