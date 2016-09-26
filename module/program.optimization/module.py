@@ -1236,8 +1236,8 @@ def initialize(i):
 
                   or
 
-              (target)                     - if specified, use info from 'device' module to set up target platform
-              (device_cfg)                 - extra device cfg (if empty, will be filled in from 'device' description)
+              (target)                     - if specified, use info from 'machine' module to set up target machine
+              (device_cfg)                 - extra machine cfg (if empty, will be filled in from 'machine' description)
 
               (quiet)                      - do not ask questions, but select random ...
               (skip_welcome)               - if 'yes', do not print welcome header

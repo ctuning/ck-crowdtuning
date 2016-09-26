@@ -1,3 +1,5 @@
+* 2016.09.26 * changing 'device' to 'machine'
+
 * 2016.09.23 * major update to support --target ('device' module)
 
 * 2016.09.05 * changed soft functions 'detect' to 'internal_detect' and 'check' to 'detect'
