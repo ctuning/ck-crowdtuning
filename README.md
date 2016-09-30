@@ -45,7 +45,8 @@ Prerequisites
 Usage
 =====
 
-See https://github.com/ctuning/ck/wiki/Crowdsource_Experiments
+See [CK Getting Started Guide](https://github.com/ctuning/ck/wiki/Crowdsource_Experiments) 
+and the section on [Experiment Crowdsourcing](https://github.com/ctuning/ck/wiki/Crowdsourcing-optimization)
 
 Notes
 =====
