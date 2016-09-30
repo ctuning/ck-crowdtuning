@@ -10,7 +10,7 @@ customizable, multi-dimensional, multi-objective
 GCC/LLVM crowd-tuning. See public crowd-tuning
 results in the [CK live repository](http://cknowledge.org/repo)!
 
-See related [Android app](https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments Android app)
+See related [Android app](https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments)
 to let you participate in our experiment crowdsourcing using
 spare Android mobile phones, tables and other devices.
 
