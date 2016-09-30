@@ -1,12 +1,20 @@
 Status
 ======
-This is a relatively stable repository for customizable
-experiment crowdsourcing across platforms provided by voluteers
+This is a stable Collective Knowledge repository to enable
+customizable experiment crowdsourcing across Linux, Windows,
+Android and MacOS-based platforms provided by volunteers
 (such as mobile devices and data centers).
-Currently implemented scenarios include universal,
+
+We have several public experimental scenarios include universal,
 customizable, multi-dimensional, multi-objective 
 GCC/LLVM crowd-tuning. See public crowd-tuning
-results in the [http://cknowledge.org/repo CK live repository]!
+results in the [CK live repository](http://cknowledge.org/repo)!
+
+See related [Android app](https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments Android app)
+to let you participate in our experiment crowdsourcing using
+spare Android mobile phones, tables and other devices.
+
+Further details are available at [CK wiki](https://github.com/ctuning/ck/wiki)
 
 Description
 ===========
