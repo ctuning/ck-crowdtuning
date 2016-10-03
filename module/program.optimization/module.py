@@ -1569,6 +1569,8 @@ def run(i):
     oo=''
     if o=='con': oo='con'
 
+    target=i.get('target','')
+
     hos=i.get('host_os','')
     tos=i.get('target_os','')
     tdid=i.get('target_device_id','')
@@ -1734,6 +1736,7 @@ def run(i):
     ii={'action':'pipeline',
         'module_uoa':cfg['module_deps']['program'],
         'host_os':hos,
+        'target':target,
         'target_os':tos,
         'target_device_id':tdid,
         'dependencies':sdeps,
