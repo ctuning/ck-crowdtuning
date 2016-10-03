@@ -1592,6 +1592,9 @@ def run(i):
 
     sp=i.get('skip_pruning','')
 
+    print ('xyz=',sp)
+    exit(1)
+
     sf=i.get('solutions_file','')
     if sf=='':
        sf=os.path.join(curdir, fsolutions)
@@ -2501,7 +2504,7 @@ def run(i):
 
                       # Sort points by first key
                       points_to_add=sorted(points_to_add, key=lambda v: (ck.safe_float(v.get(ik0,0.0),0.0)), reverse=True)
-   
+
                       # Prepare new solution
                       sol={'solution_uid':suid,
                            'choices':choices,

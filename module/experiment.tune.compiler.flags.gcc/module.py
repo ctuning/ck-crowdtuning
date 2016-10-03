@@ -40,6 +40,7 @@ def crowdsource(i):
     """
 
     i['module_uoa']='experiment.tune.compiler.flags'
+    i['skip_pruning']='yes'
     i['module_cfg']=copy.deepcopy(cfg)
     i['module_work']=copy.deepcopy(work)
     return ck.access(i)
