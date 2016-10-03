@@ -1592,9 +1592,6 @@ def run(i):
 
     sp=i.get('skip_pruning','')
 
-    print ('xyz=',sp)
-    exit(1)
-
     sf=i.get('solutions_file','')
     if sf=='':
        sf=os.path.join(curdir, fsolutions)
