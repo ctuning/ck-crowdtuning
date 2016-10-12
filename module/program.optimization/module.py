@@ -1257,6 +1257,8 @@ def initialize(i):
               (force_platform_name)        - if !='', use this for platform name
 
               (skip_info_collection)       - if 'yes', skip info collection - useful when running scenarios remotly for mobile devices
+
+              (crowdtuning_type)           - (by default = random-crowdtuning)
             }
 
     Output: {
@@ -1297,6 +1299,9 @@ def initialize(i):
     esr=i.get('exchange_subrepo','')
 
     fpn=i.get('force_platform_name','')
+
+    crowdtuning_type=i.get('crowdtuning_type','')
+    if crowdtuning_type=='': crowdtuning_type='random-crowdtuning'
 
     quiet=i.get('quiet','')
 
@@ -1343,7 +1348,9 @@ def initialize(i):
     if r['return']!=16:
        dcfg=r['dict']
 
-    user=dcfg.get('user_email','')
+    user=i.get('user','')
+    if user=='':
+        user=dcfg.get('user_email','')
 
     if (user=='' and o=='con' and quiet!='yes') or (cu!='' and cu!='-'):
        if cu=='':
@@ -1385,7 +1392,7 @@ def initialize(i):
            'module_uoa':work['self_module_uid'],
            'out':'',
            'email':user,
-           'type':'random-crowdtuning',
+           'type':crowdtuning_type,
            'repo_uoa':er}
        r=ck.access(ii)
        if r['return']>0: return r
