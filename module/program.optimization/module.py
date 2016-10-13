@@ -1349,7 +1349,7 @@ def initialize(i):
        ck.out(line)
        ck.out('Experimental results will be appeneded to a local log file: '+p)
 
-       if quiet!='yes':
+       if quiet!='yes' and i.get('skip_log_wait','')!='yes':
           ck.out('')
           r=ck.inp({'text':'Press Enter to continue'})
 
