@@ -332,6 +332,7 @@ def show(i):
     """
 
     import os
+    import copy
 
     h='<center>'
     h+='<h2>Public results of crowdsourced experiments (continuously updated)</h2>\n'
@@ -358,7 +359,7 @@ def show(i):
     action=i.get('action','')
     muoa=i.get('module_uoa','')
 
-    hstyle=''
+    st=''
 
     url+='action=index&module_uoa=wfe&native_action='+action+'&'+'native_module_uoa='+muoa
     url1=url
@@ -434,6 +435,21 @@ def show(i):
           r=ck.access(ii)
           if r['return']>0: return r
           ds=r['dict']
+
+          eh=ds.get('external_html',{})
+          ehmuoa=eh.get('module_uoa','')
+          if ehmuoa!='':
+              ii=copy.deepcopy(i)
+              ii.update(eh)
+              ii['crowd_module_uoa']=scenario
+              ii['crowd_on_change']=onchange
+
+              r=ck.access(ii)
+              if r['return']>0: return r
+              h+=r['html']
+              st+=r.get('style','')
+
+              return {'return':0, 'html':h, 'style':st}
 
           # Get replay description + first key
           ik=ds.get('improvements_keys',[])
@@ -644,7 +660,7 @@ def show(i):
 
                 h+='</center>\n'
 
-    return {'return':0, 'html':h}
+    return {'return':0, 'html':h, 'style':st}
 
 ##############################################################################
 # add new solution
