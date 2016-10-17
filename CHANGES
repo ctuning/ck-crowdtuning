@@ -1,3 +1,6 @@
+* 2016.10.17 * added 'experiment.scenario.mobile' module to get crowd-benchmarking 
+               and crowd-tuning scenarios for mobile devices
+
 * 2016.10.13 * added support for external HTML rendering during crowd-tuning
 
 * 2016.10.12 * a few minor fixes/improvements (support for ARM WA)
