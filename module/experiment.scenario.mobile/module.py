@@ -36,14 +36,79 @@ def init(i):
 def get(i):
     """
     Input:  {
+              (data_uoa)
+              (repo_uoa)
+
+              (platform_features)
             }
 
     Output: {
               return       - return code =  0, if successful
                                          >  0, if error
               (error)      - error text if return > 0
+
+              scenarios    - list of scenarios and related files
             }
 
     """
 
-    return {'return':0, 'scenarios':{'test':'yes'}}
+    pf=i.get('platform_features',{})
+
+    abi=pf.get('cpu',{}).get('cpu_abi','')
+
+    duoa=i.get('data_uoa','')
+    ruoa=i.get('repo_uoa','')
+
+    r=ck.access({'action':'search',
+                 'module_uoa':work['self_module_uid'],
+                 'data_uoa':duoa,
+                 'repo_uoa':ruoa,
+                 'add_meta':'yes'})
+    if r['return']>0: return r
+
+    lst=r['lst']
+
+    nlst=[]
+
+    # Prepare URL from CK server
+    rx=ck.access({'action':'form_url_prefix',
+                  'module_uoa':'wfe',
+                  'host':i.get('host',''), 
+                  'port':i.get('port',''), 
+                  'template':i.get('template','')})
+    if rx['return']>0: return rx
+    url0=rx['url']
+
+    for q in lst:
+        add=True
+
+        meta=q['meta']
+
+        sabi=meta.get('supported_abi',[])
+        if abi!='' and abi not in sabi:
+            add=False
+
+        if add:
+            ff=meta.get('files',[])
+
+            # Go through files and update
+            nff=[]
+            for f in ff:
+                sabi=f.get('limit_abi',[])
+                if len(sabi)==0 or abi=='' or abi in sabi:
+                    url=f.get('url','')
+                    if url=='':
+                        path=f.get('path','')
+                        fn=f.get('filename','')
+                        url=url0+'action=pull&common_action=yes&cid='+q['module_uoa']+':'+q['data_uid']+'&filename='+path+'/'+fn
+
+                    f['url']=url
+                    nff.append(f)
+
+            meta['files']=nff
+
+            nlst.append(q)
+
+#    ck.save_json_to_file({'json_file':'/tmp/xyz888.json','dict':nlst})
+
+    return {'return':0, 'scenarios':nlst}
