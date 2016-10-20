@@ -2996,7 +2996,8 @@ def links(i):
 
     """
 
-    h ='<center>[ <a href="https://github.com/ctuning/ck/wiki/Crowdsourcing-optimization">How to participate and plans</a> ], \n'
+    h ='<center>[ <a href="https://github.com/ctuning/ck/wiki/Crowdsourcing-optimization">How to participate</a> ], \n'
+    h+='[ <a href="https://github.com/ctuning/ck/wiki/Research-and-development-challenges">Open challanges</a> ], \n'
     h+='[ <a href="https://github.com/ctuning/ck"><b>open research SDK</b></a> ], \n'
     h+='[ <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments"><b>Android app to crowdsource experiments using mobile devices</b></a> ], \n'
     h+='[ <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=experiment.user">User timeline</a> ]<br> \n'
@@ -3006,7 +3007,8 @@ def links(i):
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpu">GPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpgpu">GPGPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.nn">NN</a> ], \n'
-    h+='[ A few papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a>, <a href="http://bit.ly/ck-date16">DATE\'16</a>, \n'
+    h+='[ A few papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a>, \n'
+    h+='  <a href="https://www.researchgate.net/publication/304010295_Collective_Knowledge_Towards_RD_Sustainability">DATE\'16</a>, \n'
     h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST@PLDI\'14</a>, <a href="http://cknowledge.org/interactive-report">interactive</a>,\n'
     h+='  <a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube</a>\n'
     h+='  ], \n'
