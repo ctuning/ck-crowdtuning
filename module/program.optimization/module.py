@@ -3796,3 +3796,39 @@ def problem(i):
     if r['return']>0: return r
 
     return {'return':0}
+
+##############################################################################
+# show local results
+
+def dashboard(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    i['action']='start'
+    i['module_uoa']='web'
+    i['cid']=''
+    i['browser']='yes'
+    i['extra_url']='action=index&module_uoa=wfe&native_action=show&native_module_uoa=program.optimization'
+
+    return ck.access(i)
