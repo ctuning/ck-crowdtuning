@@ -56,6 +56,12 @@ Usage
 See [CK Getting Started Guide](https://github.com/ctuning/ck/wiki/Crowdsource_Experiments) 
 and the section on [Experiment Crowdsourcing](https://github.com/ctuning/ck/wiki/Crowdsourcing-optimization)
 
+You can also participate in crowd-benchmarking and crowd-tuning 
+using your Android mobile device using the following apps:
+* [small workloads](https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments)
+* [large workloads including DNN libs such as Caffe](https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments)
+
+
 Notes
 =====
 We and the community added various analysis of variation 
