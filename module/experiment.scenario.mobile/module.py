@@ -56,6 +56,12 @@ def get(i):
 
     abi=pf.get('cpu',{}).get('cpu_abi','')
 
+    os_name=pf.get('os',{}).get('name','')
+    os_ver=[]
+    j=os_name.find(' ')
+    if j>0:
+        os_ver=os_name[j+1:].strip().split('.')
+
     duoa=i.get('data_uoa','')
     ruoa=i.get('repo_uoa','')
 
@@ -87,6 +93,12 @@ def get(i):
         sabi=meta.get('supported_abi',[])
         if abi!='' and abi not in sabi:
             add=False
+
+        if add:
+            min_os_ver=meta.get('min_os_ver',[])
+            # TBD: need to check all digits
+            if len(min_os_ver)>0 and len(os_ver)>0 and os_ver[0]<min_os_ver[0]:
+                add=False
 
         if add:
             ff=meta.get('files',[])
