@@ -137,6 +137,8 @@ def get(i):
 def process(i):
     """
     Input:  {
+              (data_uoa)
+              (repo_uoa)
             }
 
     Output: {
@@ -147,15 +149,93 @@ def process(i):
 
     """
 
-    ck.out('process all scenarios (check files, get md5, get length)')
+    import os
 
-    ck.out('')
-    ck.out('Command line: ')
-    ck.out('')
+    duoa=i.get('data_uoa','')
+    ruoa=i.get('repo_uoa','')
 
-    import json
-    cmd=json.dumps(i, indent=2)
+    r=ck.access({'action':'search',
+                 'module_uoa':work['self_module_uid'],
+                 'data_uoa':duoa,
+                 'repo_uoa':ruoa,
+                 'add_meta':'yes'})
+    if r['return']>0: return r
 
-    ck.out(cmd)
+    lst=r['lst']
 
-    return {'return':0}
+    nlst=[]
+
+    # Prepare URL from CK server
+    rx=ck.access({'action':'form_url_prefix',
+                  'module_uoa':'wfe',
+                  'host':i.get('host',''), 
+                  'port':i.get('port',''), 
+                  'template':i.get('template','')})
+    if rx['return']>0: return rx
+    url0=rx['url']
+
+    for q in lst:
+        ck.out(q['data_uoa']+':')
+
+        meta=q['meta']
+
+        ff=meta.get('files',[])
+
+        # Go through files and update
+        for f in ff:
+            fn=f.get('filename','')
+            ck.out('  '+fn)
+
+            url=f.get('url','')
+            if url=='':
+                p=f.get('path','')
+
+                md5x=f.get('md5','')
+
+                dduoa=q['data_uid']
+                if f.get('from_data_uoa','')!='':
+                   dduoa=f['from_data_uoa']
+
+                # Get path
+                r=ck.access({'action':'load',
+                             'data_uoa':dduoa,
+                             'module_uoa':q['module_uoa']})
+                if r['return']>0: return r
+
+                pp=os.path.join(r['path'],p,fn)
+
+                if not os.path.isfile(pp):
+                    return {'return':1, 'error':'file ('+pp+') not found'}
+
+                # Check MD5 sum
+                md5=''
+
+                r=ck.run_and_get_stdout({'cmd':'md5sum < '+pp})
+                if r['return']>0: return r
+
+                s=r['stdout'].split(' ')
+                if len(s)>0:
+                    md5=s[0]
+                    if len(md5)>0 and md5.startswith('\\'):
+                        md5=md5[1:]
+
+                f['md5']=md5
+
+                # Get file size
+                fs=os.path.getsize(pp)
+                f['file_size']=fs
+
+                ck.out('    File size = '+str(fs))
+                ck.out('    MD5       = '+md5)
+
+        # Update entry
+        r=ck.access({'action':'update',
+                     'module_uoa':q['module_uid'],
+                     'data_uoa':q['data_uid'],
+                     'dict':meta,
+                     'substitute':'yes',
+                     'sort_key':'yes',
+                     'ignore_update':'yes'})
+        if r['return']>0: return r
+
+    return {'return':0, 'scenarios':nlst}

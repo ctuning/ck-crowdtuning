@@ -2,6 +2,9 @@
   "actions": {
     "get": {
       "desc": "get scenarios depending on user's mobile device features"
+    },
+    "process": {
+      "desc": "process all scenarios (check files, get md5, get length)"
     }
   },
   "copyright": "See CK COPYRIGHT.txt for copyright details",
