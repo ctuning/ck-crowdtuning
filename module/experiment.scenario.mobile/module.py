@@ -90,36 +90,42 @@ def get(i):
 
         meta=q['meta']
 
-        sabi=meta.get('supported_abi',[])
-        if abi!='' and abi not in sabi:
-            add=False
-
-        if add:
-            min_os_ver=meta.get('min_os_ver',[])
-            # TBD: need to check all digits
-            if len(min_os_ver)>0 and len(os_ver)>0 and os_ver[0]<min_os_ver[0]:
+        if meta.get('skip','')!='yes':
+            sabi=meta.get('supported_abi',[])
+            if abi!='' and abi not in sabi:
                 add=False
 
-        if add:
-            ff=meta.get('files',[])
+            if add:
+                min_os_ver=meta.get('min_os_ver',[])
+                # TBD: need to check all digits
+                if len(min_os_ver)>0 and len(os_ver)>0 and os_ver[0]<min_os_ver[0]:
+                    add=False
 
-            # Go through files and update
-            nff=[]
-            for f in ff:
-                sabi=f.get('limit_abi',[])
-                if len(sabi)==0 or abi=='' or abi in sabi:
-                    url=f.get('url','')
-                    if url=='':
-                        path=f.get('path','')
-                        fn=f.get('filename','')
-                        url=url0+'action=pull&common_action=yes&cid='+q['module_uoa']+':'+q['data_uid']+'&filename='+path+'/'+fn
+            if add:
+                ff=meta.get('files',[])
 
-                    f['url']=url
-                    nff.append(f)
+                # Go through files and update
+                nff=[]
+                for f in ff:
+                    sabi=f.get('limit_abi',[])
+                    if len(sabi)==0 or abi=='' or abi in sabi:
+                        url=f.get('url','')
+                        if url=='':
+                            path=f.get('path','')
+                            fn=f.get('filename','')
 
-            meta['files']=nff
+                            dduoa=q['data_uid']
+                            if f.get('from_data_uoa','')!='':
+                                dduoa=f['from_data_uoa']
 
-            nlst.append(q)
+                            url=url0+'action=pull&common_action=yes&cid='+q['module_uoa']+':'+dduoa+'&filename='+path+'/'+fn
+
+                        f['url']=url
+                        nff.append(f)
+
+                meta['files']=nff
+
+                nlst.append(q)
 
 #    ck.save_json_to_file({'json_file':'/tmp/xyz888.json','dict':nlst})
 
