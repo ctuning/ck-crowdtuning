@@ -130,3 +130,32 @@ def get(i):
 #    ck.save_json_to_file({'json_file':'/tmp/xyz888.json','dict':nlst})
 
     return {'return':0, 'scenarios':nlst}
+
+##############################################################################
+# process all scenarios (check files, get md5, get length)
+
+def process(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    ck.out('process all scenarios (check files, get md5, get length)')
+
+    ck.out('')
+    ck.out('Command line: ')
+    ck.out('')
+
+    import json
+    cmd=json.dumps(i, indent=2)
+
+    ck.out(cmd)
+
+    return {'return':0}
