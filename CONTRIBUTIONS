@@ -42,3 +42,9 @@ E:
 H:
 O: University of Edinburgh, UK
 C: helping test ARM64-based Android mobile devices (flags and OpenCL)
+
+N: Dave Butcher 
+E:
+O: ARM
+C: reporting a few bugs when intergrating ARM's workload automation to CK crowd-tuning
+W: 2016

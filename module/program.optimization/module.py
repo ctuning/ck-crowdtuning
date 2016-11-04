@@ -3588,7 +3588,12 @@ def prune(i):
 
     import os
 
-    curdir=os.getcwd()
+
+    try:
+        curdir=os.getcwd()
+    except OSError:
+        os.chdir('..')
+        curdir=os.getcwd()
 
     o=i.get('out','')
 
