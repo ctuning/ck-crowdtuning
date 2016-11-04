@@ -3012,7 +3012,7 @@ def links(i):
     h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST@PLDI\'14</a>, <a href="http://cknowledge.org/interactive-report">interactive</a>,\n'
     h+='  <a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube</a>\n'
     h+='  ], \n'
-    h+='[ <a href="http://cTuning.org/reproducibility-wiki">Reproducible experimentation initiative</a> ]\n'
+    h+='[ <a href="http://cTuning.org/ae">Reproducible experimentation initiative</a> ]\n'
     h+='</center>\n'
 
     return {'return':0, 'html':h}
