@@ -107,7 +107,7 @@ def get(i):
                 # Go through files and update
                 nff=[]
                 for f in ff:
-                    sabi=f.get('limit_abi',[])
+                    sabi=f.get('supported_abi',[])
                     if len(sabi)==0 or abi=='' or abi in sabi:
                         url=f.get('url','')
                         if url=='':
