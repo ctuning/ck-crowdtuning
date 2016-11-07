@@ -324,8 +324,9 @@ def show(i):
     h+='   <td '+ha+'><b>Crowd scenario</b></td>\n'
     h+='   <td '+ha+'><b>Model weight size</b></td>\n'
     h+='   <td '+ha+'><b>Min/Max recognition time (sec.)</b></td>\n'
+    h+='   <td '+ha+'><b>Prediction accuracy</b></td>\n'
+    h+='   <td '+ha+'><b>Energy</td>\n'
     h+='   <td '+ha+'><b>Image features</b></td>\n'
-    h+='   <td '+ha+'><b>Predictions</b></td>\n'
     h+='   <td '+ha+'><b>Platform</b></td>\n'
     h+='   <td '+ha+'><b>CPU</b></td>\n'
     h+='   <td '+ha+'><b>GPU</b></td>\n'
@@ -425,9 +426,19 @@ def show(i):
 
         h+='   <td '+ha+'>'+xx+'</a></td>\n'
 
+
+        # Accuracy
+        x=pred
+        j=x.find('-')
+        if j>0:
+            x=x[:j-1].strip()
+        h+='   <td '+ha+'>'+x+'</a></td>\n'
+
+        # Energy TBD
+        h+='   <td '+ha+'>-</a></td>\n'
+
         # All images
         h+='   <td '+ha+'>'+key.replace(' ','&nbsp;')+'</a></td>\n'
-        h+='   <td '+ha+'>'+pred+'</a></td>\n'
 
         # Platform, etc ...
         x=plat_name
