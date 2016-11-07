@@ -37,8 +37,10 @@ hextra+='</center></i>\n'
 hextra+='<br>\n'
 
 selector=[{'name':'Scenario', 'key':'crowd_uid', 'module_uoa':'65477d547a49dd2c', 'module_key':'##dict#title'},
-          {'name':'Platform', 'key':'plat_name'},
-          {'name':'CPU', 'key':'cpu_name', 'new_line':'yes'},
+          {'name':'DNN engine', 'key':'engine'},
+          {'name':'Model', 'key':'model'},
+          {'name':'Platform', 'key':'plat_name','new_line':'yes'},
+          {'name':'CPU', 'key':'cpu_name'},
           {'name':'OS', 'key':'os_name'},
           {'name':'GPU', 'key':'gpu_name'}]
 
@@ -135,10 +137,37 @@ def show(i):
     mchoices={} # cache of UID -> alias choices
     wchoices={}
 
+    cache_meta={}
+
     for q in lst:
         d=q['meta']
         meta=d.get('meta',{})
 
+        # Process some derivatives
+        scenario=meta.get('crowd_uid','')
+
+        kscenario=cfg['module_deps']['experiment.scenario.mobile']+':'+scenario
+        if kscenario not in cache_meta:
+            r=ck.access({'action':'load',
+                         'module_uoa':cfg['module_deps']['experiment.scenario.mobile'],
+                         'data_uoa':scenario})
+            if r['return']>0: return r
+            xd=r['dict']
+
+            # Find model size
+            for q in xd.get('files',[]):
+                if q.get('model_weights','')=='yes':
+                    xd['model_weights_size']=int(q.get('file_size',0)/1E6)
+                    break
+
+            cache_meta[kscenario]=xd
+        else:
+            xd=cache_meta[kscenario]
+
+        if meta.get('engine','')=='': meta['engine']=xd.get('engine','')
+        if meta.get('model','')=='': meta['model']=xd.get('model','')
+
+        # Process selector meta
         for kk in selector:
             kx=kk['key']
             k=ckey+kx
@@ -293,6 +322,7 @@ def show(i):
     h+='  <tr style="background-color:#dddddd">\n'
     h+='   <td '+ha+'><b>Data UID / Behavior UID</b></td>\n'
     h+='   <td '+ha+'><b>Crowd scenario</b></td>\n'
+    h+='   <td '+ha+'><b>Model weight size</b></td>\n'
     h+='   <td '+ha+'><b>Min/Max recognition time (sec.)</b></td>\n'
     h+='   <td '+ha+'><b>Image features</b></td>\n'
     h+='   <td '+ha+'><b>Predictions</b></td>\n'
@@ -314,6 +344,7 @@ def show(i):
 
     # Sort
     splst=sorted(plst, key=lambda x: x.get('extra',{}).get('time_min',0))
+
 
     for q in splst:
         ix+=1
@@ -366,9 +397,18 @@ def show(i):
         if cmuoa!='': x=cmuoa
         h+='   <td '+ha+'>'+str(ix)+')&nbsp;<a href="'+url0+'&wcid='+x+':'+duid+'">'+duid+' / '+buid+'</a></td>\n'
 
-        x=scenario
-        xx=mchoices.get(ckey+'crowd_uid',{}).get(x,'')
-        h+='   <td '+ha+'>'+xx+'</a></td>\n'
+        # Output scenario
+        xx=mchoices.get(ckey+'crowd_uid',{}).get(scenario,'')
+
+        kscenario=cfg['module_deps']['experiment.scenario.mobile']+':'+scenario
+        xd=cache_meta[kscenario]
+
+        xx=xd.get('title','')
+        xy=int(xd.get('model_weights_size',0))+1
+
+        h+='   <td '+ha+'><a href="'+url0+'&wcid='+kscenario+'">'+xx+'</a></td>\n'
+
+        h+='   <td '+ha+'>'+str(xy)+' MB</td>\n'
 
         # Check relative time
         xx='<b>'+('%.3f'%tmin)+'</b>&nbsp;/&nbsp;'+('%.3f'%tmax)
@@ -468,7 +508,7 @@ def show(i):
            "title":"Powered by Collective Knowledge",
 
            "axis_x_desc":"Experiment",
-           "axis_y_desc":"Neural network recognition time per pixel (us)",
+           "axis_y_desc":"DNN image classification time (s)",
 
            "plot_grid":"yes",
 
@@ -520,6 +560,9 @@ def process(i):
     email=i.get('email','')
     raw_results=i.get('raw_results',{})
 
+    cfb=i.get('cpu_freqs_before',{})
+    cfa=i.get('cpu_freqs_after',{})
+
     features=i.get('platform_features',{})
 
     fplat=features.get('platform',{})
@@ -549,6 +592,16 @@ def process(i):
           'gpu_name':gpu_name,
           'gpgpu_name':gpgpu_name,
           'crowd_uid':crowd_uid}
+
+    # Load scenario and update meta
+    r=ck.access({'action':'load',
+                 'module_uoa':cfg['module_deps']['experiment.scenario.mobile'],
+                 'data_uoa':crowd_uid})
+    if r['return']>0: return r
+    xd=r['dict']
+
+    meta['engine']=xd.get('engine','')
+    meta['model']=xd.get('model','')
 
     mmeta=copy.deepcopy(meta)
 
@@ -599,6 +652,12 @@ def process(i):
     if tx!=None: t.append(tx)
     raw_results['time']=t
 
+    raw_results['cpu_freqs_before']=[cfb]
+    raw_results['cpu_freqs_after']=[cfa]
+
+    # Process freq before and freq after (for now no any intelligence)
+    fb=raw_results
+
     # Process results
     results=ddd.get('all_raw_results',[])
 
@@ -613,9 +672,19 @@ def process(i):
                 t.append(tx)
             q['time']=t
 
+            fb=q.get('cpu_freqs_before',[])
+            fb.append(cfb)
+            q['cpu_freqs_before']=fb
+
+            fa=q.get('cpu_freqs_after',[])
+            fa.append(cfa)
+            q['cpu_freqs_before']=fa
+
             buid=q.get('behavior_uid','')
 
             found=True
+
+            break
 
     if not found:
         results.append(raw_results)
