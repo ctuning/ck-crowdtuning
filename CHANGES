@@ -1,3 +1,6 @@
+* 2016.11.07 * added experiment.bench.dnn.mobile to collaboratively benchmark 
+               various DNN implementations (Caffe, TensorFlow, etc)
+
 * 2016.11.06 * improving mobile crowd-tuning scenarios 
 
 * 2016.11.04 * making os.getcwd() safer
@@ -80,4 +83,3 @@
 * 2016.01.02 * adding test function to check CK server from remote (for example from mobile phones when crowdsourcing SW/HW optimization)
 
 * 2015.12.18 * adding dummy modules for compiler flag crowdtuning/pruning and crowdsourcing OpenCL algorithm tuning
-
