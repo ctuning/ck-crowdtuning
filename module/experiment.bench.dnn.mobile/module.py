@@ -664,8 +664,10 @@ def process(i):
     # Check if already exists with this image topology
     found=False
     for q in results:
-        if q.get('image_height',None)==raw_results.get('image_height',None) and \
-           q.get('image_width',None)==raw_results.get('image_width',None):
+        if (q.get('image_height',None)==raw_results.get('image_height',None) and \
+           q.get('image_width',None)==raw_results.get('image_width',None)) or \
+           (q.get('image_height',None)==raw_results.get('image_width',None) and \
+           q.get('image_width',None)==raw_results.get('image_height',None)):
             t=q.get('time',[])
 
             for tx in raw_results.get('time',[]):
