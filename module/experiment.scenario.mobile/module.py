@@ -85,7 +85,7 @@ def get(i):
     if rx['return']>0: return rx
     url0=rx['url']
 
-    for q in lst:
+    for q in sorted(lst, key=lambda x: x.get('meta',{}).get('title','')):
         add=True
 
         meta=q['meta']
@@ -106,6 +106,8 @@ def get(i):
 
                 # Go through files and update
                 nff=[]
+                tfs=0 # Total file size
+
                 for f in ff:
                     sabi=f.get('supported_abi',[])
                     if len(sabi)==0 or abi=='' or abi in sabi:
@@ -122,6 +124,17 @@ def get(i):
 
                         f['url']=url
                         nff.append(f)
+
+                        fs=int(f.get('file_size',0))
+                        tfs+=fs
+
+                tfs=int(tfs/1E6)
+
+                if tfs>0:
+                    title=meta.get('title','')
+                    if title!='':
+                        title+=' ('+str(tfs+1)+' MB)'
+                        meta['title']=title
 
                 meta['files']=nff
 
