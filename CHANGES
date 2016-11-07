@@ -1,3 +1,6 @@
+* 2016.11.07 * added experiment.bench.dnn.mobile to collaboratively benchmark 
+               various DNN implementations (Caffe, TensorFlow, etc)
+
 * 2016.11.04 * making os.getcwd() safer
 
 * 2016.11.02 * improving module to crowdsource video experiments (Caffe)
