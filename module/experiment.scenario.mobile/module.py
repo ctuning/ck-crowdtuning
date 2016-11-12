@@ -128,6 +128,8 @@ def get(i):
                         fs=int(f.get('file_size',0))
                         tfs+=fs
 
+                q['total_file_size']=tfs
+
                 tfs=int(tfs/1E6)
 
                 if tfs>0:

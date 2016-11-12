@@ -1,3 +1,5 @@
+* 2016.11.12 * returning total_file_size for mobile crowd-tuning scenarios
+
 * 2016.11.07 * added experiment.bench.dnn.mobile to collaboratively benchmark 
                various DNN implementations (Caffe, TensorFlow, etc)
 
