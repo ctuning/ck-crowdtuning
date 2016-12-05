@@ -91,7 +91,7 @@ def get(i):
 
         meta=q['meta']
 
-        if meta.get('skip','')!='yes':
+        if meta.get('skip','')!='yes' and meta.get('outdated','')!='yes':
             sabi=meta.get('supported_abi',[])
             if abi!='' and abi not in sabi:
                 add=False
@@ -199,6 +199,9 @@ def process(i):
         ck.out(q['data_uoa']+':')
 
         meta=q['meta']
+
+        if meta.get('outdated','')=='yes':
+           continue
 
         ff=meta.get('files',[])
 
