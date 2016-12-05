@@ -109,7 +109,7 @@ def show(i):
 
            ix=user.find('@')
            if ix>1:
-              user=user[:ix-2]+'***'+user[ix+1:]
+              user=user[:ix-1]+'{HiddenForPrivacy}'+user[ix+2:]
 
            a=''
            if nu=='yes': a='New user'

@@ -52,6 +52,8 @@ def get(i):
 
     """
 
+    import copy
+
     pf=i.get('platform_features',{})
 
     abi=pf.get('cpu',{}).get('cpu_abi','')
@@ -103,6 +105,12 @@ def get(i):
                     add=False
 
             if add:
+                # Check engine_meta ->
+                em=meta.get('engine_meta',{}).get(abi,{})
+                if em>0:
+                   meta['engine_meta_dict']=copy.deepcopy(em)
+                   del(meta['engine_meta'])
+
                 ff=meta.get('files',[])
 
                 # Go through files and update
