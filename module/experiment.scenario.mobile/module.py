@@ -214,6 +214,14 @@ def process(i):
             if url=='':
                 p=f.get('path','')
 
+                if not p.startswith('code') and not p.startswith('data'):
+                   j1=p.find('code/')
+                   if j1<0:
+                      j1=p.find('data/')
+                   if j1>0:
+                      p=p[j1:]
+                      f['path']=p
+
                 md5x=f.get('md5','')
 
                 dduoa=q['data_uid']
