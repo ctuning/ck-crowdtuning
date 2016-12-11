@@ -28,7 +28,7 @@
       "tags": "lib,xopenme"
     }
   }, 
-  "desc": "crowdtune OpenCL local work size (execution time/FPS vs energy)",
+  "desc": "auto/crowd-tune OpenCL local work size (execution time/FPS vs energy)",
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 

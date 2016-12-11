@@ -16,5 +16,5 @@
       "12x"
     ]
   }, 
-  "data_name": "crowdtune LLVM compiler flags (minimize execution time, do not degrade code size)"
+  "data_name": "auto/crowd-tune LLVM compiler flags (minimize execution time, do not degrade code size)"
 }

@@ -28,7 +28,7 @@
       "tags": "lib,xopenme"
     }
   }, 
-  "desc": "crowdtune LLVM compiler flags (minimize execution time)",
+  "desc": "auto/crowd-tune LLVM compiler flags (minimize execution time)",
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 

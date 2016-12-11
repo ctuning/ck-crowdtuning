@@ -28,7 +28,7 @@
       "tags": "lib,xopenme"
     }
   }, 
-  "desc": "crowdtune CUDA work size (execution time)",
+  "desc": "auto/crowd-tune CUDA work size (execution time)",
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 
