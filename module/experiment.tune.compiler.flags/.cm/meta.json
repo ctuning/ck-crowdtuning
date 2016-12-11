@@ -21,7 +21,7 @@
       "tags": "lib,xopenme"
     }
   }, 
-  "desc": "crowdtune compiler flags (exploration)", 
+  "desc": "explore compiler flags", 
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 

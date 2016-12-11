@@ -28,7 +28,7 @@
       "tags": "lib,xopenme"
     }
   }, 
-  "desc": "crowdtune LLVM compiler flags (exploration)", 
+  "desc": "explore LLVM compiler flags", 
   "developer": "Grigori Fursin", 
   "developer_email": "Grigori.Fursin@cTuning.org", 
   "developer_webpage": "http://fursin.net", 
