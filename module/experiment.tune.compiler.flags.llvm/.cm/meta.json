@@ -167,6 +167,7 @@
   "tags": [
     "program optimization", 
     "autotuning",
+    "explore",
     "llvm"
   ],
   "prune_autotune_pipeline": {

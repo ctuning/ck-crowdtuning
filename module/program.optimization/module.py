@@ -288,6 +288,7 @@ def crowdsource(i):
               (tbb)                        - add tag 'tbb' to search optimization crowdsourcing scenarios
               (opengl)                     - add tag 'opengl' to search optimization crowdsourcing scenarios
               (bugs)                       - add tag 'bugs' to search optimization crowdsourcing scenarios
+              (explore)                    - add tags 'explore' to search optimization crowdsourcing scenarios
             }
 
     Output: {

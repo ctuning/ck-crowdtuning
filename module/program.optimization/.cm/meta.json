@@ -99,7 +99,8 @@
     "pgi",
     "openmp",
     "mpi",
-    "bugs"
+    "bugs",
+    "explore"
   ],
   "solutions_modules_tags": "crowdsoure,experiments,program optimization",
   "tags": [],

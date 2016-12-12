@@ -166,6 +166,7 @@
   ], 
   "tags": [
     "program optimization", 
+    "explore",
     "autotuning",
     "gcc"
   ],
