@@ -2881,7 +2881,8 @@ def run(i):
                 ck.out('Note that you can:')
                 ck.out('  * replay above experiments via "ck replay experiment:'+euoa0+' (--point={above solution UID})"')
                 if xprune!='yes' and replay!='yes':
-                   ck.out('  * plot graph for above experiments via "ck plot graph:'+euoa0+'"')
+                   ck.out('  * plot non-interactive graph for above experiments via "ck plot graph:'+euoa0+'"')
+                   ck.out('  * view these experiments in a browser via "ck browse experiment:'+euoa0+'"')
 
        if i.get('once','')=='yes':
           finish=True
