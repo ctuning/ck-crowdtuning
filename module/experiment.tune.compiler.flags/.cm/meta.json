@@ -135,7 +135,9 @@
     }
   ], 
   "record_keys": [
-    "##characteristics#*"
+    "##characteristics#*",
+    "##features#*",
+    "##choices#*"
   ], 
   "reference_threshold": 0.03, 
   "replay_desc": {
