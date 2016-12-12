@@ -1,0 +1,1 @@
+ck autotune program:cbench-automotive-susan --iterations=2 --repetitions=2 --cmd_key=edges --dataset_uoa=image-pgm-0001 --parametric_flags

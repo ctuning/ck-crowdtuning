@@ -1,0 +1,3 @@
+ck autotune program:cbench-automotive-susan --iterations=20 --repetitions=2 --repeat=50 --target_os=android19-arm --cmd_key=edges --dataset_uoa=image-pgm-0001 --new
+
+rem -O3 -fbranch-probabilities -fbranch-target-load-optimize -fno-cse-follow-jumps -fcx-limited-range -fdata-sections -fno-devirtualize -fno-dse -findirect-inlining -fno-isolate-erroneous-paths-attribute -fno-keep-inline-functions -fkeep-static-consts -fno-loop-parallelize-all -fbranch-count-reg -fno-peephole -frename-registers -fno-reorder-blocks-and-partition -fsched-dep-count-heuristic -fsingle-precision-constant -fno-tracer -ftree-ccp -ftree-phiprop -fno-tree-sink -ftree-switch-conversion -fno-tree-tail-merge -funswitch-loops
