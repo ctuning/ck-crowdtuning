@@ -3258,7 +3258,7 @@ def replay(i):
                   'data_uoa':muoa})
     if rx['return']>0: return rx
     drx=rx['dict']
-    
+
     duoa=ck.get_from_dicts(i, 'data_uoa', '', None)
 
     scenario=ck.get_from_dicts(i, 'scenario', '', None)
