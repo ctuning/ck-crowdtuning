@@ -420,7 +420,15 @@ def show(i):
 
         te=d.get('characteristics',{}).get('run',{})
 
-        h+='  <tr'+bg+'>\n'
+        bgx=bg
+        bgx1=bg1
+        bgx2=bg2
+        if hi_uid!='' and buid==hi_uid:
+           bgx=' style="background-color:#ffcf7f"'
+           bgx1=' style="background-color:#ffbf5f"'
+           bgx2=' style="background-color:#ffaf2f"'
+
+        h+='  <tr'+bgx+'>\n'
 
         x=work['self_module_uid']
         if cmuoa!='': x=cmuoa
@@ -451,7 +459,7 @@ def show(i):
             bgraph['0'].append([ix,tmin])
             if hi_uid!='': bgraph['1'].append([ix,None])
 
-        h+='   <td '+ha+' '+bg1+'>'+xx+'</a></td>\n'
+        h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
 
         for ixo in range(0,3):
            tmin=extra.get('xopenme_execution_time_kernel_'+str(ixo)+'_min',0)
@@ -460,14 +468,14 @@ def show(i):
            xx='<b>'+('%.3f'%tmin)+'</b>&nbsp;/&nbsp;'+('%.3f'%tmax)
            if tmin==0: xx+='<br><b><center>bug?</center></b>\n'
 
-           h+='   <td '+ha+' '+bg1+'>'+xx+'</a></td>\n'
+           h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
 
         # Accuracy
         x=pred
         j=x.find('-')
         if j>0:
             x=x[:j-1].strip()
-        h+='   <td '+ha+' '+bg2+'>'+x+'</a></td>\n'
+        h+='   <td '+ha+' '+bgx2+'>'+x+'</a></td>\n'
 
         # Energy TBD
         h+='   <td '+ha+'>-</a></td>\n'
