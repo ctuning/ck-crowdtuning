@@ -144,7 +144,7 @@ def get(i):
                 if tfs>0:
                     title=meta.get('title','')
                     if title!='':
-                        title+=' ('+str(tfs+1)+' MB)'
+#                        title+=' ('+str(tfs+1)+' MB)'
                         meta['title']=title
 
                 meta['files']=nff

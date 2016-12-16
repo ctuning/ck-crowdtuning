@@ -349,21 +349,23 @@ def show(i):
     hb='align="left" valign="top"'
 
     h+='  <tr style="background-color:#dddddd">\n'
-    h+='   <td '+ha+'><b>Data UID / Behavior UID</b></td>\n'
+
+    h+='   <td '+ha+'><b>#</b></td>\n'
+    h+='   <td '+ha+'><b>Platform</b></td>\n'
     h+='   <td '+ha+'><b>Crowd scenario</b></td>\n'
     h+='   <td '+ha+'><b>Model weight size</b></td>\n'
     h+='   <td '+ha+'><b>Total time (min/max sec.)</b></td>\n'
     h+='   <td '+ha+'><b>Init network time (min/max sec.)</b></td>\n'
-    h+='   <td '+ha+'><b>Process image time (min/max sec.)</b></td>\n'
-    h+='   <td '+ha+'><b>Classify image time (min/max sec.)</b></td>\n'
-    h+='   <td '+ha+'><b>Prediction accuracy</b></td>\n'
-    h+='   <td '+ha+'><b>Energy</td>\n'
+    h+='   <td '+ha+'><b>Image preparation (min/max sec.)</b></td>\n'
+    h+='   <td '+ha+'><b>Classification time (min/max sec.)</b></td>\n'
+    h+='   <td '+ha+'><b>Prediction probability</b></td>\n'
+    h+='   <td '+ha+'><b>Energy (TBD)</td>\n'
+    h+='   <td '+ha+'><b>Mispredictions and unexpected behavior</b></td>\n'
     h+='   <td '+ha+'><b>Image features</b></td>\n'
-    h+='   <td '+ha+'><b>Platform</b></td>\n'
     h+='   <td '+ha+'><b>CPU</b></td>\n'
     h+='   <td '+ha+'><b>GPU</b></td>\n'
     h+='   <td '+ha+'><b>OS</b></td>\n'
-    h+='   <td '+ha+'><b>Mispredictions / unexpected behavior</b></td>\n'
+    h+='   <td '+ha+'><b>Data UID / Behavior UID</b></td>\n'
     h+='   <td '+ha+'><b>User</b></td>\n'
     h+='  <tr>\n'
 
@@ -377,7 +379,6 @@ def show(i):
 
     # Sort
     splst=sorted(plst, key=lambda x: x.get('extra',{}).get('time_min',0))
-
 
     for q in splst:
         ix+=1
@@ -428,11 +429,15 @@ def show(i):
            bgx1=' style="background-color:#ffbf5f"'
            bgx2=' style="background-color:#ffaf2f"'
 
+        # Starting raw
         h+='  <tr'+bgx+'>\n'
 
-        x=work['self_module_uid']
-        if cmuoa!='': x=cmuoa
-        h+='   <td '+ha+'>'+str(ix)+')&nbsp;<a href="'+url0+'&wcid='+x+':'+duid+'">'+duid+' / '+buid+'</a></td>\n'
+        h+='   <td '+ha+'>'+str(ix)+'</a></td>\n'
+
+        x=plat_name
+        if plat_uid!='':
+            x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform']+':'+plat_uid+'">'+x+'</a>'
+        h+='   <td '+ha+'>'+x+'</td>\n'
 
         # Output scenario
         xx=mchoices.get(ckey+'crowd_uid',{}).get(scenario,'')
@@ -480,30 +485,6 @@ def show(i):
         # Energy TBD
         h+='   <td '+ha+'>-</a></td>\n'
 
-        # All images
-        h+='   <td '+ha+'>'+key.replace(' ','&nbsp;')+'</a></td>\n'
-
-        # Platform, etc ...
-        x=plat_name
-        if plat_uid!='':
-            x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform']+':'+plat_uid+'">'+x+'</a>'
-        h+='   <td '+ha+'>'+x+'</td>\n'
-
-        x=cpu_name
-        if cpu_uid!='':
-            x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform.cpu']+':'+cpu_uid+'">'+x+'</a>'
-        h+='   <td '+ha+'>'+x+'</td>\n'
-
-        x=gpu_name
-        if gpu_uid!='':
-            x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform.gpu']+':'+gpu_uid+'">'+x+'</a>'
-        h+='   <td '+ha+'>'+x+'</td>\n'
-
-        x=os_name
-        if os_uid!='':
-            x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform']+':'+os_uid+'">'+x+'</a>'
-        h+='   <td '+ha+'>'+x+'</td>\n'
-
         x=''
         for q in mp:
             ca=q.get('correct_answer','')
@@ -534,6 +515,31 @@ def show(i):
         if tmin==0: x+='<br><b><center>Bug detected</center></b>\n'
 
         h+='   <td '+ha+'>'+x+'</td>\n'
+
+        # All images
+        h+='   <td '+ha+'>'+key.replace(' ','&nbsp;')+'</a></td>\n'
+
+        # Extra info about platform
+
+        x=cpu_name
+        if cpu_uid!='':
+            x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform.cpu']+':'+cpu_uid+'">'+x+'</a>'
+        h+='   <td '+ha+'>'+x+'</td>\n'
+
+        x=gpu_name
+        if gpu_uid!='':
+            x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform.gpu']+':'+gpu_uid+'">'+x+'</a>'
+        h+='   <td '+ha+'>'+x+'</td>\n'
+
+        x=os_name
+        if os_uid!='':
+            x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform']+':'+os_uid+'">'+x+'</a>'
+        h+='   <td '+ha+'>'+x+'</td>\n'
+
+
+        x=work['self_module_uid']
+        if cmuoa!='': x=cmuoa
+        h+='   <td '+ha+'><a href="'+url0+'&wcid='+x+':'+duid+'">'+duid+' '+buid+'</a></td>\n'
 
         h+='   <td '+ha+'><a href="'+url0+'&action=index&module_uoa=wfe&native_action=show&native_module_uoa=experiment.user">'+user+'</a></td>\n'
 
