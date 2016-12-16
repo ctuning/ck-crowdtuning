@@ -40,8 +40,9 @@ selector=[{'name':'Scenario', 'key':'crowd_uid', 'module_uoa':'65477d547a49dd2c'
           {'name':'DNN engine', 'key':'engine'},
           {'name':'Model', 'key':'model'},
           {'name':'Platform', 'key':'plat_name','new_line':'yes'},
-          {'name':'CPU', 'key':'cpu_name'},
           {'name':'OS', 'key':'os_name'},
+          {'name':'CPU', 'key':'cpu_name', 'new_line':'yes'},
+          {'name':'CPU ABI', 'key':'cpu_abi'},
           {'name':'GPU', 'key':'gpu_name'}]
 
 ##############################################################################
@@ -70,6 +71,8 @@ def show(i):
                (crowd_module_uoa) - if rendered from experiment crowdsourcing
                (crowd_key)        - add extra name to Web keys to avoid overlapping with original crowdsourcing HTML
                (crowd_on_change)  - reuse onchange doc from original crowdsourcing HTML
+
+               (highlight_behavior_uid) - highlight specific result (behavior)!
             }
 
     Output: {
@@ -92,7 +95,7 @@ def show(i):
     if conc=='':
         conc=onchange
 
-    hi_uid=i.get('highlight_uid','')
+    hi_uid=i.get('highlight_behavior_uid','')
 
     h='<hr>\n'
     h+='<center>\n'
@@ -302,6 +305,26 @@ def show(i):
 
                 nn['extra']={'key':key, 'raw_results':g, 'time_min':tmin, 'time_max':tmax, 'prediction':prd}
 
+                # Check xOpenME timing
+                xopenme=g.get('xopenme',{})
+                xxopenme={}
+
+                if type(xopenme)==dict:
+                   for xk in xopenme:
+                       t=xopenme[xk]
+
+                       tmin=0
+                       tmax=0
+
+                       if len(t)>0:
+                           tmin=min(t)
+                           tmax=max(t)
+
+                       xxopenme['xopenme_'+xk+'_min']=tmin
+                       xxopenme['xopenme_'+xk+'_max']=tmax
+
+                nn['extra'].update(xxopenme)
+
                 plst.append(nn)
 
     # Check if too many
@@ -314,6 +337,12 @@ def show(i):
         return {'return':0, 'html':h, 'style':st}
 
     # Prepare table
+#    bgc='afffaf'
+    bgc='dfffdf'
+    bg=' style="background-color:#'+bgc+';"'
+    bg1=' style="background-color:#bfffbf;"'
+    bg2=' style="background-color:#afffaf;"'
+
     h+='<table border="1" cellpadding="7" cellspacing="0">\n'
 
     ha='align="center" valign="top"'
@@ -323,7 +352,10 @@ def show(i):
     h+='   <td '+ha+'><b>Data UID / Behavior UID</b></td>\n'
     h+='   <td '+ha+'><b>Crowd scenario</b></td>\n'
     h+='   <td '+ha+'><b>Model weight size</b></td>\n'
-    h+='   <td '+ha+'><b>Min/Max recognition time (sec.)</b></td>\n'
+    h+='   <td '+ha+'><b>Total time (min/max sec.)</b></td>\n'
+    h+='   <td '+ha+'><b>Init network time (min/max sec.)</b></td>\n'
+    h+='   <td '+ha+'><b>Process image time (min/max sec.)</b></td>\n'
+    h+='   <td '+ha+'><b>Classify image time (min/max sec.)</b></td>\n'
     h+='   <td '+ha+'><b>Prediction accuracy</b></td>\n'
     h+='   <td '+ha+'><b>Energy</td>\n'
     h+='   <td '+ha+'><b>Image features</b></td>\n'
@@ -388,10 +420,6 @@ def show(i):
 
         te=d.get('characteristics',{}).get('run',{})
 
-#        bgc='afffaf'
-        bgc='dfffdf'
-        bg=' style="background-color:#'+bgc+';"'
-
         h+='  <tr'+bg+'>\n'
 
         x=work['self_module_uid']
@@ -416,23 +444,30 @@ def show(i):
 
         if tmin==0: xx+='<br><b><center>bug?</center></b>\n'
 
-        if duid==hi_uid:
-            if hi_uid!='':
-                bgraph['0'].append([ix,None])
-                bgraph['1'].append([ix,tmin])
+        if hi_uid!='' and buid==hi_uid:
+            bgraph['0'].append([ix,None])
+            bgraph['1'].append([ix,tmin])
         else:
             bgraph['0'].append([ix,tmin])
             if hi_uid!='': bgraph['1'].append([ix,None])
 
-        h+='   <td '+ha+'>'+xx+'</a></td>\n'
+        h+='   <td '+ha+' '+bg1+'>'+xx+'</a></td>\n'
 
+        for ixo in range(0,3):
+           tmin=extra.get('xopenme_execution_time_kernel_'+str(ixo)+'_min',0)
+           tmax=extra.get('xopenme_execution_time_kernel_'+str(ixo)+'_max',0)
+
+           xx='<b>'+('%.3f'%tmin)+'</b>&nbsp;/&nbsp;'+('%.3f'%tmax)
+           if tmin==0: xx+='<br><b><center>bug?</center></b>\n'
+
+           h+='   <td '+ha+' '+bg1+'>'+xx+'</a></td>\n'
 
         # Accuracy
         x=pred
         j=x.find('-')
         if j>0:
             x=x[:j-1].strip()
-        h+='   <td '+ha+'>'+x+'</a></td>\n'
+        h+='   <td '+ha+' '+bg2+'>'+x+'</a></td>\n'
 
         # Energy TBD
         h+='   <td '+ha+'>-</a></td>\n'
@@ -565,6 +600,7 @@ def process(i):
 
     import copy
 
+#    Debug
 #    ck.save_json_to_file({'json_file':'/tmp/xyz1.json','dict':i})
 
     crowd_uid=i.get('crowd_uid','')
@@ -598,6 +634,7 @@ def process(i):
 
     # Prepare high-level experiment meta
     meta={'cpu_name':cpu_name,
+          'cpu_abi':cpu_abi,
           'os_name':os_name,
           'plat_name':plat_name,
           'gpu_name':gpu_name,
@@ -663,6 +700,21 @@ def process(i):
     if tx!=None: t.append(tx)
     raw_results['time']=t
 
+    # Check XOpenME
+    xopenme={}
+
+    yopenme=raw_results.get('xopenme',[])
+    for xx in yopenme:
+        for k in xx:
+            v=xx[k]
+            if k not in xopenme:
+               xopenme[k]=[]
+            if v!=None:
+               xopenme[k].append(v)
+
+    raw_results['xopenme']=xopenme
+
+    # Record freq (not checking if changed at this stage)
     raw_results['cpu_freqs_before']=[cfb]
     raw_results['cpu_freqs_after']=[cfa]
 
@@ -684,6 +736,17 @@ def process(i):
             for tx in raw_results.get('time',[]):
                 t.append(tx)
             q['time']=t
+
+            tkk1=raw_results.get('xopenme',{})
+            tkk2=q.get('xopenme',{})
+
+            for tk in tkk1:
+                if tk not in tkk2: tkk2[tk]=[]
+                for tx in tkk1[tk]:
+                    if tx!=None: 
+                       tkk2[tk].append(tx)
+
+            q['xopenme']=tkk2
 
             fb=q.get('cpu_freqs_before',[])
             fb.append(cfb)
@@ -718,7 +781,14 @@ def process(i):
                   'sort_keys':'yes'})
     if rx['return']>0: return rx
 
-    return {'return':0, 'status':'Results successfully added to Collective Knowledge (UID='+duid+')!', 'data_uid':duid, 'behavior_uid':buid}
+    # Prepare url with results
+    rx=ck.access({'action':'form_url_prefix',
+                  'module_uoa':'wfe'})
+    if rx['return']>0: return rx
+
+    url=rx['url']+'&action=index&module_uoa=wfe&native_action=show&native_module_uoa=program.optimization&scenario='+work['self_module_uid']+'&highlight_behavior_uid='+buid
+
+    return {'return':0, 'status':'Results successfully added to Collective Knowledge (UID='+duid+')!', 'data_uid':duid, 'behavior_uid':buid, 'result_url':url}
 
 ##############################################################################
 # record unexpected behavior
