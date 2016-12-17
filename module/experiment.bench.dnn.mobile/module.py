@@ -170,6 +170,8 @@ def show(i):
         if meta.get('engine','')=='': meta['engine']=xd.get('engine','')
         if meta.get('model','')=='': meta['model']=xd.get('model','')
 
+        meta['engine_meta']=xd.get('engine_meta',{})
+
         # Process selector meta
         for kk in selector:
             kx=kk['key']
@@ -353,6 +355,7 @@ def show(i):
     h+='   <td '+ha+'><b>#</b></td>\n'
     h+='   <td '+ha+'><b>Platform</b></td>\n'
     h+='   <td '+ha+'><b>Crowd scenario</b></td>\n'
+    h+='   <td '+ha+'><b>Versions</b></td>\n'
     h+='   <td '+ha+'><b>Model weight size</b></td>\n'
     h+='   <td '+ha+'><b>Total time (min/max sec.)</b></td>\n'
     h+='   <td '+ha+'><b>Init network time (min/max sec.)</b></td>\n'
@@ -363,6 +366,7 @@ def show(i):
     h+='   <td '+ha+'><b>Mispredictions and unexpected behavior</b></td>\n'
     h+='   <td '+ha+'><b>Image features</b></td>\n'
     h+='   <td '+ha+'><b>CPU</b></td>\n'
+    h+='   <td '+ha+'><b>CPU ABI</b></td>\n'
     h+='   <td '+ha+'><b>GPU</b></td>\n'
     h+='   <td '+ha+'><b>OS</b></td>\n'
     h+='   <td '+ha+'><b>Data UID / Behavior UID</b></td>\n'
@@ -409,6 +413,7 @@ def show(i):
 
         plat_name=meta.get('plat_name','')
         cpu_name=meta.get('cpu_name','')
+        cpu_abi=meta.get('cpu_abi','')
         os_name=meta.get('os_name','')
         gpu_name=meta.get('gpu_name','')
         gpgpu_name=meta.get('gpgpu_name','')
@@ -449,6 +454,19 @@ def show(i):
         xy=int(xd.get('model_weights_size',0))+1
 
         h+='   <td '+ha+'><a href="'+url0+'&wcid='+kscenario+'">'+xx+'</a></td>\n'
+
+        # Versions
+        ver=''
+        dver=meta.get('engine_meta',{}).get(cpu_abi,{})
+        ver+='main: '+str(dver.get('program_version',''))+'\n'
+        dps=dver.get('deps_versions',{})
+        for dx in dps:
+            ver+=dx+': '+str(dps[dx].get('version',''))+'\n'
+
+        ver=ver.replace("\'","'").replace("'","\\'").replace('\"','"').replace('"',"\\'").replace('\n','\\n')
+        if ver!='':
+            ver='<input type="button" class="ck_small_button" onClick="alert(\''+ver+'\');" value="View">'
+        h+='   <td '+ha+'>'+ver+'</td>\n'
 
         h+='   <td '+ha+'>'+str(xy)+' MB</td>\n'
 
@@ -525,6 +543,8 @@ def show(i):
         if cpu_uid!='':
             x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform.cpu']+':'+cpu_uid+'">'+x+'</a>'
         h+='   <td '+ha+'>'+x+'</td>\n'
+
+        h+='   <td '+ha+'>'+cpu_abi+'</td>\n'
 
         x=gpu_name
         if gpu_uid!='':
