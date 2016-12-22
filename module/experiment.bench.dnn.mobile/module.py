@@ -434,7 +434,7 @@ def show(i):
         bgx=bg
         bgx1=bg1
         bgx2=bg2
-        if (hi_uid!='' and buid==hi_uid) or (hi_user==user):
+        if (hi_uid!='' and buid==hi_uid) or (hi_user!='' and hi_user==user):
            bgx=' style="background-color:#ffcf7f"'
            bgx1=' style="background-color:#ffbf5f"'
            bgx2=' style="background-color:#ffaf2f"'
