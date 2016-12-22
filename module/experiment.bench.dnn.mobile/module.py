@@ -480,7 +480,7 @@ def show(i):
 
         if tmin==0: xx+='<br><b><center>bug?</center></b>\n'
 
-        if (hi_uid!='' and buid==hi_uid) or (hi_user==user):
+        if (hi_uid!='' and buid==hi_uid) or (hi_user!='' and hi_user==user):
             bgraph['0'].append([ix,None])
             bgraph['1'].append([ix,tmin])
         else:
