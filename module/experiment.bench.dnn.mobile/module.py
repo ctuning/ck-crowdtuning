@@ -73,6 +73,7 @@ def show(i):
                (crowd_on_change)  - reuse onchange doc from original crowdsourcing HTML
 
                (highlight_behavior_uid) - highlight specific result (behavior)!
+               (highlight_by_user)      - highlight all results from a given user
             }
 
     Output: {
@@ -96,6 +97,7 @@ def show(i):
         conc=onchange
 
     hi_uid=i.get('highlight_behavior_uid','')
+    hi_user=i.get('highlight_by_user','')
 
     h='<hr>\n'
     h+='<center>\n'
@@ -250,7 +252,10 @@ def show(i):
 
     # Check hidden
     if hi_uid!='':
-        h+='<input type="hidden" name="highlight_uid" value="'+hi_uid+'">\n'
+        h+='<input type="hidden" name="highlight_behavior_uid" value="'+hi_uid+'">\n'
+
+    if hi_user!='':
+        h+='<input type="hidden" name="highlight_by_user" value="'+hi_user+'">\n'
 
     h+='<br><br>'
 
@@ -378,7 +383,7 @@ def show(i):
 
     ix=0
     bgraph={'0':[]} # Just for graph demo
-    if hi_uid!='':
+    if hi_uid!='' or hi_user!='':
         bgraph['1']=[]
 
     # Sort
@@ -429,7 +434,7 @@ def show(i):
         bgx=bg
         bgx1=bg1
         bgx2=bg2
-        if hi_uid!='' and buid==hi_uid:
+        if (hi_uid!='' and buid==hi_uid) or (hi_user==user):
            bgx=' style="background-color:#ffcf7f"'
            bgx1=' style="background-color:#ffbf5f"'
            bgx2=' style="background-color:#ffaf2f"'
@@ -475,12 +480,13 @@ def show(i):
 
         if tmin==0: xx+='<br><b><center>bug?</center></b>\n'
 
-        if hi_uid!='' and buid==hi_uid:
+        if (hi_uid!='' and buid==hi_uid) or (hi_user==user):
             bgraph['0'].append([ix,None])
             bgraph['1'].append([ix,tmin])
         else:
             bgraph['0'].append([ix,tmin])
-            if hi_uid!='': bgraph['1'].append([ix,None])
+            if hi_uid!='' or hi_user!='': 
+               bgraph['1'].append([ix,None])
 
         h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
 

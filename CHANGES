@@ -1,3 +1,5 @@
+* 2016.12.21 * highlighting all results from a given user
+
 * 2016.12.16 * added support to get fine grain stats for DNN libraries during crowd-tuning via mobile devices
 
 * 2016.11.12 * returning total_file_size for mobile crowd-tuning scenarios
