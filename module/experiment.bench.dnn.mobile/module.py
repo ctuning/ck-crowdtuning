@@ -27,12 +27,12 @@ form_name='wa_web_form'
 onchange='document.'+form_name+'.submit();'
 
 hextra='<i><center>\n'
-hextra+='This is an on-going long-term scenario. Please check our vision [ '
-hextra+='<a href="http://doi.acm.org/10.1145/2909437.2909449">IWOCL\'16</a>, \n'
+hextra+='This is an on-going, community-driven project. Please see this <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=fr">Android app</a>, long-term vision [ '
 hextra+='<a href="http://arxiv.org/abs/1506.06256">CPC\'15</a>, \n'
+hextra+='<a href="http://doi.acm.org/10.1145/2909437.2909449">IWOCL\'16</a>, \n'
 hextra+='<a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube</a>, \n'
 hextra+='<a href="http://ctuning.org/cm/wiki/index.php?title=CM:data:45741e3fbcf4024b:1db78910464c9d05">wiki</a> ] '
-hextra+=' and <a href="https://github.com/dividiti/ck-caffe">CK-Caffe GitHub repo</a> for more details!'
+hextra+=' and <a href="https://github.com/dividiti/ck-caffe">CK-Caffe GitHub repo</a>.'
 hextra+='</center></i>\n'
 hextra+='<br>\n'
 
@@ -367,7 +367,9 @@ def show(i):
     h+='   <td '+ha+'><b>Image preparation (min/max sec.)</b></td>\n'
     h+='   <td '+ha+'><b>Classification time (min/max sec.)</b></td>\n'
     h+='   <td '+ha+'><b>Prediction probability</b></td>\n'
-    h+='   <td '+ha+'><b>Energy (TBD)</td>\n'
+    h+='   <td '+ha+'><b>Energy</td>\n'
+    h+='   <td '+ha+'><b>Model accuracy</td>\n'
+    h+='   <td '+ha+'><b>HW costs</td>\n'
     h+='   <td '+ha+'><b>Mispredictions and unexpected behavior</b></td>\n'
     h+='   <td '+ha+'><b>Image features</b></td>\n'
     h+='   <td '+ha+'><b>CPU</b></td>\n'
@@ -507,6 +509,12 @@ def show(i):
         h+='   <td '+ha+' '+bgx2+'>'+x+'</a></td>\n'
 
         # Energy TBD
+        h+='   <td '+ha+'>-</a></td>\n'
+
+        # Accuracy TBD (take from model info)
+        h+='   <td '+ha+'>-</a></td>\n'
+
+        # Cost TBD (take from platform meta)
         h+='   <td '+ha+'>-</a></td>\n'
 
         x=''
