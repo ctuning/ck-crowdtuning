@@ -368,7 +368,7 @@ def show(i):
     h+='   <td '+ha+'><b>Classification time (min/max sec.)</b></td>\n'
     h+='   <td '+ha+'><b>Prediction probability</b></td>\n'
     h+='   <td '+ha+'><b>Energy</td>\n'
-    h+='   <td '+ha+'><b>Model accuracy</td>\n'
+    h+='   <td '+ha+'><b><a href="https://github.com/dividiti/ck-caffe/blob/master/script/explore-accuracy/explore_accuracy.20160808.ipynb">Model accuracy on ImageNet</a></td>\n'
     h+='   <td '+ha+'><b>HW costs</td>\n'
     h+='   <td '+ha+'><b>Mispredictions and unexpected behavior</b></td>\n'
     h+='   <td '+ha+'><b>Image features</b></td>\n'
@@ -511,10 +511,19 @@ def show(i):
         # Energy TBD
         h+='   <td '+ha+'>-</a></td>\n'
 
-        # Accuracy TBD (take from model info)
-        h+='   <td '+ha+'>-</a></td>\n'
+        # Accuracy (take from model info)
+        acc=xd.get('features',{}).get('accuracy','')
+        acc5=xd.get('features',{}).get('accuracy_top5','')
 
-        # Cost TBD (take from platform meta)
+        x=str(acc)
+        if acc5!='':
+           x+=' / '+str(acc5)
+
+        if x=='': x='-'
+
+        h+='   <td '+ha+'>'+x+'</a></td>\n'
+
+        # Cost (take from platform meta)
         hc='-'
         if plat_uid!='':
            rh=ck.access({'action':'load',
