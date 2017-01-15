@@ -368,6 +368,7 @@ def show(i):
     h+='   <td '+ha+'><b>Classification time (min/max sec.)</b></td>\n'
     h+='   <td '+ha+'><b>Prediction probability</b></td>\n'
     h+='   <td '+ha+'><b>Energy</td>\n'
+    h+='   <td '+ha+'><b>Memory usage (MB)</td>\n'
     h+='   <td '+ha+'><b><a href="https://github.com/dividiti/ck-caffe/blob/master/script/explore-accuracy/explore_accuracy.20160808.ipynb">Model accuracy on ImageNet</a></td>\n'
     h+='   <td '+ha+'><b>HW costs</td>\n'
     h+='   <td '+ha+'><b>Mispredictions and unexpected behavior</b></td>\n'
@@ -509,6 +510,9 @@ def show(i):
         h+='   <td '+ha+' '+bgx2+'>'+x+'</a></td>\n'
 
         # Energy TBD
+        h+='   <td '+ha+'>-</a></td>\n'
+
+        # Memory usage TBD
         h+='   <td '+ha+'>-</a></td>\n'
 
         # Accuracy (take from model info)
