@@ -1,3 +1,7 @@
+* 2017.01.15 - added costs of various hardware as features 
+               (see our CPC'15 paper on performance and cost-aware computer engineering
+                https://arxiv.org/abs/1506.06256)
+
 * 2016.12.21 * highlighting all results from a given user
 
 * 2016.12.16 * added support to get fine grain stats for DNN libraries during crowd-tuning via mobile devices

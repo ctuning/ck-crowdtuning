@@ -515,7 +515,21 @@ def show(i):
         h+='   <td '+ha+'>-</a></td>\n'
 
         # Cost TBD (take from platform meta)
-        h+='   <td '+ha+'>-</a></td>\n'
+        hc='-'
+        if plat_uid!='':
+           rh=ck.access({'action':'load',
+                        'module_uoa':cfg['module_deps']['platform'],
+                        'data_uoa':plat_uid})
+           if rh['return']==0:
+              hd=rh['dict']
+
+              costs=hd.get('features',{}).get('cost',[])
+              hc=''
+              for c in costs:
+                  if hc!='': hc+='<br>\n'
+                  hc+='<b>'+str(c.get('price',''))+' '+c.get('currency','')+ '</b> - '+c.get('desc','')+' ('+c.get('date','')+')'
+
+        h+='   <td '+ha+'>'+hc+'</a></td>\n'
 
         x=''
         for q in mp:
