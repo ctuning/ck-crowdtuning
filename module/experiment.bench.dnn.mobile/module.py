@@ -367,7 +367,7 @@ def show(i):
     h+='   <td '+ha+'><b>Image preparation (min/max sec.)</b></td>\n'
     h+='   <td '+ha+'><b>Classification time (min/max sec.)</b></td>\n'
     h+='   <td '+ha+'><b>Prediction probability</b></td>\n'
-    h+='   <td '+ha+'><b>Energy</td>\n'
+    h+='   <td '+ha+'><b>Power consumption (W)<br>min / max</td>\n'
     h+='   <td '+ha+'><b>Memory usage (MB)</td>\n'
     h+='   <td '+ha+'><b><a href="https://github.com/dividiti/ck-caffe/blob/master/script/explore-accuracy/explore_accuracy.20160808.ipynb">Model accuracy on ImageNet</a></td>\n'
     h+='   <td '+ha+'><b>HW costs</td>\n'
@@ -509,8 +509,25 @@ def show(i):
             x=x[:j-1].strip()
         h+='   <td '+ha+' '+bgx2+'>'+x+'</a></td>\n'
 
+        # Get info about platform
+        hd={}
+        if plat_uid!='':
+           rh=ck.access({'action':'load',
+                        'module_uoa':cfg['module_deps']['platform'],
+                        'data_uoa':plat_uid})
+           if rh['return']==0:
+              hd=rh['dict']
+
         # Energy TBD
-        h+='   <td '+ha+'>-</a></td>\n'
+        x='-'
+        if len(hd)>0:
+           power=hd.get('features',{}).get('power_consumption',{})
+           if len(power)>0:
+              pmin=power.get('min','')
+              pmax=power.get('max','')
+
+              x=str(pmin)+' / '+str(pmax)
+        h+='   <td '+ha+'>'+x+'</a></td>\n'
 
         # Memory usage TBD
         h+='   <td '+ha+'>-</a></td>\n'
@@ -529,18 +546,12 @@ def show(i):
 
         # Cost (take from platform meta)
         hc='-'
-        if plat_uid!='':
-           rh=ck.access({'action':'load',
-                        'module_uoa':cfg['module_deps']['platform'],
-                        'data_uoa':plat_uid})
-           if rh['return']==0:
-              hd=rh['dict']
-
-              costs=hd.get('features',{}).get('cost',[])
-              hc=''
-              for c in costs:
-                  if hc!='': hc+='<br>\n'
-                  hc+='<b>'+str(c.get('price',''))+' '+c.get('currency','')+ '</b> - '+c.get('desc','')+' ('+c.get('date','')+')'
+        if len(hd)>0:
+           costs=hd.get('features',{}).get('cost',[])
+           hc=''
+           for c in costs:
+               if hc!='': hc+='<br>\n'
+               hc+='<b>'+str(c.get('price',''))+' '+c.get('currency','')+ '</b> - '+c.get('desc','')+' ('+c.get('date','')+')'
 
         h+='   <td '+ha+'>'+hc+'</a></td>\n'
 
