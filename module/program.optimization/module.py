@@ -376,7 +376,12 @@ def show(i):
 
     # Listing available crowdsourcing scenarios ...
     scenario=i.get('scenario','')
+
     if scenario=='': 
+       # Check if has local var
+       scenario=ck.cfg.get('default_crowdtuning_scenario','')
+          
+    if scenario=='':
 #       scenario=cfg['module_deps']['experiment.tune.compiler.flags.llvm.e']
        scenario=cfg['module_deps']['experiment.tune.compiler.flags.gcc.e']
 
