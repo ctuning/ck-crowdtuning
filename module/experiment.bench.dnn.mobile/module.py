@@ -27,7 +27,7 @@ form_name='wa_web_form'
 onchange='document.'+form_name+'.submit();'
 
 hextra='<i><center>\n'
-hextra+='This is an on-going, community-driven project. Please see this <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=fr">Android app</a>, long-term vision [ '
+hextra+='This is an on-going, community-driven project. Please see this <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=en">Android app</a>, long-term vision [ '
 hextra+='<a href="http://arxiv.org/abs/1506.06256">CPC\'15</a>, \n'
 hextra+='<a href="http://doi.acm.org/10.1145/2909437.2909449">IWOCL\'16</a>, \n'
 hextra+='<a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube</a>, \n'
