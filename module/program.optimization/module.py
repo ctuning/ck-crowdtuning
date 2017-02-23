@@ -336,13 +336,7 @@ def show(i):
     import copy
 
     h='<center>'
-    h+='<h2>Collaborative experiments performed using CK workflow framework</h2>\n'
-
-    rx=links({})
-    if rx['return']>0: return rx
-    h+=rx['html']
-
-    h+='\n'
+    h+='<h2>Public experiments performed and shared using CK workflow framework</h2>\n'
 
     # Check host URL prefix and default module/action
     rx=ck.access({'action':'form_url_prefix',
@@ -380,7 +374,7 @@ def show(i):
     if scenario=='': 
        # Check if has local var
        scenario=ck.cfg.get('default_crowdtuning_scenario','')
-          
+
     if scenario=='':
 #       scenario=cfg['module_deps']['experiment.tune.compiler.flags.llvm.e']
        scenario=cfg['module_deps']['experiment.tune.compiler.flags.gcc.e']
@@ -426,11 +420,17 @@ def show(i):
            'selected_value':scenario}
        r=ck.access(ii)
        if r['return']>0: return r
-       h+='<br><b>Select crowdsourcing scenario:</b> '+r['html']
+       h+='<b>Select CK-powered common expermental workflow:</b> '+r['html']
 
        h+='</center>\n'
 
-       h+='<p>\n'
+       h+='<hr>\n'
+
+       rx=links({})
+       if rx['return']>0: return rx
+       h+=rx['html']
+
+       h+='\n'
 
        # Check scenario
        if scenario!='':
@@ -3003,23 +3003,24 @@ def links(i):
 
     """
 
-    h ='<center>[ <a href="https://github.com/ctuning/ck/wiki/Crowdsourcing-optimization">How to participate</a> ], \n'
-    h+='[ <a href="https://github.com/ctuning/ck/wiki/Research-and-development-challenges">Open challanges</a> ], \n'
-    h+='[ <a href="https://github.com/ctuning/ck"><b>open research SDK</b></a> ], \n'
-    h+='[ <b>Android apps to crowdsource experiments:</b> <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments">small kernels</a>, <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments">apps (DNN)</a>) ], \n'
-    h+='[ <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=experiment.user">User timeline</a> ]<br> \n'
+    h='<center>'
     h+='[ Participated <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform">Platforms</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.os">OS</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.cpu">CPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpu">GPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpgpu">GPGPU</a>, \n'
-    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.nn">NN</a> ], \n'
-    h+='[ A few papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a>, \n'
-    h+='  <a href="https://www.researchgate.net/publication/304010295_Collective_Knowledge_Towards_RD_Sustainability">DATE\'16</a>, \n'
-    h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST@PLDI\'14</a>, <a href="http://cknowledge.org/interactive-report">interactive</a>,\n'
-    h+='  <a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube</a>\n'
-    h+='  ], \n'
-    h+='[ <a href="http://cTuning.org/ae">Reproducible experimentation initiative</a> ]\n'
+    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.nn">NN</a> ] \n'
+    h+='[ <a href="https://github.com/ctuning/ck/wiki/Crowdsourcing-optimization">How to participate</a> ] \n'
+    h+='[ <a href="https://github.com/ctuning/ck/wiki/Research-and-development-challenges">Open challanges</a> ] \n'
+#    h+='[ <a href="https://github.com/ctuning/ck"><b>open research SDK</b></a> ], \n'
+#    h+='[ <b>Android apps to crowdsource experiments:</b> <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments">small kernels</a>, <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments">apps (DNN)</a>) ], \n'
+    h+='[ <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=experiment.user">Participated users</a> ]\n'
+#    h+='[ A few papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a>, \n'
+#    h+='  <a href="https://www.researchgate.net/publication/304010295_Collective_Knowledge_Towards_RD_Sustainability">DATE\'16</a>, \n'
+#    h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST@PLDI\'14</a>, <a href="http://cknowledge.org/interactive-report">interactive</a>,\n'
+#    h+='  <a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube</a>\n'
+#    h+='  ], \n'
+    h+='[ <a href="http://cTuning.org/ae">Our reproducible initiative for ACM conferences</a> ]\n'
     h+='</center>\n'
 
     return {'return':0, 'html':h}
