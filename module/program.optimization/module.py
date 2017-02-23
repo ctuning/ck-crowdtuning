@@ -336,7 +336,7 @@ def show(i):
     import copy
 
     h='<center>'
-    h+='<h2>Public results of crowdsourced experiments (continuously updated)</h2>\n'
+    h+='<h2>Collaborative experiments performed using CK workflow framework</h2>\n'
 
     rx=links({})
     if rx['return']>0: return rx
