@@ -27,14 +27,14 @@ form_name='wa_web_form'
 onchange='document.'+form_name+'.submit();'
 
 hextra='<i><center>\n'
-hextra+='This is an on-going, community-driven project. Please see this <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=en">Android app</a>, long-term vision [ '
-hextra+='<a href="http://arxiv.org/abs/1506.06256">CPC\'15</a>, \n'
-hextra+='<a href="http://doi.acm.org/10.1145/2909437.2909449">IWOCL\'16</a>, \n'
-hextra+='<a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube</a>, \n'
-hextra+='<a href="http://ctuning.org/cm/wiki/index.php?title=CM:data:45741e3fbcf4024b:1db78910464c9d05">wiki</a> ] '
-hextra+=' and <a href="https://github.com/dividiti/ck-caffe">CK-Caffe GitHub repo</a>.'
+hextra+='This is a community-driven research: \n'
+hextra+=' [ <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=en">Android app to participate in crowdsourcing DNN experiments</a> ], '
+hextra+=' [ <a href="https://github.com/dividiti/ck-caffe">CK-powered Caffe workflows at GitHub</a> ], '
+hextra+=' [ <a href="https://en.wikipedia.org/wiki/Collective_Knowledge_(software)">CK intro</a>, \n'
+hextra+='<a href="https://www.researchgate.net/publication/304010295_Collective_Knowledge_Towards_RD_Sustainability">CK paper</a>, \n'
+hextra+='<a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube intro</a> ] \n'
 hextra+='</center></i>\n'
-hextra+='<br>\n'
+#hextra+='<br>\n'
 
 selector=[{'name':'Scenario', 'key':'crowd_uid', 'module_uoa':'65477d547a49dd2c', 'module_key':'##dict#title'},
           {'name':'DNN engine', 'key':'engine'},
@@ -99,11 +99,13 @@ def show(i):
     hi_uid=i.get('highlight_behavior_uid','')
     hi_user=i.get('highlight_by_user','')
 
-    h='<hr>\n'
-    h+='<center>\n'
+#    h='<hr>\n'
+    h='<center>\n'
     h+='\n\n<script language="JavaScript">function copyToClipboard (text) {window.prompt ("Copy to clipboard: Ctrl+C, Enter", text);}</script>\n\n' 
 
     h+=hextra
+
+    h+='<hr>\n'
 
     # Check host URL prefix and default module/action
     rx=ck.access({'action':'form_url_prefix',
