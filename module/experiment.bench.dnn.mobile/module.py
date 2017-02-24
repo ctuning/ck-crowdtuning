@@ -641,6 +641,8 @@ def show(i):
 
            "title":"Powered by Collective Knowledge",
 
+           "x_ticks_period":5,
+
            "axis_x_desc":"Experiment",
            "axis_y_desc":"DNN image classification time (s)",
 
