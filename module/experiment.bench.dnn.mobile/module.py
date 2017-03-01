@@ -463,6 +463,8 @@ def show(i):
         xx=xd.get('title','')
         xy=int(xd.get('model_weights_size',0))+1
 
+        fbsize=xd.get('features',{}).get('fixed_batch_size','')
+
         h+='   <td '+ha+'><a href="'+url0+'&wcid='+kscenario+'">'+xx+'</a></td>\n'
 
         # Versions
@@ -484,6 +486,8 @@ def show(i):
         xx='<b>'+('%.3f'%tmin)+'</b>&nbsp;/&nbsp;'+('%.3f'%tmax)
 
         if tmin==0: xx+='<br><b><center>bug?</center></b>\n'
+        elif fbsize!='':
+           xx+='<br><br><i>batch size='+str(fbsize)+'</i>'
 
         if (hi_uid!='' and buid==hi_uid) or (hi_user!='' and hi_user==user):
             bgraph['0'].append([ix,None])
