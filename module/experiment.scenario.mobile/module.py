@@ -204,12 +204,12 @@ def process(i):
     url0=rx['url']
 
     for q in lst:
-        ck.out(q['data_uoa']+':')
-
         meta=q['meta']
 
         if meta.get('outdated','')=='yes':
            continue
+
+        ck.out('Processing '+q['data_uoa']+' ...')
 
         ff=meta.get('files',[])
 
