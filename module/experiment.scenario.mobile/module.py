@@ -152,10 +152,11 @@ def get(i):
                 nlst.append(q)
 
     # Sort by title
-    snlst=[]
+    snlst=nlst
+#[]
 #    for q in sorted(nlst, key=lambda x: (x.get('total_file_size',0),x.get('meta',{}).get('title',''))):
-    for q in sorted(nlst, key=lambda x: x.get('meta',{}).get('title','')):
-        snlst.append(q)
+#    for q in sorted(nlst, key=lambda x: x.get('meta',{}).get('title','')):
+#        snlst.append(q)
 
 #    ck.save_json_to_file({'json_file':'/tmp/xyz888.json','dict':nlst})
 
