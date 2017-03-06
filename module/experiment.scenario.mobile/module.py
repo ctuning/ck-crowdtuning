@@ -153,7 +153,7 @@ def get(i):
 
     # Sort by size
     snlst=[]
-    for q in sorted(nlst, key=lambda x: x.get('total_file_size',0)):
+    for q in sorted(nlst, key=lambda x: (x.get('total_file_size',0),x.get('meta',{}).get('title',''))):
         snlst.append(q)
 
 #    ck.save_json_to_file({'json_file':'/tmp/xyz888.json','dict':nlst})
