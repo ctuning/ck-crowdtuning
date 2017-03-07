@@ -85,3 +85,5 @@ and find missing experiment features that could explain and separate
 such states such as CPU/GPU frequency.
 
 See our papers for more details.
+
+![logo](https://github.com/ctuning/ck-guide-images/blob/master/logo-validated-by-the-community-simple.png)
