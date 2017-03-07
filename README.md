@@ -3,6 +3,8 @@ customizable experiment crowdsourcing across diverse Linux, Windows,
 MacOS and Android-based platforms provided by volunteers
 (such as mobile devices/IoT, data centers and supercomputers).
 
+![logo](https://github.com/ctuning/ck-guide-images/blob/master/image-pipelines.png)
+
 We have several public experimental scenarios include universal,
 customizable, multi-dimensional, multi-objective 
 [DNN crowd-benchmarking](http://cKnowledge.org/ai) 
