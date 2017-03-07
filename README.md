@@ -85,6 +85,8 @@ See our papers for more details.
 Publications
 ============
 
+The concepts have been described in the following publications:
+
 ```
 @inproceedings{ck-date16,
     title = {{Collective Knowledge}: towards {R\&D} sustainability},
