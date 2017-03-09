@@ -552,7 +552,7 @@ def show(i):
         h+='   <td '+ha+'>'+x+'</a></td>\n'
 
         # Will be used to optimize model topology and parameters
-        h+='   <td '+ha+'>Unchanged</a></td>\n'
+        h+='   <td '+ha+'>default</a></td>\n'
 
         # Cost (take from platform meta)
         hc='-'
