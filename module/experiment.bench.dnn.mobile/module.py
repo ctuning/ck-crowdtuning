@@ -372,6 +372,7 @@ def show(i):
     h+='   <td '+ha+'><b>Power consumption (W)<br>min / max</td>\n'
     h+='   <td '+ha+'><b>Memory usage (MB)</td>\n'
     h+='   <td '+ha+'><b><a href="https://github.com/dividiti/ck-caffe/blob/master/script/explore-accuracy/explore_accuracy.20160808.ipynb">Model accuracy on ImageNet</a></td>\n'
+    h+='   <td '+ha+'><b>Model topology and parameters</td>\n'
     h+='   <td '+ha+'><b>HW costs</td>\n'
     h+='   <td '+ha+'><b>Mispredictions and unexpected behavior</b></td>\n'
     h+='   <td '+ha+'><b>Image features</b></td>\n'
@@ -549,6 +550,9 @@ def show(i):
         if x=='': x='-'
 
         h+='   <td '+ha+'>'+x+'</a></td>\n'
+
+        # Will be used to optimize model topology and parameters
+        h+='   <td '+ha+'>Unchanged</a></td>\n'
 
         # Cost (take from platform meta)
         hc='-'
