@@ -1,3 +1,6 @@
+* 2017.03.09 * added used model topology to table of crowd-results (preparing collaborative
+               optimization of model topology and parameters)
+
 * 2017.01.15 * added accuracy of models and costs of various hardware as features 
                (see our CPC'15 paper on performance and cost-aware computer engineering
                 https://arxiv.org/abs/1506.06256)

@@ -552,7 +552,21 @@ def show(i):
         h+='   <td '+ha+'>'+x+'</a></td>\n'
 
         # Will be used to optimize model topology and parameters
-        h+='   <td '+ha+'>Unchanged</a></td>\n'
+        x='default'
+
+        xfiles=xd.get('files',[])
+        for xf in xfiles:
+            if xf.get('filename','')=='deploy.prototxt':
+               xx1=xf.get('from_data_uoa','')
+               if xx1=='':
+                  xx1=scenario
+               xx2=xf.get('path','')
+
+               x='<a href="'+url0+'&action=pull&common_action=yes&cid='+cfg['module_deps']['experiment.scenario.mobile']+':'+xx1+'&filename='+xx2+'/deploy.prototxt'+'">deploy.prototxt</a>\n'
+
+               break
+
+        h+='   <td '+ha+'>'+x+'</a></td>\n'
 
         # Cost (take from platform meta)
         hc='-'
@@ -649,7 +663,7 @@ def show(i):
 
            "title":"Powered by Collective Knowledge",
 
-           "x_ticks_period":5,
+           "x_ticks_period":10,
 
            "axis_x_desc":"Experiment",
            "axis_y_desc":"DNN image classification time (s)",

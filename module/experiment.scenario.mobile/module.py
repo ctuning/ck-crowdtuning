@@ -158,7 +158,7 @@ def get(i):
 #    for q in sorted(nlst, key=lambda x: x.get('meta',{}).get('title','')):
 #        snlst.append(q)
 
-#    ck.save_json_to_file({'json_file':'/tmp/xyz888.json','dict':nlst})
+#    ck.save_json_to_file({'json_file':'/tmp/xyz888.json','dict':snlst})
 
     return {'return':0, 'scenarios':snlst}
 
