@@ -3011,7 +3011,7 @@ def links(i):
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpgpu">GPGPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.nn">NN</a> ] \n'
     h+='[ <a href="https://github.com/ctuning/ck/wiki/Crowdsourcing-optimization">How to participate</a> ] \n'
-    h+='[ <a href="https://github.com/ctuning/ck/wiki/Research-and-development-challenges">Open challanges</a> ] \n'
+    h+='[ <a href="https://github.com/ctuning/ck/wiki/Research-and-development-challenges">Open challenges</a> ] \n'
 #    h+='[ <a href="https://github.com/ctuning/ck"><b>open research SDK</b></a> ], \n'
 #    h+='[ <b>Android apps to crowdsource experiments:</b> <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments">small kernels</a>, <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments">apps (DNN)</a>) ], \n'
     h+='[ <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=experiment.user">Participated users</a> ]\n'
