@@ -1,5 +1,8 @@
 {
   "actions": {
+    "generate": {
+      "desc": "generate scenarios"
+    },
     "process": {
       "desc": "process raw results from mobile devices",
       "for_web": "yes"
@@ -26,6 +29,7 @@
   "module_deps": {
     "choice": "e4564d6f984400d7",
     "env": "9b9b3208ac44b891",
+    "experiment.scenario.mobile": "65477d547a49dd2c",
     "graph": "2d41f89bcf32d4d4",
     "machine": "84be34883a81b2a9",
     "module": "032630d041b4fd8a",
@@ -37,13 +41,32 @@
     "platform.os": "41e31cc4496b8a8e",
     "program": "b0ac08fe1d3c2615",
     "program.optimization": "27bc42ee449e880e",
-    "experiment.scenario.mobile":"65477d547a49dd2c",
     "soft": "5e1100048ab875d7",
     "wfe": "1e4e644996b7f2a0"
   },
   "priority": 9,
+  "prog_uoa": [
+    {
+      "engine": "Caffe CPU",
+      "program_uoa": "473c67d70ebe45a9",
+      "engine-deps-key": "lib-caffe",
+      "engine-lib":"libcaffe.so"
+    },
+    {
+      "engine": "Caffe OpenCL",
+      "program_uoa": "a04a64811e45d288",
+      "engine-deps-key": "lib-caffe",
+      "engine-lib":"libcaffe.so"
+    },
+    {
+      "engine": "TensorFlow CPU",
+      "program_uoa": "1c1cc5d6a4944be7",
+      "engine-deps-key": "lib-tensorflow",
+      "engine-lib":""
+    }
+  ],
   "program_tags": "crowd-benchmarking,dnn-mobile",
-  "skip_from_cmd":"yes",
+  "skip_from_cmd": "yes",
   "tags": [
     "crowdsource",
     "experiments",
