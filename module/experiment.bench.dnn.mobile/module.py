@@ -513,7 +513,8 @@ def show(i):
            tmax=extra.get('xopenme_execution_time_kernel_'+str(ixo)+'_max',0)
 
            xx='<b>'+('%.3f'%tmin)+'</b>&nbsp;/&nbsp;'+('%.3f'%tmax)
-           if tmin==0: xx+='<br><b><center>bug?</center></b>\n'
+           if tmin==0 and ixo!=2: 
+              xx+='<br><b><center>bug?</center></b>\n'
 
            h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
 
