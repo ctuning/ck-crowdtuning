@@ -351,7 +351,7 @@ def show(i):
     if lplst==0:
         h+='<b>No results found!</b>'
         return {'return':0, 'html':h, 'style':st}
-    elif lplst>200:
+    elif lplst>300:
         h+='<b>Too many entries to show ('+str(lplst)+') - please, prune list further!</b>'
         return {'return':0, 'html':h, 'style':st}
 
