@@ -125,7 +125,7 @@
     "##characteristics#compile#md5_sum#min", 
     "##characteristics#compile#joined_compiler_flags#min"
   ], 
-  "priority": 10, 
+  "priority": 35, 
   "program_tags": "crowd-tuning,small", 
   "prune_autotune_pipeline": {
     "prune_ignore_choices": [
