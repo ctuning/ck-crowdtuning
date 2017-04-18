@@ -790,6 +790,7 @@ def crowdsource(i):
     cpu_name=pi.get('features',{}).get('cpu',{}).get('name','')
     compiler_soft_uoa=sdeps.get('compiler',{}).get('dict',{}).get('soft_uoa','')
     compiler_env=sdeps.get('compiler',{}).get('bat','')
+    compiler_tool=sdeps.get('compiler',{}).get('dict',{}).get('env',{}).get('CK_CC','')
 
     plat_extra={}
     pft=pi.get('features',{})
@@ -810,7 +811,8 @@ def crowdsource(i):
         'host_os':hos,
         'target_os':tos,
         'target_device_id':tdid,
-        'env':compiler_env}
+        'env':compiler_env,
+        'tool':compiler_tool}
     r=ck.access(ii)
     if r['return']>0: return r
 

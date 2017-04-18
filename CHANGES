@@ -1,3 +1,5 @@
+* 2017.04.18 * fixed LLVM/GCC crowd-tuning when there is extension in gcc/clang name, i.e. gcc-6 ...
+
 * 2017.03.09 * added used model topology to table of crowd-results (preparing collaborative
                optimization of model topology and parameters)
 
