@@ -335,7 +335,8 @@ def crowdsource(i):
         return {'return':11, 'error':'couldn\'t prepare universal CK program workflow'}
 
     state=rr['state']
-    tmp_dir=state['tmp_dir']
+    tmp_dir=state.get('tmp_dir','')
+    if tmp_dir=='': tmp_dir='tmp' # usually when no_compile
 
     deps=rr['dependencies'] # resolved deps
 
