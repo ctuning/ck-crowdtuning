@@ -46,7 +46,8 @@ hextra+='</center></i>\n'
 hextra+='<br>\n'
 
 selector=[{'name':'Type', 'key':'caffe_type'},
-          {'name':'DNN engine', 'key':'dnn_engine', 'flat_key':'##xdeps#lib-caffe#data_name'},
+#          {'name':'DNN engine', 'key':'dnn_engine', 'flat_key':'##xdeps#lib-caffe#data_name'},
+          {'name':'DNN engine', 'key':'dnn_engine_name'},
           {'name':'Model', 'key':'nn_type'},
           {'name':'Platform', 'key':'plat_name', 'new_line':'yes'},
           {'name':'CPU', 'key':'cpu_name'},
