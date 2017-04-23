@@ -19,6 +19,7 @@ ck_url='http://cknowledge.org/repo/web.php?native_action=show&native_module_uoa=
 ck_url1='http://cknowledge.org/repo/web.php?wcid=experiment.bench.dnn:'
 
 ffstat='ck-stat-flat-characteristics.json'
+ffmin='ck-stat-flat-min.json'
 
 form_name='wa_web_form'
 onchange='document.'+form_name+'.submit();'
@@ -795,8 +796,24 @@ def show(i):
     if hi_uid!='':
         bgraph['1']=[]
 
+    # Load min stat
+    for q in plst:
+        pmin=os.path.join(q['path'],ffmin)
+        if os.path.isfile(pmin):
+           rx=ck.load_json_file({'json_file':pmin})
+           if rx['return']==0:
+              dx=rx['dict']
+
+              # Fix
+              x=dx.get('##characteristics#run#time_fwbw_ms#min','')
+              if x==None or x=='': dx['##characteristics#run#time_fwbw_ms#min']=0
+
+              q['min_stat']=dx
+
     # Sort
-    splst=sorted(plst, key=lambda x: x.get('meta',{}).get('characteristics',{}).get('run',{}).get('time_fwbw_ms',0))
+    splst=sorted(plst, key=lambda x: x.get('min_stat',{}).get('##characteristics#run#time_fwbw_ms#min',0))
+
+#    splst=sorted(plst, key=lambda x: x.get('meta',{}).get('characteristics',{}).get('run',{}).get('time_fwbw_ms',0))
 
     for q in splst:
         ix+=1
