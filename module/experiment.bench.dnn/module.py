@@ -47,7 +47,6 @@ hextra+='</center></i>\n'
 hextra+='<br>\n'
 
 selector=[{'name':'Type', 'key':'caffe_type'},
-#          {'name':'DNN engine', 'key':'dnn_engine', 'flat_key':'##xdeps#lib-caffe#data_name'},
           {'name':'DNN engine', 'key':'dnn_engine_name'},
           {'name':'Model', 'key':'nn_type'},
           {'name':'Platform', 'key':'plat_name', 'new_line':'yes'},
@@ -679,6 +678,7 @@ def show(i):
                     choices[k].append(v)
                     wchoices[k].append({'name':v, 'value':v})
 
+
     # Prepare query div ***************************************************************
     if cmuoa=='':
         # Start form + URL (even when viewing entry)
@@ -736,7 +736,7 @@ def show(i):
             v=kk.get('value','')
 
             kflat=kk.get('flat_key','')
-            if kflat=='': kflat='##'+kx
+            if kflat=='': kflat='##'+k
 
             rx=ck.get_by_flat_key({'dict':meta, 'key':kflat})
             if rx['return']>0: return rx
@@ -806,7 +806,11 @@ def show(i):
 
               # Fix
               x=dx.get('##characteristics#run#time_fwbw_ms#min','')
-              if x==None or x=='': dx['##characteristics#run#time_fwbw_ms#min']=0
+              if x==None or x=='' or x>50000: 
+                 dx['##characteristics#run#time_fwbw_ms#min']=0
+                 if q.get('meta',{}).get('state',{}).get('fail_reason','')=='':
+                    q['meta']['state']['fail']='yes'
+                    q['meta']['state']['fail_reason']='strange timing'
 
               q['min_stat']=dx
 
