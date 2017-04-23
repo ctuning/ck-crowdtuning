@@ -15,8 +15,8 @@ ck=None # Will be updated by CK (initialized CK kernel)
 
 line='================================================================'
 
-ck_url='http://cknowledge.org/repo/web.php?native_action=show&native_module_uoa=program.optimization&scenario=155b6fa5a4012a93'
-ck_url1='http://cknowledge.org/repo/web.php?wcid=experiment.bench.caffe:'
+ck_url='http://cknowledge.org/repo/web.php?native_action=show&native_module_uoa=program.optimization&scenario=1eb2f50d4620903e'
+ck_url1='http://cknowledge.org/repo/web.php?wcid=experiment.bench.dnn:'
 
 ffstat='ck-stat-flat-characteristics.json'
 
@@ -37,6 +37,7 @@ hextra='<i><center>\n'
 hextra+='This is a community-driven R&D: \n'
 hextra+=' [ <a href="http://cKnowledge.org/ai">collaborative AI optimization</a> ], '
 hextra+=' [ <a href="https://github.com/dividiti/ck-caffe">CK-Caffe</a> ], '
+hextra+=' [ <a href="https://github.com/ctuning/ck-tensorflow">CK-TensorFlow</a> ], '
 hextra+=' [ <a href="https://en.wikipedia.org/wiki/Collective_Knowledge_(software)">CK intro</a>, \n'
 hextra+='CK papers: <a href="https://www.researchgate.net/publication/304010295_Collective_Knowledge_Towards_RD_Sustainability">1</a> and \n'
 hextra+='<a href="https://arxiv.org/abs/1506.06256">2</a>; \n'
