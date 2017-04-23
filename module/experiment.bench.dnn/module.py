@@ -804,6 +804,17 @@ def show(i):
 
         d=q['meta']
 
+        # Characteristics
+        # Check if has statistics
+        dstat={}
+        fstat=os.path.join(path,'ck-stat-flat-characteristics.json')
+        if os.path.isfile(fstat):
+            r=ck.load_json_file({'json_file':fstat, 'dict':dstat})
+            if r['return']>0: return r
+            dstat=r['dict']
+
+        x0=dstat.get("##characteristics#run#time_fwbw_ms#min",None)
+
         meta=d.get('meta',{})
 
         choices=d.get('choices',{})
@@ -849,8 +860,8 @@ def show(i):
             bgc='ffafaf'
         elif hi_uid!='' and duid==hi_uid:
             bgc='9fff9f'
-            bgraph['0'].append([ix,None])
-            bgraph['1'].append([ix,x0])
+#            bgraph['0'].append([ix,None])
+#            bgraph['1'].append([ix,x0])
 
         bg=' style="background-color:#'+bgc+';"'
 
@@ -958,14 +969,6 @@ def show(i):
 
         h+='   <td '+ha+'>'+x1+'</td>\n'
 
-        # Characteristics
-        # Check if has statistics
-        dstat={}
-        fstat=os.path.join(path,'ck-stat-flat-characteristics.json')
-        if os.path.isfile(fstat):
-            r=ck.load_json_file({'json_file':fstat, 'dict':dstat})
-            if r['return']>0: return r
-            dstat=r['dict']
 
         x=''
 
@@ -988,8 +991,8 @@ def show(i):
 
         h+='   <td '+ha+' style="background-color:#afffaf">'+x+'</td>\n'
 
+        bgraph['0'].append([ix,x0])
         if fail!='yes' and x0!=None and duid!=hi_uid:
-            bgraph['0'].append([ix,x0])
             if hi_uid!='': bgraph['1'].append([ix,None])
 
         x1=dstat.get("##characteristics#run#time_fw_ms#center",None)
