@@ -1010,7 +1010,7 @@ def show(i):
             x='<b>'+('%.0f'%x0)+'&nbsp;ms.</b>\n'
 #            x+='('+('%.0f'%x1)+'&nbsp;&PlusMinus;&nbsp;'+('%.0f'%x2)+'&nbsp;ms.)'
 
-        if x1!=None and x2!=None:
+        if x0e!=None and x2!=None:
             x+='<br><br>('+('%.0f'%x0e)+'&nbsp;&PlusMinus;&nbsp;'+('%.0f'%x2)+'&nbsp;ms.)\n'
 
         if xr!=None:
