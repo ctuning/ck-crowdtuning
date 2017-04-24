@@ -1234,6 +1234,8 @@ def show(i):
 
            "title":"Powered by Collective Knowledge",
 
+           "x_ticks_period":10,
+
            "axis_x_desc":"Experiment",
            "axis_y_desc":"Neural network total time (ms.)",
 
