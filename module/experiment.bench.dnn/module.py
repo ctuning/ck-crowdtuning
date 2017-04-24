@@ -778,6 +778,7 @@ def show(i):
     h+='   <td '+ha+'><b>FW</b></td>\n'
     h+='   <td '+ha+'><b>BW</b></td>\n'
     h+='   <td '+ha+'><b>Per layer</b></td>\n'
+    h+='   <td '+ha+'><b>HW costs</td>\n'
     h+='   <td '+ha+'><b>Model size</b></td>\n'
     h+='   <td '+ha+'><b><a href="https://github.com/dividiti/ck-caffe/blob/master/script/explore-accuracy/explore_accuracy.20160808.ipynb">Model accuracy on ImageNet</a></td>\n'
     h+='   <td '+ha+'><b>Model topology and parameters</td>\n'
@@ -799,6 +800,8 @@ def show(i):
     # Load min stat
     for q in plst:
         pmin=os.path.join(q['path'],ffmin)
+        dx={'##characteristics#run#time_fwbw_ms#min':1e99}
+
         if os.path.isfile(pmin):
            rx=ck.load_json_file({'json_file':pmin})
            if rx['return']==0:
@@ -807,12 +810,12 @@ def show(i):
               # Fix
               x=dx.get('##characteristics#run#time_fwbw_ms#min','')
               if x==None or x=='' or x>50000: 
-                 dx['##characteristics#run#time_fwbw_ms#min']=0
+                 dx['##characteristics#run#time_fwbw_ms#min']=1e99
                  if q.get('meta',{}).get('state',{}).get('fail_reason','')=='':
                     q['meta']['state']['fail']='yes'
                     q['meta']['state']['fail_reason']='strange timing'
 
-              q['min_stat']=dx
+        q['min_stat']=dx
 
     # Sort
     splst=sorted(plst, key=lambda x: x.get('min_stat',{}).get('##characteristics#run#time_fwbw_ms#min',0))
@@ -1014,6 +1017,7 @@ def show(i):
 
         h+='   <td '+ha+' style="background-color:#afffaf">'+x+'</td>\n'
 
+        if fail=='yes': x0=0
         bgraph['0'].append([ix,x0])
         if fail!='yes' and x0!=None and duid!=hi_uid:
             if hi_uid!='': bgraph['1'].append([ix,None])
@@ -1104,6 +1108,26 @@ def show(i):
 
         h+='   <td '+ha+'>'+x+'</td>\n'
 
+        # Get info about platform
+        hd={}
+        if plat_uid!='':
+           rh=ck.access({'action':'load',
+                        'module_uoa':cfg['module_deps']['platform'],
+                        'data_uoa':plat_uid})
+           if rh['return']==0:
+              hd=rh['dict']
+
+        # Cost (take from platform meta)
+        hc='-'
+        if len(hd)>0:
+           costs=hd.get('features',{}).get('cost',[])
+           hc=''
+           for c in costs:
+               if hc!='': hc+='<br>\n'
+               hc+='<b>'+str(c.get('price',''))+' '+c.get('currency','')+ '</b> - '+c.get('desc','')+' ('+c.get('date','')+')'
+
+        h+='   <td '+ha+'>'+hc+'</a></td>\n'
+
         # Model size
         h+='   <td '+ha+'>'+msize+'</td>\n'
 
@@ -1136,9 +1160,15 @@ def show(i):
         h+='   <td '+ha+'>'+x+'</td>\n'
 
         # Power consumption (TBD)
-        x=''
+        x='-'
+        if len(hd)>0:
+           power=hd.get('features',{}).get('power_consumption',{})
+           if len(power)>0:
+              pmin=power.get('min','')
+              pmax=power.get('max','')
 
-        h+='   <td '+ha+'>'+x+'</td>\n'
+              x=str(pmin)+' / '+str(pmax)
+        h+='   <td '+ha+'>'+x+'</a></td>\n'
 
         # Memory usage
         x=''
