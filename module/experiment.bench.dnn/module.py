@@ -783,6 +783,7 @@ def show(i):
     h+='   <td '+ha+'><b><a href="https://github.com/dividiti/ck-caffe/blob/master/script/explore-accuracy/explore_accuracy.20160808.ipynb">Model accuracy on ImageNet</a></td>\n'
     h+='   <td '+ha+'><b>Model topology and parameters</td>\n'
     h+='   <td '+ha+'><b>Power consumption (W)<br>min / max</td>\n'
+    h+='   <td '+ha+'><b>Noise (db)<br>min / max</td>\n'
     h+='   <td '+ha+'><b>Memory usage (MB)</td>\n'
     h+='   <td '+ha+'><b>Bug detected?</b></td>\n'
     h+='   <td '+ha+'><b>User</b></td>\n'
@@ -1159,10 +1160,21 @@ def show(i):
 
         h+='   <td '+ha+'>'+x+'</td>\n'
 
-        # Power consumption (TBD)
+        # Power consumption (TBD - real measurements)
         x='-'
         if len(hd)>0:
            power=hd.get('features',{}).get('power_consumption',{})
+           if len(power)>0:
+              pmin=power.get('min','')
+              pmax=power.get('max','')
+
+              x=str(pmin)+' / '+str(pmax)
+        h+='   <td '+ha+'>'+x+'</a></td>\n'
+
+        # Power consumption (TBD - real measurements)
+        x='-'
+        if len(hd)>0:
+           power=hd.get('features',{}).get('noise',{})
            if len(power)>0:
               pmin=power.get('min','')
               pmax=power.get('max','')
