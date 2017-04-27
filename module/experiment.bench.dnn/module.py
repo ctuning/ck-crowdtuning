@@ -54,6 +54,9 @@ selector=[{'name':'Type', 'key':'dnn_type'},
           {'name':'OS', 'key':'os_name', 'new_line':'yes'},
           {'name':'GPGPU', 'key':'gpgpu_name'}]
 
+replay_clean_vars=['no_compile','host_os','device_id']
+replay_clean_env_vars=['CK_CAFFE_MODEL','CK_CAFFE_MODEL_FILE','CK_ENV_MODEL_CAFFE_WEIGHTS']
+  
 ##############################################################################
 # Initialize module
 
@@ -361,6 +364,8 @@ def crowdsource(i):
     for k in deps:
         dp=deps[k]
 
+        ptags=dp.get('tags',[])
+
         puoa=dp.get('package_uoa','')
         if puoa=='':
            puoa=dp.get('cus',{}).get('used_package_uoa','')
@@ -374,7 +379,7 @@ def crowdsource(i):
             if j1>0:
                 xnn=xnn[j1+1:-1]
 
-        xdeps[k]={'name':dp.get('name',''), 'data_name':dname, 'ver':dp.get('ver',''), 'package_uoa':puoa}
+        xdeps[k]={'name':dp.get('name',''), 'data_name':dname, 'ver':dp.get('ver',''), 'package_uoa':puoa, 'package_tags':ptags}
 
     # versions of engine sub deps
     dvers={}
@@ -923,6 +928,7 @@ def show(i):
         if cmuoa!='': uu1=cmuoa
         uu2=str(ix)+')&nbsp;<a href="'+url0+'&wcid='+uu1+':'+duid+'">'+duid+'</a>'
         uu3='[&nbsp;<a href="'+url0+'&wcid='+uu1+':'+duid+'">See&nbsp;raw&nbsp;files</a>&nbsp;]'
+        uu4=uu1+':'+duid
 
         # Type
         h+='   <td '+ha+'>'+tp+'</a></td>\n'
@@ -1205,7 +1211,7 @@ def show(i):
 
         h+='   <td '+ha+'><a href="'+url0+'&action=index&module_uoa=wfe&native_action=show&native_module_uoa=experiment.user">'+user+'</a></td>\n'
 
-        h+='   <td '+ha+'><input type="button" class="ck_small_button" onClick="copyToClipboard(\'ck replay caffe\');" value="Replay"><br><br>\n'
+        h+='   <td '+ha+'><input type="button" class="ck_small_button" onClick="copyToClipboard(\'ck replay '+uu4+' '+ck.cfg.get('add_extra_to_replay','')+'\');" value="Replay"><br><br>\n'
         h+='              '+uu3+'</td>\n'
 
         h+='  <tr>\n'
@@ -1264,30 +1270,6 @@ def show(i):
              h+='</center>\n'
 
     return {'return':0, 'html':h, 'style':st}
-
-##############################################################################
-# replay experiment (TBD)
-
-def replay(i):
-    """
-    Input:  {
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-            }
-
-    """
-
-    # TBD - take params from remote/local experiment and pre-set ...
-    # Run locally, i.e. do not share stats unless requested ...
-
-    i['action']='crowdsource'
-    i['module_uoa']=cfg['module_deps']['experiment.bench.caffe']
-
-    return ck.access(i)
 
 ##############################################################################
 # browse public results
@@ -1532,3 +1514,180 @@ def html_viewer(i):
     h+='</center>\n'
 
     return {'return':0, 'html':h, 'show_top':'yes'}
+
+##############################################################################
+# replay experiment (TBD)
+
+def replay(i):
+    """
+    Input:  {
+              (data_uoa)
+              (remote)
+
+              (host_os)
+              (target_os)
+              (device_id)
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    import copy
+    import os
+
+    # Setting output
+    o=i.get('out','')
+    oo=''
+    if o=='con': oo='con'
+
+    duoa=i.get('data_uoa','')
+    remote=i.get('remote','')
+
+    er=''
+    esr=''
+
+    if remote=='yes':
+       er=i.get('exchange_repo','')
+       if er=='': er=ck.cfg['default_exchange_repo_uoa']
+       esr=i.get('exchange_subrepo','')
+       if esr=='': esr=ck.cfg['default_exchange_subrepo_uoa']
+
+    # Try to load info
+    if o=='con':
+       ck.out('Loading experiment entry ...')
+       ck.out('')
+
+    r=ck.access({'action':'load',
+                 'module_uoa':work['self_module_uid'],
+                 'data_uoa':duoa,
+                 'repo_uoa':er,
+                 'remote_repo_uoa':esr})
+    if r['return']>0: return r
+
+    d=r['dict']
+
+    hos=i.get('host_os','')
+    tos=i.get('target_os','')
+    tdid=i.get('device_id','')
+
+    # Check two main deps (engine and model)
+    meta=d.get('meta',{})
+    xdeps=meta.get('xdeps',{})
+
+#    TBD: rebuild env by tags!
+#
+#    dnn=xdeps.get('lib-caffe',{})
+#    model=xdeps.get('caffemodel',{})
+#
+#    pdnn=dnn.get('package_uoa','')
+#    pmodel=model.get('package_uoa','')
+#
+#    preset_env={}
+#    penv=[pdnn,pmodel]
+#
+#    for j in range(0, len(penv)):
+#        px=''
+#        py=penv[j]
+#
+#        if py!='':
+#           # Search by package
+#           r=ck.access({'action':'search',
+#                        'module_uoa':cfg['module_deps']['env'],
+#                        'search_dict':{'package_uoa':py}})
+#           if r['return']>0: return r
+#
+#           l=r['lst']
+#
+#        if j==0: preset_env['lib-caffe']=px
+#        elif j==1: preset_env['caffemodel']=px
+
+    # Run pipeline
+    choices=d.get('choices',{})
+    
+    # Clean various vars
+    for k in replay_clean_vars:
+        if k in choices:
+           del(choices[k])
+
+    if i.get('target_os','')!='' and not i['target_os'].startswith('android'):
+       del(i['target_os'])
+
+    env=choices.get('env',{})
+    for k in replay_clean_env_vars:
+        if k in env:
+           del(env[k])
+    choices['env']=env
+
+    if hos!='': choices['host_os']=hos
+    if tos!='': choices['target_os']=tos
+    if tdid!='': choices['device_id']=tdid
+
+    pipeline_data_uoa=choices['module_uoa']
+
+    # Prepare pipeline
+    ii={'action':'pipeline',
+        'module_uoa':cfg['module_deps']['program'],
+        'prepare':'yes',
+        'choices':choices,
+        'out':o}
+    rr=ck.access(ii)
+    if rr['return']>0: return rr
+
+    fail=rr.get('fail','')
+    if fail=='yes':
+        return {'return':10, 'error':'pipeline failed ('+rr.get('fail_reason','')+')'}
+
+    ready=rr.get('ready','')
+    if ready!='yes':
+        return {'return':11, 'error':'couldn\'t prepare universal CK program workflow'}
+
+    # Run pipeline
+    ii={'action':'run',
+        'module_uoa':cfg['module_deps']['pipeline'],
+        'data_uoa':pipeline_data_uoa,
+        'pipeline':rr,
+        'out':o}
+    rr=ck.access(ii)
+    if rr['return']>0: return rr
+
+    fail=rr.get('fail','')
+    if fail=='yes':
+        return {'return':10, 'error':'pipeline failed ('+rr.get('fail_reason','')+')'}
+
+    if o=='con':
+       ck.out('')
+       ck.out('Your results:')
+       ck.out('')
+
+       dstat=rr.get('last_stat_analysis',{}).get('dict_flat',{})
+
+       x0=dstat.get("##characteristics#run#time_fwbw_ms#min",None)
+       x0e=dstat.get("##characteristics#run#time_fwbw_ms#exp",None)
+
+       if x0!=None:
+            ck.out('* FWBW min: '+('%.0f'%x0)+' ms.')
+       if x0e!=None:
+            ck.out('* FWBW exp: '+('%.0f'%x0e)+' ms.')
+
+       x1=dstat.get("##characteristics#run#time_fw_ms#min",None)
+       x1e=dstat.get("##characteristics#run#time_fw_ms#exp",None)
+
+       if x1!=None:
+            ck.out('* FW   min: '+('%.0f'%x1)+' ms.')
+       if x1e!=None:
+            ck.out('* FW   exp: '+('%.0f'%x1e)+' ms.')
+
+       x2=dstat.get("##characteristics#run#time_bw_ms#min",None)
+       x2e=dstat.get("##characteristics#run#time_bw_ms#exp",None)
+
+       if x2!=None:
+            ck.out('* BW   min: '+('%.0f'%x2)+' ms.')
+       if x2e!=None:
+            ck.out('* BW   exp: '+('%.0f'%x2e)+' ms.')
+
+    return {'return':0}
