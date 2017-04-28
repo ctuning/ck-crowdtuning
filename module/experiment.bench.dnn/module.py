@@ -927,7 +927,7 @@ def show(i):
         uu1=work['self_module_uid']
         if cmuoa!='': uu1=cmuoa
         uu2=str(ix)+')&nbsp;<a href="'+url0+'&wcid='+uu1+':'+duid+'">'+duid+'</a>'
-        uu3='[&nbsp;<a href="'+url0+'&wcid='+uu1+':'+duid+'">See&nbsp;raw&nbsp;files</a>&nbsp;]'
+        uu3='[&nbsp;<a href="'+url0+'&wcid='+uu1+':'+duid+'">See&nbsp;raw&nbsp;files</a>&nbsp;]<br><br>('+duid+')'
         uu4=uu1+':'+duid
 
         # Type
