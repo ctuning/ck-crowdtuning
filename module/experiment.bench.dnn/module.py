@@ -571,7 +571,7 @@ def crowdsource(i):
     if o=='con':
         ck.out('')
         ck.out('Succesfully recorded results in remote repo (Entry UID='+rduid+')')
-
+   
         # Check host URL prefix and default module/action
         url=ck_url+'&highlight_uid='+rduid
         ck.out('')
@@ -900,7 +900,7 @@ def show(i):
         h+='  <tr'+bg+'>\n'
 
         # Number
-        h+='   <td '+ha+'>'+str(ix)+'</a></td>\n'
+        h+='   <td '+ha+'><a name="'+duid+'">'+str(ix)+'</a></td>\n'
 
         # Platform, etc ...
         x=plat_name

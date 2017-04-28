@@ -458,7 +458,7 @@ def show(i):
         # Starting raw
         h+='  <tr'+bgx+'>\n'
 
-        h+='   <td '+ha+'>'+str(ix)+'</a></td>\n'
+        h+='   <td '+ha+'><a name="'+buid+'">'+str(ix)+'</a></td>\n'
 
         x=plat_name
         if plat_uid!='':
