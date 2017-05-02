@@ -36,19 +36,7 @@ hextra+='<a href="https://www.researchgate.net/publication/304010295_Collective_
 hextra+='<a href="https://arxiv.org/abs/1506.06256">Paper 2</a>, \n'
 hextra+='<a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube CK intro</a> ] \n'
 hextra+='</center></i>\n'
-#hextra+='<br>\n'
-
-hextra='<i><center>\n'
-hextra+=' [ <a href="http://cKnowledge.org/ai">Community-driven AI R&D powered by CK</a> ], '
-hextra+=' [ <a href="https://github.com/dividiti/ck-caffe">CK-Caffe</a> ], '
-hextra+=' [ <a href="https://github.com/ctuning/ck-tensorflow">CK-TensorFlow</a> ], '
-hextra+=' [ <a href="https://en.wikipedia.org/wiki/Collective_Knowledge_(software)">Wikipedia</a>, \n'
-hextra+='<a href="https://www.researchgate.net/publication/304010295_Collective_Knowledge_Towards_RD_Sustainability">paper 1</a>, \n'
-hextra+='<a href="https://arxiv.org/abs/1506.06256">Paper 2</a>, \n'
-hextra+='<a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube CK intro</a> ] \n'
-hextra+='</center></i>\n'
 hextra+='<br>\n'
-
 
 selector=[{'name':'Scenario', 'key':'crowd_uid', 'module_uoa':'65477d547a49dd2c', 'module_key':'##dict#title'},
           {'name':'DNN engine', 'key':'engine'},
