@@ -320,6 +320,10 @@ def show(i):
     """
     Input:  {
               scenario
+
+              (widget)        - if 'yes', use as embedded widget
+              (prepared_url0) - pre-defined URL0 if widget
+              (prepared_url1) - pre-defined URL1 if widget
             }
 
     Output: {
@@ -335,38 +339,44 @@ def show(i):
     import os
     import copy
 
+    widget=False
+    if i.get('widget','')=='yes': widget=True
+
     h='<center>'
-    h+='<h2>Public experiments performed and shared using CK workflow framework</h2>\n'
-
-    # Check host URL prefix and default module/action
-    rx=ck.access({'action':'form_url_prefix',
-                  'module_uoa':'wfe',
-                  'host':i.get('host',''), 
-                  'port':i.get('port',''), 
-                  'template':i.get('template','')})
-    if rx['return']>0: return rx
-    url0=rx['url']
-
-    url00=url0
-    if ck.cfg.get('wfe_url_prefix_subst','')!='': url00=ck.cfg['wfe_url_prefix_subst']
-
-    url=url0
-    action=i.get('action','')
-    muoa=i.get('module_uoa','')
-
     st=''
 
-    url+='action=index&module_uoa=wfe&native_action='+action+'&'+'native_module_uoa='+muoa
-    url1=url
+    if not widget:
+       h+='<h2>Public experiments performed and shared using CK workflow framework</h2>\n'
 
-    # Prepare query div ***************************************************************
-    # Start form + URL (even when viewing entry)
-    r=ck.access({'action':'start_form',
-                 'module_uoa':cfg['module_deps']['wfe'],
-                 'url':url1,
-                 'name':form_name})
-    if r['return']>0: return r
-    h+=r['html']
+       # Check host URL prefix and default module/action
+       rx=ck.access({'action':'form_url_prefix',
+                     'module_uoa':'wfe',
+                     'host':i.get('host',''), 
+                     'port':i.get('port',''), 
+                     'template':i.get('template','')})
+       if rx['return']>0: return rx
+       url0=rx['url']
+
+       url=url0
+       action=i.get('action','')
+       muoa=i.get('module_uoa','')
+
+       url+='action=index&module_uoa=wfe&native_action='+action+'&'+'native_module_uoa='+muoa
+       url1=url
+
+       # Prepare query div ***************************************************************
+       # Start form + URL (even when viewing entry)
+       r=ck.access({'action':'start_form',
+                    'module_uoa':cfg['module_deps']['wfe'],
+                    'url':url1,
+                    'name':form_name})
+       if r['return']>0: return r
+       h+=r['html']
+    else:
+       url0=i.get('prepared_url0','')
+       url1=i.get('prepared_url1','')
+       form_name=i.get('prepared_form_name','')
+       onchange='document.'+form_name+'.submit();'
 
     # Listing available crowdsourcing scenarios ...
     scenario=i.get('scenario','')
@@ -379,17 +389,23 @@ def show(i):
 #       scenario=cfg['module_deps']['experiment.tune.compiler.flags.llvm.e']
        scenario=cfg['module_deps']['experiment.tune.compiler.flags.gcc.e']
 
+    scenario_tags='crowdsource,experiments,program optimization'
+    if i.get('prepared_scenario_tags','')!='':
+       scenario_tags+=','+i['prepared_scenario_tags']
+
     ii={'action':'search',
         'module_uoa':cfg['module_deps']['module'],
         'add_meta':'yes',
         'add_info':'yes',
-        'tags':'crowdsource,experiments,program optimization'}
+        'tags':scenario_tags}
     r=ck.access(ii)
     if r['return']>0: return r
 
     xls=r['lst']
 
     url5=ck.cfg.get('wiki_data_web','')
+
+    results=[]
 
     if len(xls)==0:
        h+='<b>Can\'t find any local experiment crowdsourcing scenarios ...</b>'
@@ -424,11 +440,12 @@ def show(i):
 
        h+='</center>\n'
 
-       h+='<hr>\n'
+       if not widget:
+          h+='<hr>\n'
 
-       rx=links({})
-       if rx['return']>0: return rx
-       h+=rx['html']
+          rx=links({})
+          if rx['return']>0: return rx
+          h+=rx['html']
 
        h+='\n'
 
@@ -605,8 +622,6 @@ def show(i):
 
                 iq=0
                 for q in range(0, irl):
-                    iq+=1
-
                     qq=rl[q]
 
                     duid=qq['data_uid']
@@ -618,6 +633,9 @@ def show(i):
                     ns=qqm.get('solutions','')
 
                     if ns!='' and int(ns)>0:
+                       iq+=1
+
+                       results.append(qq)
 
                        h+='<tr>'
                        h+=' <td>'+str(iq)+'</td>'
@@ -658,7 +676,8 @@ def show(i):
 
                 h+='</table>\n'
 
-                h+='<br><a href="http://arxiv.org/abs/1506.06256"><img src="'+url0+'action=pull&common_action=yes&cid='+cfg['module_deps']['module']+':'+work['self_module_uid']+'&filename=images/image-workflow1.png"></a><br>\n'
+                if not widget:
+                   h+='<br><a href="http://arxiv.org/abs/1506.06256"><img src="'+url0+'action=pull&common_action=yes&cid='+cfg['module_deps']['module']+':'+work['self_module_uid']+'&filename=images/image-workflow1.png"></a><br>\n'
 
                 x=ck.cfg.get('extra_browser_text_ct','')
                 if x!='':
@@ -666,7 +685,7 @@ def show(i):
 
                 h+='</center>\n'
 
-    return {'return':0, 'html':h, 'style':st}
+    return {'return':0, 'html':h, 'style':st, 'results':results}
 
 ##############################################################################
 # add new solution
