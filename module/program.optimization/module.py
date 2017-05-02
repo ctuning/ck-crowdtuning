@@ -35,9 +35,6 @@ welcome1  = "NOTE: this program will send some anonymized info about your hardwa
             " and help us optimize computer systems to accelerate knowledge discovery and boost innovation " \
             " in science and technology while making our planet greener!\n\n" \
 
-form_name='ck_cresults_form'
-onchange='document.'+form_name+'.submit();'
-
 wscenario='scenario'
 wprune='pruning'
 
@@ -341,6 +338,9 @@ def show(i):
 
     widget=False
     if i.get('widget','')=='yes': widget=True
+
+    form_name='ck_cresults_form'
+    onchange='document.'+form_name+'.submit();'
 
     h='<center>'
     st=''
