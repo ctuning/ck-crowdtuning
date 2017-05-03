@@ -61,6 +61,12 @@ def html_viewer(i):
 
     orig_module_uid=work['self_module_uid']
 
+    features=i.get('features',{})
+    xfeatures={}
+    if len(features)>0:
+       for k in features:
+           xfeatures[k[2:]]=features[k]
+
     mcfg=i.get('module_cfg',{})
     if len(mcfg)>0: cfg=mcfg
 
@@ -110,6 +116,7 @@ def html_viewer(i):
        pdesc=pdesc.get(xxkey,{})
 
     h='<center>\n'
+
     h+='\n\n<script language="JavaScript">function copyToClipboard (text) {window.prompt ("Copy to clipboard: Ctrl+C, Enter", text);}</script>\n\n' 
 
     h+='<H2>Distinct solutions after online classification ('+cfg['desc']+')</H2>\n'
@@ -219,6 +226,61 @@ def html_viewer(i):
        if rx['return']>0: return rx
        classification=rx['dict']
 
+    # If features, update similarity and find min/max
+    if len(features)>0:
+       dist_min=None
+       dist_max=None
+       for q in sols:
+           em=q.get('extra_meta',{})
+           suid=q['solution_uid']
+
+           cls=classification.get(suid,{})
+           if len(cls)>0:
+              wl_best=len(cls.get('best',[]))
+              wl_worst=len(cls.get('worst',[]))
+
+              wl_best_prog_uoa=''
+              wl_best_cmd_key=''
+              if wl_best>0:
+                 wl_best_prog_uoa=cls['best'][0].get('workload',{}).get('program_uoa','') # for now only for the 1st program
+                                                                                          # howelever later should group all programs with best opt!
+                 wl_best_cmd_key=cls['best'][0].get('workload',{}).get('cmd_key','')
+
+                 if wl_best_prog_uoa!='' and wl_best_cmd_key!='':
+                    # Try to load program static features
+                    ra=ck.access({'action':'load',
+                                  'module_uoa':cfg['module_deps']['program.static.features'],
+                                  'data_uoa':wl_best_prog_uoa})
+                    if ra['return']==0:
+                       dfeat=ra['dict'].get('features',{}).get('program_static_milepost_features',{})
+
+                       # Load program to get hot kernel (for features)
+                       ra=ck.access({'action':'load',
+                                     'module_uoa':cfg['module_deps']['program'],
+                                     'data_uoa':wl_best_prog_uoa})
+                       if ra['return']==0:
+                          func=ra['dict'].get('run_cmds',{}).get(wl_best_cmd_key,{}).get('hot_functions',[])
+
+                          if len(func)>0:
+                             dft=dfeat.get(func[0]['name'],{})
+   #
+                            # Calculate similarity
+                             r=ck.access({'action':'calculate_similarity',
+                                          'module_uoa':cfg['module_deps']['program.static.features'],
+                                          'features1':xfeatures,
+                                          'features2':dft})
+                             if r['return']==0:
+                                dist=r['distance']
+
+                                if dist!=None:
+                                   cls['distance']=dist
+
+                                   if dist_max==None or dist>dist_max:
+                                      dist_max=dist
+
+                                   if dist_min==None or dist<dist_min:
+                                      dist_min=dist
+
     h+='<p>\n'
     h+='$#graph#$\n'
     h+='<p>\n'
@@ -232,6 +294,7 @@ def html_viewer(i):
 
        h+=' <tr style="background-color:#cfcfff;">\n'
        h+='  <td colspan="1"></td>\n'
+       h+='  <td colspan="1" style="background-color:#bfffbf;"></td>\n'
        h+='  <td colspan="1" style="background-color:#bfbfff;"></td>\n'
        h+='  <td colspan="'+str(len(ik))+'" align="center"><b>Improvements (<4% variation)</b></td>\n'
        h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"></td>\n'
@@ -245,6 +308,12 @@ def html_viewer(i):
        h+='  <td><b>\n'
        h+='   #\n'
        h+='  </b></td>\n'
+
+       if len(features)>0:
+          h+='  <td style="background-color:#bfffbf;"><b>\n'
+          h+='   <a href="http://ctuning.org/wiki/index.php/CTools:MilepostGCC:StaticFeatures:MILEPOST_V2.1">MILEPOST features distance</a>\n'
+          h+='  </b></td>\n'
+
        h+='  <td style="background-color:#bfbfff;"><b>\n'
        h+='   Solution UID\n'
        h+='  </b></td>\n'
@@ -339,6 +408,8 @@ def html_viewer(i):
               wl_best=len(cls.get('best',[]))
               wl_worst=len(cls.get('worst',[]))
 
+              dist=cls.get('distance',None)
+
               url_wl=url0+'action=get_workloads&cid='+cfg['module_deps']['program.optimization']+':'+duid+'&scenario_module_uoa='+muid+'&solution_uid='+suid+'&out=json'
               url_wl_best=url_wl+'&key=best'
               url_wl_worst=url_wl+'&key=worst'
@@ -408,9 +479,32 @@ def html_viewer(i):
               h+=' <tr>\n'
               h+='  <td valign="top" style="background-color:#efefff;">\n'
               if ires<2:
-
                  h+='   '+ss+'\n'
               h+='  </td>\n'
+
+              if len(features)>0:
+
+                 if dist!=None and dist_min!=None and dist_max!=None:
+
+                    xdist="%.3f" % dist
+
+                    col='FFFFFF'
+                    if dist<=1:
+                       col1=int(55+((dist-dist_min)/(1-dist_min))*200)
+                       col2=hex(col1)[2:]
+                       if (col1<16): col2='0'+col2
+                       col='FF'+col2+col2
+                    else:
+                       col1=int(55+(1-((dist-1)/(dist_max-1)))*200)
+                       col2=hex(col1)[2:]
+                       if (col1<16): col2='0'+col2
+                       col=col2+col2+'FF'
+
+                    h+='  <td valign="top" align="right" style="background-color: #'+col+'">'+xdist+'\n'
+                 else:
+                    h+='  <td>\n'
+
+                 h+='  </td>\n'
 
               h+='  <td valign="top">\n'
               if ires<2 and urlx!='':
