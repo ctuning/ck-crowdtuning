@@ -294,7 +294,8 @@ def html_viewer(i):
 
        h+=' <tr style="background-color:#cfcfff;">\n'
        h+='  <td colspan="1"></td>\n'
-       h+='  <td colspan="1" style="background-color:#bfffbf;"></td>\n'
+       if len(features)>0:
+          h+='  <td colspan="1" style="background-color:#bfffbf;"></td>\n'
        h+='  <td colspan="1" style="background-color:#bfbfff;"></td>\n'
        h+='  <td colspan="'+str(len(ik))+'" align="center"><b>Improvements (<4% variation)</b></td>\n'
        h+='  <td colspan="2" align="center" style="background-color:#bfbfff;"></td>\n'

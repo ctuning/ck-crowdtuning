@@ -639,11 +639,14 @@ def show(i):
 
                        h+='<tr>'
                        h+=' <td>'+str(iq)+'</td>'
-                       h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">Click to see solutions ('+duid+')</a>\n'
+                       if widget:
+                          h+=' <td><button type="submit" name="view_solution_'+scenario+'_'+duid+'">Predict optimization</button></td>\n'
+                       else:
+                          h+=' <td><a href="'+url0+'wcid='+scenario+':'+duid+'">Click to see solutions ('+duid+')</a></td>\n'
 
                        h+=' <td align="center">'
                        if url5!='': h+='<a href="'+url5+scenario+'_'+duid+'">Wiki</a>'
-                       h+='\n'
+                       h+='</td>\n'
 
                        h+=' <td align="center">'+str(ns)+'</td>'
 
