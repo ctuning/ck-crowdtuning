@@ -312,7 +312,7 @@ def html_viewer(i):
 
        if len(features)>0:
           h+='  <td style="background-color:#bfffbf;"><b>\n'
-          h+='   <a href="http://ctuning.org/wiki/index.php/CTools:MilepostGCC:StaticFeatures:MILEPOST_V2.1">MILEPOST features distance</a>\n'
+          h+='   <a href="http://ctuning.org/wiki/index.php/CTools:MilepostGCC:StaticFeatures:MILEPOST_V2.1">MILEPOST features distance (red - most close)</a>\n'
           h+='  </b></td>\n'
 
        h+='  <td style="background-color:#bfbfff;"><b>\n'
