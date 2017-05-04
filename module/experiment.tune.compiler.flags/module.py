@@ -227,12 +227,16 @@ def html_viewer(i):
        classification=rx['dict']
 
     # If features, update similarity and find min/max
+    predicted_opt=''
     if len(features)>0:
        dist_min=None
        dist_max=None
+
        for q in sols:
            em=q.get('extra_meta',{})
            suid=q['solution_uid']
+
+           dv=em.get('flat',{}).get('##characteristics#compile#joined_compiler_flags#min','')
 
            cls=classification.get(suid,{})
            if len(cls)>0:
@@ -312,7 +316,7 @@ def html_viewer(i):
 
        if len(features)>0:
           h+='  <td style="background-color:#bfffbf;"><b>\n'
-          h+='   <a href="http://ctuning.org/wiki/index.php/CTools:MilepostGCC:StaticFeatures:MILEPOST_V2.1">MILEPOST features distance (red - most close)</a>\n'
+          h+='   <a href="http://ctuning.org/wiki/index.php/CTools:MilepostGCC:StaticFeatures:MILEPOST_V2.1">MILEPOST features NN distance (red - most close)</a>\n'
           h+='  </b></td>\n'
 
        h+='  <td style="background-color:#bfbfff;"><b>\n'
@@ -483,9 +487,13 @@ def html_viewer(i):
                  h+='   '+ss+'\n'
               h+='  </td>\n'
 
+              flags=rr.get('flat',{}).get('##characteristics#compile#joined_compiler_flags#min','')
+
               if len(features)>0:
 
                  if dist!=None and dist_min!=None and dist_max!=None:
+
+                    if dist==dist_min: predicted_opt=flags
 
                     xdist="%.3f" % dist
 
@@ -549,15 +557,12 @@ def html_viewer(i):
                         y='<span style="color:#bf0000">'+y+'</span>'
                      elif dv!=0:
                         y='<span style="color:#0000bf">'+y+'</span>'
-                  
 
                   h+=str(y)+'\n'
                   h+='  </td>\n'
 
-
               h+='  <td valign="top">\n'
-              dv=rr.get('flat',{}).get('##characteristics#compile#joined_compiler_flags#min','')
-              h+='   '+dv+'\n'
+              h+='   '+flags+'\n'
               h+='  </td>\n'
 
               h+='  <td valign="top" align="center">\n'
@@ -660,6 +665,9 @@ def html_viewer(i):
 
 
        h+='</table>\n'
+
+       if predicted_opt!='':
+          h+='<br><br><b>Using machine learning to precict optimizations:</b><br><br><i>'+predicted_opt+'</i><br><br>\n'
        h+='<br><a href="http://arxiv.org/abs/1506.06256"><img src="'+url0+'action=pull&common_action=yes&cid='+cfg['module_deps']['module']+':'+orig_module_uid+'&filename=images/image-workflow1.png"></a>\n'
 
     h+='</center>\n'
@@ -738,7 +746,7 @@ def html_viewer(i):
 
     h=h.replace('$#graph#$', hg)
 
-    return {'return':0, 'html':h, 'style':st}
+    return {'return':0, 'html':h, 'style':st, 'predicted_opt':predicted_opt}
 
 ##############################################################################
 # crowdsource these experiments
