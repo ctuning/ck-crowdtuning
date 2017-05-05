@@ -142,7 +142,7 @@ def html_viewer(i):
           if x!='': x+=', '
           x+='<a href="'+urld+'">Google group</a>' 
 
-       h+='<tr><td><b>Discuss:</b></td><td>'+x+'</td></tr>\n'
+       h+='<tr><td><b>Discuss (optimizations to improve compilers,<br><a href="https://arxiv.org/abs/1506.06256">semantic/data set/hardware features<br>to improve predictions</a>, etc):</b></td><td>'+x+'</td></tr>\n'
 
        h+='<tr><td><td></td></tr>\n'
 
@@ -316,7 +316,7 @@ def html_viewer(i):
 
        if len(features)>0:
           h+='  <td style="background-color:#bfffbf;"><b>\n'
-          h+='   <a href="http://ctuning.org/wiki/index.php/CTools:MilepostGCC:StaticFeatures:MILEPOST_V2.1">MILEPOST features NN distance (red - most close)</a>\n'
+          h+='   <a href="http://ctuning.org/wiki/index.php/CTools:MilepostGCC:StaticFeatures:MILEPOST_V2.1">MILEPOST features and NN distance (red - most close)</a>\n'
           h+='  </b></td>\n'
 
        h+='  <td style="background-color:#bfbfff;"><b>\n'
