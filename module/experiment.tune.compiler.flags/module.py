@@ -667,7 +667,7 @@ def html_viewer(i):
        h+='</table>\n'
 
        if predicted_opt!='':
-          h+='<br><br><b>Using machine learning to precict optimizations:</b><br><br><i>'+predicted_opt+'</i><br><br>\n'
+          h+='<br><br><b>Using machine learning to predict optimizations:</b><br><br><i>'+predicted_opt+'</i><br><br>\n'
        h+='<br><a href="http://arxiv.org/abs/1506.06256"><img src="'+url0+'action=pull&common_action=yes&cid='+cfg['module_deps']['module']+':'+orig_module_uid+'&filename=images/image-workflow1.png"></a>\n'
 
     h+='</center>\n'
