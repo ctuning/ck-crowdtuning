@@ -12,8 +12,6 @@ work={} # Will be updated by CK (temporal data)
 ck=None # Will be updated by CK (initialized CK kernel) 
 
 # Local settings
-rrepo=ck.cfg.get('record_local_repo_uoa','')
-
 compiler_choices='#choices#compiler_flags#'
 
 line='================================================================'
@@ -796,7 +794,7 @@ def process(i):
 
     ii={'action':'search',
         'module_uoa':work['self_module_uid'],
-        'repo_uoa':rrepo,
+        'repo_uoa':ck.cfg.get('record_local_repo_uoa',''),
         'search_dict':{'meta':meta},
         'add_meta':'yes'}
     rx=ck.access(ii)
@@ -897,7 +895,7 @@ def process(i):
     rx=ck.access({'action':'update',
                   'module_uoa':work['self_module_uid'],
                   'data_uoa':duid,
-                  'repo_uoa':rrepo,
+                  'repo_uoa':ck.cfg.get('record_local_repo_uoa',''),
                   'dict':ddd,
                   'substitute':'yes',
                   'sort_keys':'yes'})
