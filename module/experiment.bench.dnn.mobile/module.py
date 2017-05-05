@@ -12,7 +12,7 @@ work={} # Will be updated by CK (temporal data)
 ck=None # Will be updated by CK (initialized CK kernel) 
 
 # Local settings
-rrepo='upload' # TBD - get from cfg
+rrepo=ck.cfg.get('record_local_repo_uoa','')
 
 compiler_choices='#choices#compiler_flags#'
 
