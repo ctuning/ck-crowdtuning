@@ -35,6 +35,7 @@ onchange='document.'+form_name+'.submit();'
 #hextra+='<br>\n'
 
 hextra='<i><center>\n'
+hextra+=' [ <a href="http://dividiti.blogspot.fr/2017/02/we-received-test-of-time-award-for-our.html">CGO\'17 test of time award for our interdisiplinary R&D</a> ], '
 hextra+=' [ <a href="http://cKnowledge.org/ai">Community-driven AI R&D powered by CK</a> ], '
 hextra+=' [ <a href="https://github.com/dividiti/ck-caffe">CK-Caffe</a> ], '
 hextra+=' [ <a href="https://github.com/ctuning/ck-tensorflow">CK-TensorFlow</a> ], '

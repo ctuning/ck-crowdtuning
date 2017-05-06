@@ -25,6 +25,7 @@ form_name='wa_web_form'
 onchange='document.'+form_name+'.submit();'
 
 hextra='<i><center>\n'
+hextra+=' [ <a href="http://dividiti.blogspot.fr/2017/02/we-received-test-of-time-award-for-our.html">CGO\'17 test of time award for our interdisiplinary R&D</a> ], '
 hextra+=' [ <a href="http://cKnowledge.org/ai">Community-driven AI R&D powered by CK</a> ], '
 hextra+=' [ <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=en">Android app to crowd-optimize DNN engines and models</a> ], '
 hextra+=' [ <a href="https://github.com/dividiti/ck-caffe">CK-Caffe</a> ], '
