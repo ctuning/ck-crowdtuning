@@ -52,6 +52,8 @@ def html_viewer(i):
 
               html
               (style)      - styles - useful for plotting JavaScript-based graphs
+
+              (predicted_opt) - if MILEPOST prediction is used
             }
 
     """

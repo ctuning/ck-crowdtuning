@@ -339,6 +339,8 @@ def show(i):
     widget=False
     if i.get('widget','')=='yes': widget=True
 
+    sh=i.get('skip_html','')
+
     form_name='ck_cresults_form'
     onchange='document.'+form_name+'.submit();'
 
@@ -687,6 +689,10 @@ def show(i):
                    h+=x+'\n'
 
                 h+='</center>\n'
+
+    if sh=='yes':
+       h=''
+       st=''
 
     return {'return':0, 'html':h, 'style':st, 'results':results}
 
