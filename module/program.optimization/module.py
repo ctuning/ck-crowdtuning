@@ -3873,3 +3873,24 @@ def dashboard(i):
     i['extra_url']='action=index&module_uoa=wfe&native_action=show&native_module_uoa=program.optimization'
 
     return ck.access(i)
+
+##############################################################################
+# return json instead of html in show (needed for CK AI API)
+
+def show_json(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    r=show(i)
+    if r['return']>0: return r
+
+    return {'return':0, 'results':r.get('results',[])

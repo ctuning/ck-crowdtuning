@@ -53,6 +53,10 @@
       "desc": "show results via web service",
       "for_web": "yes"
     },
+    "show_json": {
+      "desc": "return json instead of html in show",
+      "for_web": "yes"
+    },
     "test": {
       "desc": "test remote access",
       "for_web": "yes"
