@@ -3050,7 +3050,7 @@ def links(i):
 #    h+='  ], \n'
     h+='[ <a href="http://cTuning.org/ae">Our reproducible initiative for ACM conferences</a> ], \n'
     h+='[ <a href="http://dividiti.blogspot.fr/2017/02/we-received-test-of-time-award-for-our.html">CGO\'17 test of time award for our interdisiplinary R&D</a> ], '
-    h+='[ <b><a href="http://cknowledge.org/ai/ck-api-demo">Online MILEPOST optimization predictor</a></b> ] '
+    h+='[ <b><a href="http://cknowledge.org/ai/ck-api-demo">Open and unified CK API for AI</a></b> ] '
     h+='</center>\n'
 
     return {'return':0, 'html':h}
