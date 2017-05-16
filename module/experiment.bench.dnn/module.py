@@ -971,12 +971,12 @@ def show(i):
            rx=ck.access({'action':'load',
                          'module_uoa':'package',
                          'data_uoa':d_model_package_uoa})
-           if rx['return']>0: return rx
-           mft=rx['dict'].get('features',{})
+           if rx['return']==0: 
+              mft=rx['dict'].get('features',{})
 
-           msize=str(mft.get('model_size_mb',''))+'&nbsp;MB'
-           mtop=str(mft.get('accuracy',''))
-           mtop5=str(mft.get('accuracy_top5',''))
+              msize=str(mft.get('model_size_mb',''))+'&nbsp;MB'
+              mtop=str(mft.get('accuracy',''))
+              mtop5=str(mft.get('accuracy_top5',''))
 
 #        if x!='' and d_model_ver!='':
 #           x+='\n<br><br>Version&nbsp;<b>'+d_model_ver+'</b>'
