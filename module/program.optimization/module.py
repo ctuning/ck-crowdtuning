@@ -300,6 +300,10 @@ def crowdsource(i):
     if i.get('local_autotuning','')=='yes': 
        tags='program optimization,autotuning'
 
+    extra_tags=i.get('extra_tags','')
+    if extra_tags!='':
+       tags+=','+extra_tags
+
     for q in cfg['opt_keys']:
         if i.get(q,'')=='yes':
            if tags!='': tags+=','
@@ -1543,6 +1547,8 @@ def run(i):
 
               (program_uoa)                - force program UOA
               (cmd_key)                    - CMD key
+              (cmd_keys)                   - Select only from this list of available CMD keys
+
               (dataset_uoa)                - dataset UOA
               (dataset_file)               - dataset filename (if more than one inside one entry - suggest to have a UID in name)
 
@@ -1706,6 +1712,7 @@ def run(i):
     program_uoa=i.get('program_uoa','')
     if program_uoa=='': program_uoa=i.get('data_uoa','')
     cmd_key=i.get('cmd_key','')
+    cmd_keys=i.get('cmd_keys',[])
     dataset_uoa=i.get('dataset_uoa','')
     dataset_file=i.get('dataset_file','')
     edt=i.get('extra_dataset_tags',[])
@@ -1801,6 +1808,7 @@ def run(i):
         'program_tags':program_tags,
         'program_uoa':program_uoa,
         'cmd_key':cmd_key,
+        'cmd_keys':cmd_keys,
         'dataset_uoa':dataset_uoa,
         'dataset_file':dataset_file,
         'skip_local':'yes',
@@ -2051,6 +2059,8 @@ def run(i):
 
        pipeline=copy.deepcopy(pipeline_copy)
        pup0=scfg.get('experiment_0_pipeline_update',{})
+       if len(i.get('experiment_0_pipeline_update',{}))>0:
+          pup0.update(i['experiment_0_pipeline_update'])
 
        if rep!='': pup0['repetitions']=rep
        if nsc!='': pup0['no_state_check']=nsc
@@ -2296,6 +2306,17 @@ def run(i):
                       xpup1['omit_probability']=oprob
 
                    pup1['choices_selection'][0]=xpup1
+
+                # Check customization
+                if len(i.get('choices_order',[]))>0:
+                   pup1['choices_order']=i['choices_order']
+                if len(i.get('choices_selection',[]))>0:
+                   pup1['choices_selection']=i['choices_selection']
+                if len(i.get('frontier_keys',[]))>0:
+                   pup1['frontier_keys']=i['frontier_keys']
+
+                if len(i.get('experiment_1_pipeline_update',{}))>0:
+                   pup1.update(i['experiment_1_pipeline_update'])
 
                 if rep!='': pup1['repetitions']=rep
                 if seed!='': pup1['seed']=seed
