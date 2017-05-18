@@ -131,7 +131,7 @@ def crowdsource(i):
     # Check that has minimal dependencies for this scenario ***********************************************************
     sdeps=i.get('dependencies',{}) # useful to preset inside crowd-tuning
     if len(sdeps)==0:
-       sdeps=copy.deepcopy(cfg['deps'])
+       sdeps=copy.deepcopy(cfg.get('deps',{}))
     if len(sdeps)>0:
        if o=='con':
           ck.out(line)

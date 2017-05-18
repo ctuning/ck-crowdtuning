@@ -16,6 +16,7 @@
   },
   "copyright": "See CK COPYRIGHT.txt for copyright details",
   "desc": "autotune custom pipeline dimensions",
+  "deps":{},
   "developer": "Grigori Fursin",
   "developer_email": "Grigori.Fursin@cTuning.org",
   "developer_webpage": "http://fursin.net",

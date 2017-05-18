@@ -1763,6 +1763,10 @@ def run(i):
     sols=i.get('solutions',[])
     sols_info=i.get('solutions_info',{})
 
+    # Check if customize scenario
+    if len(i.get('scenario_cfg_update',{}))>0:
+       scfg.update(i['scenario_cfg_update'])
+
     # Check (multi-objective) characteristics to process
     ok=scfg.get('original_keys',[])
     fk=scfg.get('frontier_keys',[])
