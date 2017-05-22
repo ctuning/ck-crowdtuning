@@ -52,6 +52,9 @@
     "frontier_margins": [
       1.0
     ],
+    "pipeline_update": {
+      "no_compile": "yes"
+    },
     "record_params": {
       "search_point_by_features": "yes"
     }
