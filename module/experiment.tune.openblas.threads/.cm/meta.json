@@ -16,9 +16,8 @@
   },
   "compiler_name": "GCC",
   "copyright": "See CK COPYRIGHT.txt for copyright details",
-  "deps": {
-  },
-  "desc": "explore DNN batch size",
+  "deps": {},
+  "desc": "explore OpenBLAS number of threads",
   "developer": "Grigori Fursin",
   "developer_email": "Grigori.Fursin@cTuning.org",
   "developer_webpage": "http://fursin.net",
@@ -30,16 +29,16 @@
   "experiment_1_pipeline_update": {
     "choices_order": [
       [
-        "##env#BATCH_SIZE"
+        "##env#OPENBLAS_NUM_THREADS"
       ]
     ],
     "choices_selection": [
       {
+        "default": 4,
         "notags": "",
         "start": 1,
-        "stop": 16,
         "step": 1,
-        "default": 5,
+        "stop": 16,
         "type": "loop"
       }
     ],
@@ -79,18 +78,18 @@
   ],
   "plot": {
     "add_x_loop": "no",
-    "axis_x_desc": "Batch size",
-    "axis_y_desc": "FWBW time (sec.)",
+    "axis_x_desc": "Number of threads",
+    "axis_y_desc": "Execution time (sec.)",
     "bound_lines": "no",
     "display_x_error_bar": "no",
     "display_y_error_bar": "yes",
-    "elinewidth":3,
-    "force_center_dot":"yes",
+    "elinewidth": 3,
     "flat_keys_list": [
-      "##choices#env#BATCH_SIZE#min",
+      "##choices#env#OPENBLAS_NUM_THREADS#min",
       "##characteristics#run#execution_time#center",
       "##characteristics#run#execution_time#halfrange"
     ],
+    "force_center_dot": "yes",
     "ignore_point_if_none": "yes",
     "mpl_image_dpi": "100",
     "mpl_image_size_x": "12",
@@ -111,22 +110,6 @@
   ],
   "priority": 0,
   "program_tags": "crowd-tuning,small",
-  "prune_autotune_pipeline": {
-    "result_conditions": [
-      [
-        "##characteristics#run#execution_time$#objective#$",
-        "_imp",
-        ">",
-        0.99
-      ],
-      [
-        "##characteristics#run#execution_time#range_percent",
-        "",
-        "<",
-        0.9
-      ]
-    ]
-  },
   "prune_results": [
     {
       "desc": "CPU",
@@ -156,7 +139,8 @@
     "explore",
     "explore",
     "autotuning",
-    "dnn",
-    "batch_size"
+    "openblas",
+    "openblas_threads",
+    "threads"
   ]
 }
