@@ -1,3 +1,5 @@
+* 2017.05.25 * added CLBlast crowd-tuning
+
 * 2017.05.22 * added OpenMP/OpenBLAS thread exploration
 
 * 2017.05.18 * unified customized autotuning
