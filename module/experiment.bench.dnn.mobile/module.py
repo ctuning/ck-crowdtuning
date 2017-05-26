@@ -349,9 +349,12 @@ def show(i):
     if lplst==0:
         h+='<b>No results found!</b>'
         return {'return':0, 'html':h, 'style':st}
-    elif lplst>350:
-        h+='<b>Too many entries to show ('+str(lplst)+') - please, prune list further!</b>'
-        return {'return':0, 'html':h, 'style':st}
+    elif lplst>300:
+        h+='<b>Too many entries ('+str(lplst)+'). Please, prune list further! Showing first 300 ...</b><br><br>'
+
+        del plst[300:]
+
+#        return {'return':0, 'html':h, 'style':st}
 
     # Prepare table
 #    bgc='afffaf'
