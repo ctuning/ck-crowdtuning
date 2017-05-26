@@ -17,5 +17,5 @@
       "1"
     ]
   },
-  "data_name": "experiment.tune.opencl.clblast"
+  "data_name": "auto/crowd-tune OpenCL-based CLBlast (GFLOPs)"
 }
