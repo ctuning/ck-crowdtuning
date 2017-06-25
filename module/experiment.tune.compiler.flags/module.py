@@ -1109,4 +1109,7 @@ def process_interactive_graph(i):
 
     i['out']=''
 
-    return ck.access(i)
+    r=ck.access(i)
+    if r['return']>0: return r
+
+    return {'return':0, 'graph_html':r['html']}
