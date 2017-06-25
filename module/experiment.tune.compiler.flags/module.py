@@ -82,6 +82,9 @@ def html_viewer(i):
     ap=i.get('all_params',{})
 
     ruoa=i.get('repo_uoa','')
+    eruoa=i.get('experiment_repo_uoa','') # for interactive articles
+    if eruoa!='': ruoa=eruoa
+
     muoa=work['self_module_uoa']
     muid=work['self_module_uid']
     duoa=i.get('data_uoa','')
@@ -1020,3 +1023,68 @@ def rebuild_cmd(i):
            cmd+=v
 
     return {'return':0, 'cmd':cmd}
+
+##############################################################################
+# replay optimization
+
+def replay(i):
+    """
+    See in module "program.optimization"
+    """
+
+    i['module_uoa']=cfg['module_deps']['program.optimization']
+    i['module_ref_uoa']=work['self_module_uid']
+    i['module_cfg']=copy.deepcopy(cfg)
+    i['module_work']=copy.deepcopy(work)
+    return ck.access(i)
+
+##############################################################################
+# prune compiler flags to find minimal set of choices
+
+def prune(i):
+    """
+    See in module "program.optimization"
+    """
+
+    i['module_uoa']=cfg['module_deps']['program.optimization']
+    i['module_ref_uoa']=work['self_module_uid']
+    i['module_cfg']=copy.deepcopy(cfg)
+    i['module_work']=copy.deepcopy(work)
+    return ck.access(i)
+
+##############################################################################
+# prepare graph for interactive reports
+
+def interactive_graph(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    from_repo_uoa=i.get('from_repo_uoa','')
+    from_module_uoa=i.get('from_module_uoa','')
+    
+#    i['action']='html_viewer'
+
+    if from_repo_uoa!='':
+       i['repo_uoa']=from_repo_uoa
+
+#    if from_module_uoa!='':
+#       i['module_uoa']=from_module_uoa
+
+    i['out']=''
+
+    print (i)
+
+    r=ck.access(i)
+
+    print (r)
+
+    return r
