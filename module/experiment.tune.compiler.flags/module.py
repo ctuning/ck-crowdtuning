@@ -1071,7 +1071,7 @@ def interactive_graph(i):
     from_repo_uoa=i.get('from_repo_uoa','')
     from_module_uoa=i.get('from_module_uoa','')
     
-    i['action']='interactive_graph_process'
+    i['action']='process_interactive_graph'
 
     if from_repo_uoa!='':
        i['repo_uoa']=from_repo_uoa
@@ -1092,7 +1092,7 @@ def interactive_graph(i):
 ##############################################################################
 # prepare graph for interactive reports
 
-def interactive_graph_process(i):
+def process_interactive_graph(i):
     """
     Input:  {
             }
