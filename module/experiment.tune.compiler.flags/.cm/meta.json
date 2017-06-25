@@ -8,11 +8,14 @@
       "for_web": "yes"
     },
     "interactive_graph": {
-      "desc": "prepare graph for interactive reports",
-      "for_web": "yes"
+      "desc": "prepare graph for interactive reports"
     },
     "prune": {
       "desc": "prune compiler flags to find minimal set of choices"
+    },
+    "process_interactive_graph": {
+      "desc": "prepare graph for interactive reports (internal)",
+      "for_web": "yes"
     },
     "replay": {
       "desc": "replay optimization"

@@ -1071,7 +1071,7 @@ def interactive_graph(i):
     from_repo_uoa=i.get('from_repo_uoa','')
     from_module_uoa=i.get('from_module_uoa','')
     
-#    i['action']='html_viewer'
+    i['action']='interactive_graph_process'
 
     if from_repo_uoa!='':
        i['repo_uoa']=from_repo_uoa
@@ -1088,3 +1088,25 @@ def interactive_graph(i):
     print (r)
 
     return r
+
+##############################################################################
+# prepare graph for interactive reports
+
+def interactive_graph_process(i):
+    """
+    Input:  {
+            }
+
+    Output: {
+              return       - return code =  0, if successful
+                                         >  0, if error
+              (error)      - error text if return > 0
+            }
+
+    """
+
+    i['action']='html_viewer'
+
+    i['out']=''
+
+    return ck.access(i)
