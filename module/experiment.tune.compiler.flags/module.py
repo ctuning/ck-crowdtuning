@@ -727,8 +727,6 @@ def html_viewer(i):
     d3_div='ck_interactive'
     if i.get('graph_d3_div','')!='': d3_div=i['graph_d3_div']
 
-#    if mn=='yes': h=''
-
     if len(bgraph['0'])>0:
        ii={'action':'plot',
            'module_uoa':cfg['module_deps']['graph'],
@@ -787,19 +785,18 @@ def html_viewer(i):
           if x!='':
              st=r.get('style','')
 
-#             if mn=='yes':
-#                h=x
-
              hg='<div id="ck_box_with_shadow" style="width:920px;">\n'
              if ftmp!='':
                 hg+='<center><b>Note: graph info has been saved to file '+ftmp+' for interactive publications</b></center>'
-             hg+=' <div id="ck_interactive" style="text-align:center">\n'
+             hg+=' <div id="'+d3_div+'" style="text-align:center">\n'
              hg+=x+'\n'
              hg+=' </div>\n'
              hg+='</div>\n'
 
-#    if mn!='yes':
-    h=h.replace('$#graph#$', hg)
+    if mn=='yes':
+       h=hg
+    else:
+       h=h.replace('$#graph#$', hg)
 
     rrr['html']=h
     rrr['style']=st
