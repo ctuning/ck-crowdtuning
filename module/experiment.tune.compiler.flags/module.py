@@ -697,7 +697,8 @@ def html_viewer(i):
            else:
               iq1+=1
 
-           tbl.append(xtbl)
+           if len(xtbl)>0:
+              tbl.append(xtbl)
 
        if ir=='yes':
           rrr['table']=tbl
