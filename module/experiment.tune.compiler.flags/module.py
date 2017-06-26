@@ -798,8 +798,8 @@ def html_viewer(i):
              hg+=' </div>\n'
              hg+='</div>\n'
 
-    if mn!='yes':
-       h=h.replace('$#graph#$', hg)
+#    if mn!='yes':
+#       h=h.replace('$#graph#$', hg)
 
     rrr['html']=h
     rrr['style']=st
