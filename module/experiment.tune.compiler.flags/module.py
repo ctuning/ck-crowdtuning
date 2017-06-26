@@ -784,7 +784,7 @@ def html_viewer(i):
           x=r.get('html','')
           if mn=='yes':
              h=x
-          elif x!='':
+          if x!='':
              st=r.get('style','')
 
              hg='<div id="ck_box_with_shadow" style="width:920px;">\n'
