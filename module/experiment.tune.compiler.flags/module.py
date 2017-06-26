@@ -557,8 +557,8 @@ def html_viewer(i):
 
                   # Add to graph (first dimension and first solution)
 #                  if k==0 and ires==1:
-                  dv=cls.get('highest_improvements',{}).get(ik[k],'')
-                  dvw=cls.get('highest_degradations',{}).get(ik[k],'')
+                  dv=cls.get('highest_improvements',{}).get(ik[k],None)
+                  dvw=cls.get('highest_degradations',{}).get(ik[k],None)
 
                   xtbl['highest_improvement_ik'+str(k+1)]=dv
                   xtbl['highest_degradation_ik'+str(k+1)]=dvw
@@ -760,6 +760,7 @@ def html_viewer(i):
        if ap.get('fgg_save_graph_to_file','')=='yes':
           import copy
           iii=copy.deepcopy(ii)
+
           iii["substitute_x_with_loop"]="yes"
           iii["plot_type"]="mpl_2d_bars" 
           if 'ymin' in iii: del(iii['ymin'])
@@ -1103,6 +1104,7 @@ def show(i):
                (from_repo)         - change repository (useful for remote-ck)
                (change_module_uoa) - change module_uoa (to select scenario module)
                (force_url)         - useful to redirect interactive graphs to external repo
+               (save_to_file)      - output to file (for auto-generated LaTex and interactive graphs via CK)
             }
 
     Output: {
@@ -1113,6 +1115,8 @@ def show(i):
 
     """
 
+    import os
+
     i['action']='process_interactive_graph'
     i['interactive_report']='yes'
     i['out']=''
@@ -1121,9 +1125,34 @@ def show(i):
     if from_repo!='':
        i['repo_uoa']=from_repo
 
-    r=ck.access(i)
+    rr=ck.access(i)
+    if rr['return']>0: return rr
 
-    return r
+    stf=i.get('save_to_file','')
+    stf0=''
+    # Checks to avoid hacking
+    if stf!='':
+       stf=os.path.basename(stf)
+       if not stf.endswith('.png') and not stf.endswith('.pdf'):
+          stf=''
+       if stf!='':
+          stf0=os.path.splitext(stf)[0]
+
+       # Save graph
+       iii=rr.get('graph_dict',{})
+
+       iii["substitute_x_with_loop"]="yes"
+       iii["plot_type"]="mpl_2d_bars" 
+
+       if 'ymin' in iii: del(iii['ymin'])
+       if 'ymax' in iii: del(iii['ymax'])
+
+       iii['out_to_file']=stf
+
+       r=ck.access(iii)
+       if r['return']>0: return r
+
+    return rr
 
 ##############################################################################
 # prepare graph for interactive reports
