@@ -301,6 +301,8 @@ def html_viewer(i):
     h+='$#graph#$\n'
     h+='<p>\n'
 
+    rrr={'return':0} # Preparing output (useful for interactive graphs)
+
     # List solutions
     if len(sols)==0:
        h+='<h2>No distinct solutions found!</h2>\n'
@@ -403,7 +405,11 @@ def html_viewer(i):
 
        cls={}
 
+       tbl=[]
+
        while iq1<len(sols): # already sorted by most "interesting" solutions (such as highest speedups)
+           xtbl={}
+
            if iq!=iq1:
               num+=1
 
@@ -492,6 +498,8 @@ def html_viewer(i):
               cmd1=''
               cmd2=''
 
+              xtbl['solution_num']=num
+
               ss='S'+str(num)
               h+=' <tr>\n'
               h+='  <td valign="top" style="background-color:#efefff;">\n'
@@ -532,6 +540,8 @@ def html_viewer(i):
                  h+='   <a href="'+urlx+'&solution_uid='+suid+'">'+suid+'</a>\n'
               h+='  </td>\n'
 
+              xtbl['solution_uid']=suid
+
               for k in range(0, len(ik)):
                   h+='  <td valign="top" align="right" style="background-color:#efefff;">\n'
 
@@ -549,6 +559,9 @@ def html_viewer(i):
 #                  if k==0 and ires==1:
                   dv=cls.get('highest_improvements',{}).get(ik[k],'')
                   dvw=cls.get('highest_degradations',{}).get(ik[k],'')
+
+                  tbl['highest_improvement_ik'+str(k+1)]=dv
+                  tbl['highest_degradation_ik'+str(k+1)]=dvw
 
                   if k==0:
                      bgraph['0'].append([ss,dv])
@@ -573,6 +586,8 @@ def html_viewer(i):
                   h+=str(y)+'\n'
                   h+='  </td>\n'
 
+              tbl['best_flags']=flags
+
               h+='  <td valign="top">\n'
               h+='   '+flags+'\n'
               h+='  </td>\n'
@@ -590,17 +605,22 @@ def html_viewer(i):
                  ref=ry['cmd']
 
                  h+='   '+ref+'\n'
+
+                 tbl['ref_flags']=ref
+
               h+='   \n'
               h+='  </td>\n'
 
               h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
               if ires<2:
                  h+='   <a href="'+url_wl_best+'">'+str(wl_best)+'</a>\n'
+                 tbl['best_species']=wl_best
               h+='  </td>\n'
 
               h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
               if ires<2:
                  h+='   <a href="'+url_wl_worst+'">'+str(wl_worst)+'</a>\n'
+                 tbl['best_species']=wl_worst
               h+='  </td>\n'
 
               h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
@@ -667,7 +687,9 @@ def html_viewer(i):
 
               x='ck replay '+cid+' --solution_uid='+suid
               y=ck.cfg.get('add_extra_to_replay','')
-              if y!='':x+=' '+y
+              if y!='': x+=' '+y
+              tbl['replay']=x
+
               h+='    <td valign="top" align="center"><input type="button" class="ck_small_button" style="height:60px;" onClick="copyToClipboard(\''+x+'\');" value="Copy \nto \nclipboard"></td>\n'
 
               h+=' </tr>\n'
@@ -675,6 +697,10 @@ def html_viewer(i):
            else:
               iq1+=1
 
+           tbl.append(xtbl)
+
+       if ir=='yes':
+          rrr['table']=xtbl
 
        h+='</table>\n'
 
@@ -694,8 +720,6 @@ def html_viewer(i):
     # Plot graph
     hg=''
     ftmp=''
-
-    rr={'return':0}
 
     if len(bgraph['0'])>0:
        ii={'action':'plot',
@@ -730,7 +754,7 @@ def html_viewer(i):
        # Trick to save to file (for interactive/live articles)
        if ir=='yes':
           import copy
-          rr['graph_dict']=copy.deepcopy(ii)
+          rrr['graph_dict']=copy.deepcopy(ii)
 
        if ap.get('fgg_save_graph_to_file','')=='yes':
           import copy
@@ -764,11 +788,11 @@ def html_viewer(i):
 
     h=h.replace('$#graph#$', hg)
 
-    rr['html']=h
-    rr['style']=st
-    rr['predicted_opt']=predicted_opt
+    rrr['html']=h
+    rrr['style']=st
+    rrr['predicted_opt']=predicted_opt
 
-    return rr
+    return rrr
 
 ##############################################################################
 # crowdsource these experiments
