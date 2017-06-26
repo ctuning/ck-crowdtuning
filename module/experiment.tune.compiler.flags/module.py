@@ -724,6 +724,9 @@ def html_viewer(i):
     hg=''
     ftmp=''
 
+    d3_div='ck_interactive'
+    if i.get('graph_d3_div','')!='': d3_div=i['graph_d3_div']
+
     if len(bgraph['0'])>0:
        ii={'action':'plot',
            'module_uoa':cfg['module_deps']['graph'],
@@ -747,7 +750,7 @@ def html_viewer(i):
 
            "plot_grid":"yes",
 
-           "d3_div":"ck_interactive",
+           "d3_div":d3_div,
 
            "image_width":"900",
            "image_height":"400",
