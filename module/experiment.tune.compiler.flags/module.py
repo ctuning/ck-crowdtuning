@@ -560,8 +560,8 @@ def html_viewer(i):
                   dv=cls.get('highest_improvements',{}).get(ik[k],'')
                   dvw=cls.get('highest_degradations',{}).get(ik[k],'')
 
-                  tbl['highest_improvement_ik'+str(k+1)]=dv
-                  tbl['highest_degradation_ik'+str(k+1)]=dvw
+                  xtbl['highest_improvement_ik'+str(k+1)]=dv
+                  xtbl['highest_degradation_ik'+str(k+1)]=dvw
 
                   if k==0:
                      bgraph['0'].append([ss,dv])
@@ -586,7 +586,7 @@ def html_viewer(i):
                   h+=str(y)+'\n'
                   h+='  </td>\n'
 
-              tbl['best_flags']=flags
+              xtbl['best_flags']=flags
 
               h+='  <td valign="top">\n'
               h+='   '+flags+'\n'
@@ -606,7 +606,7 @@ def html_viewer(i):
 
                  h+='   '+ref+'\n'
 
-                 tbl['ref_flags']=ref
+                 xtbl['ref_flags']=ref
 
               h+='   \n'
               h+='  </td>\n'
@@ -614,13 +614,13 @@ def html_viewer(i):
               h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
               if ires<2:
                  h+='   <a href="'+url_wl_best+'">'+str(wl_best)+'</a>\n'
-                 tbl['best_species']=wl_best
+                 xtbl['best_species']=wl_best
               h+='  </td>\n'
 
               h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
               if ires<2:
                  h+='   <a href="'+url_wl_worst+'">'+str(wl_worst)+'</a>\n'
-                 tbl['best_species']=wl_worst
+                 xtbl['best_species']=wl_worst
               h+='  </td>\n'
 
               h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
@@ -688,7 +688,7 @@ def html_viewer(i):
               x='ck replay '+cid+' --solution_uid='+suid
               y=ck.cfg.get('add_extra_to_replay','')
               if y!='': x+=' '+y
-              tbl['replay']=x
+              xtbl['replay']=x
 
               h+='    <td valign="top" align="center"><input type="button" class="ck_small_button" style="height:60px;" onClick="copyToClipboard(\''+x+'\');" value="Copy \nto \nclipboard"></td>\n'
 
@@ -700,7 +700,7 @@ def html_viewer(i):
            tbl.append(xtbl)
 
        if ir=='yes':
-          rrr['table']=xtbl
+          rrr['table']=tbl
 
        h+='</table>\n'
 
