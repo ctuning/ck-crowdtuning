@@ -1105,6 +1105,7 @@ def show(i):
                (change_module_uoa) - change module_uoa (to select scenario module)
                (force_url)         - useful to redirect interactive graphs to external repo
                (save_to_file)      - output to file (for auto-generated LaTex and interactive graphs via CK)
+               (interactive)       - if 'yes', return html
             }
 
     Output: {
@@ -1127,6 +1128,9 @@ def show(i):
 
     rr=ck.access(i)
     if rr['return']>0: return rr
+
+    if i.get('interactive','')=='yes':
+       rr['html']=rr.get('graph_html','')
 
     stf=i.get('save_to_file','')
     stf0=''
@@ -1166,7 +1170,7 @@ def show(i):
        h+='  <td><b>Worst species</b></td>\n'
        h+=' </tr>\n'
 
-       t ="    \\begin{tabular}{|r|p{3in}|r|r|}\n"
+       t ="    \\begin{tabular}{|r|p{4.5in}|p{0.5in}|p{0.5in}|}\n"
        t+="     \\hline\n"
        t+="     \\textbf{Solution} & \\textbf{Pruned flags (complexity reduction)} & \\textbf{Best species} & \\textbf{Worst species} \\\\ \n"
        t+="     \\hline\n"
