@@ -729,6 +729,7 @@ def html_viewer(i):
 
        # Trick to save to file (for interactive/live articles)
        if ir=='yes':
+          import copy
           rr['graph_dict']=copy.deepcopy(ii)
 
        if ap.get('fgg_save_graph_to_file','')=='yes':
