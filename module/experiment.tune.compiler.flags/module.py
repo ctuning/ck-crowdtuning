@@ -620,7 +620,7 @@ def html_viewer(i):
               h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
               if ires<2:
                  h+='   <a href="'+url_wl_worst+'">'+str(wl_worst)+'</a>\n'
-                 xtbl['best_species']=wl_worst
+                 xtbl['worst_species']=wl_worst
               h+='  </td>\n'
 
               h+='  <td valign="top" align="center" style="background-color:#efefff;">\n'
@@ -1149,7 +1149,57 @@ def show(i):
 
        iii['out_to_file']=stf
 
+       if i.get("save_graph_title",'')!='': iii['title']=i['save_graph_title']
+       if i.get("save_graph_axis_x_desc",'')!='': iii['axis_x_desc']=i['save_graph_axis_x_desc']
+       if i.get("save_graph_axis_y_desc",'')!='': iii['axis_y_desc']=i['save_graph_axis_y_desc']
+       if i.get("save_graph_axis_x_rotation",'')!='': iii['axis_x_rotation']=i['save_graph_axis_x_rotation']
+       if i.get("save_font_size",'')!='': iii['font_size']=i['save_font_size']
+
        r=ck.access(iii)
+       if r['return']>0: return r
+
+       h ='<table border="1" cellpadding="3" cellspacing="0">\n'
+       h+=' <tr>\n'
+       h+='  <td align="right"><b>Solution</b></td>\n'
+       h+='  <td><b>Pruned flags (complexity reduction)</b></td>\n'
+       h+='  <td><b>Best species</b></td>\n'
+       h+='  <td><b>Worst species</b></td>\n'
+       h+=' </tr>\n'
+
+       t ="    \\begin{tabular}{|r|p{3in}|r|r|}\n"
+       t+="     \\hline\n"
+       t+="     \\textbf{Solution} & \\textbf{Pruned flags (complexity reduction)} & \\textbf{Best species} & \\textbf{Worst species} \\\\ \n"
+       t+="     \\hline\n"
+
+       tbl=rr.get('table',[])
+
+       for q in tbl:
+           sn=q['solution_num']
+           bf=q['best_flags']
+
+           bs=q.get('best_species', 0)
+           ws=q.get('worst_species', 0)
+
+           t+="      "+str(sn)+" & "+bf+" & "+str(bs)+" & "+str(ws)+" \\\\\n"
+           t+="     \\hline\n"
+
+           h+=' <tr>'
+           h+='  <td>'+str(sn)+'</td>\n'
+           h+='  <td>'+bf+'</td>\n'
+           h+='  <td>'+str(bs)+'</td>\n'
+           h+='  <td>'+str(ws)+'</td>\n'
+           h+=' </tr>'
+
+       t+="    \\end{tabular}"
+
+       h+='</table>\n'
+
+       # Save tex file
+       r=ck.save_text_file({'text_file':stf0+'.solutions.tex', 'string':t})
+       if r['return']>0: return r
+
+       # Save html file
+       r=ck.save_text_file({'text_file':stf0+'.solutions.html', 'string':h})
        if r['return']>0: return r
 
     return rr
