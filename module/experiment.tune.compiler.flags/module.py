@@ -1055,9 +1055,11 @@ def prune(i):
 ##############################################################################
 # prepare graph for interactive reports
 
-def interactive_graph(i):
+def show(i):
     """
     Input:  {
+               (from_repo)         - change repository (useful for remote-ck)
+               (change_module_uoa) - change module_uoa (to select scenario module)
             }
 
     Output: {
@@ -1071,16 +1073,11 @@ def interactive_graph(i):
     i['action']='process_interactive_graph'
     i['out']=''
 
-    from_repo_uoa=i.get('from_repo_uoa','')
-    if from_repo_uoa!='':
-       i['repo_uoa']=from_repo_uoa
-
-    print (i)
+    from_repo=i.get('from_repo','')
+    if from_repo!='':
+       i['repo_uoa']=from_repo
 
     r=ck.access(i)
-    if r['return']>0: return r
-
-    print (r)
 
     return r
 
@@ -1090,6 +1087,7 @@ def interactive_graph(i):
 def process_interactive_graph(i):
     """
     Input:  {
+               (change_module_uoa)
             }
 
     Output: {
@@ -1103,11 +1101,14 @@ def process_interactive_graph(i):
     i['action']='html_viewer'
     i['out']=''
 
-    from_module_uoa=i.get('from_module_uoa','')
-    if from_module_uoa!='':
-       i['module_uoa']=from_module_uoa
+    change_module_uoa=i.get('change_module_uoa','')
+    if change_module_uoa!='':
+       i['module_uoa']=change_module_uoa
 
     r=ck.access(i)
-    if r['return']>0: return r
 
-    return {'return':0, 'graph_html':r['html']}
+    if 'html' in r:
+       r['graph_html']=r['html']
+       del(r['html'])
+
+    return r

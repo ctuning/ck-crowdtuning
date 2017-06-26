@@ -7,7 +7,7 @@
       "desc": "view solutions in html",
       "for_web": "yes"
     },
-    "interactive_graph": {
+    "show": {
       "desc": "prepare graph for interactive reports"
     },
     "prune": {
