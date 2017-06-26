@@ -727,7 +727,7 @@ def html_viewer(i):
     d3_div='ck_interactive'
     if i.get('graph_d3_div','')!='': d3_div=i['graph_d3_div']
 
-    if mn=='yes': h=''
+#    if mn=='yes': h=''
 
     if len(bgraph['0'])>0:
        ii={'action':'plot',
@@ -787,8 +787,8 @@ def html_viewer(i):
           if x!='':
              st=r.get('style','')
 
-             if mn=='yes':
-                h=x
+#             if mn=='yes':
+#                h=x
 
              hg='<div id="ck_box_with_shadow" style="width:920px;">\n'
              if ftmp!='':
