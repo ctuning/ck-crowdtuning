@@ -45,6 +45,7 @@ def html_viewer(i):
     Input:  {
               TBD
               (interactive_report) - if 'yes' output keys for interactive report
+              (minimal)            - if 'yes', minimal html
             }
 
     Output: {
@@ -78,6 +79,7 @@ def html_viewer(i):
     if len(mwork)>0: work=mwork
 
     ir=i.get('interactive_report','')
+    mn=i.get('minimal','')
 
     st=''
 
@@ -777,7 +779,9 @@ def html_viewer(i):
        r=ck.access(ii)
        if r['return']==0:
           x=r.get('html','')
-          if x!='':
+          if mn=='yes':
+             h=x
+          elif x!='':
              st=r.get('style','')
 
              hg='<div id="ck_box_with_shadow" style="width:920px;">\n'
@@ -1105,7 +1109,7 @@ def show(i):
                (change_module_uoa) - change module_uoa (to select scenario module)
                (force_url)         - useful to redirect interactive graphs to external repo
                (save_to_file)      - output to file (for auto-generated LaTex and interactive graphs via CK)
-               (interactive)       - if 'yes', return html
+               (minimal)           - if 'yes', return minimal html
             }
 
     Output: {
@@ -1129,7 +1133,7 @@ def show(i):
     rr=ck.access(i)
     if rr['return']>0: return rr
 
-    if i.get('interactive','')=='yes':
+    if i.get('minimal','')=='yes':
        rr['html']=rr.get('graph_html','')
 
     stf=i.get('save_to_file','')
