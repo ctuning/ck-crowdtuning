@@ -43,6 +43,8 @@ def init(i):
 def html_viewer(i):
     """      
     Input:  {
+              TBD
+              (interactive_report) - if 'yes' output keys for interactive report
             }
 
     Output: {
@@ -75,9 +77,14 @@ def html_viewer(i):
     mwork=i.get('module_work',{})
     if len(mwork)>0: work=mwork
 
+    ir=i.get('interactive_report','')
+
     st=''
 
-    url0=i['url_base']
+    if i.get('force_url','')=='':
+       url0=i['url_base']
+    else:
+       url0=i['force_url']
 
     ap=i.get('all_params',{})
 
@@ -688,6 +695,8 @@ def html_viewer(i):
     hg=''
     ftmp=''
 
+    rr={'return':0}
+
     if len(bgraph['0'])>0:
        ii={'action':'plot',
            'module_uoa':cfg['module_deps']['graph'],
@@ -719,6 +728,9 @@ def html_viewer(i):
            "wfe_url":url0}
 
        # Trick to save to file (for interactive/live articles)
+       if ir=='yes':
+          rr['graph_dict']=copy.deepcopy(ii)
+
        if ap.get('fgg_save_graph_to_file','')=='yes':
           import copy
           iii=copy.deepcopy(ii)
@@ -751,7 +763,11 @@ def html_viewer(i):
 
     h=h.replace('$#graph#$', hg)
 
-    return {'return':0, 'html':h, 'style':st, 'predicted_opt':predicted_opt}
+    rr['html']=h
+    rr['style']=st
+    rr['predicted_opt']=predicted_opt
+
+    return rr
 
 ##############################################################################
 # crowdsource these experiments
@@ -1060,6 +1076,7 @@ def show(i):
     Input:  {
                (from_repo)         - change repository (useful for remote-ck)
                (change_module_uoa) - change module_uoa (to select scenario module)
+               (force_url)         - useful to redirect interactive graphs to external repo
             }
 
     Output: {
@@ -1071,6 +1088,7 @@ def show(i):
     """
 
     i['action']='process_interactive_graph'
+    i['interactive_report']='yes'
     i['out']=''
 
     from_repo=i.get('from_repo','')
