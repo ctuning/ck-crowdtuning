@@ -1754,6 +1754,8 @@ def run(i):
     kexp=i.get('keep_experiments','')
 
     scon=scfg.get('solution_conditions',[])
+    cscon=i.get('customize_solution_conditions',[])
+    if len(cscon)>0: scon=cscon
 
     er=i.get('exchange_repo','')
     esr=i.get('exchange_subrepo','')
