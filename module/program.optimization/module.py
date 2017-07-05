@@ -1587,6 +1587,11 @@ def run(i):
               (solutions)                  - list of solutions
               (solutions_info)             - info (repo_uoa, module_uoa, data_uoa)
 
+              (solution_module_uoa)        - if !='' use it to reuse shared optimization cases
+              (solution_data_uoa)          - force specific solution entry
+              (solution_repo_uoa)          - force repo where to search existing solutions
+              (solution_remote_repo_uoa)   - force sub-repo (if above repo is remote)
+
               (prune)                      - prune solution (find minimal choices that give the same result)
               (prune_md5)                  - if 'yes', check if MD5 doesn't change
               (prune_invert)                  - prune all (turn off even swiched off)
@@ -2019,12 +2024,31 @@ def run(i):
              ck.out('')
              ck.out('Searching if collaborative solutions already exist ...')
 
+          xsmuoa=smuoa
+          if i.get('solution_module_uoa','')!='':
+             xsmuoa=i['solution_module_uoa']
+
+          xsduoa=''
+          xmeta=copy.deepcopy(meta)
+          if i.get('solution_data_uoa','')!='':
+             xsduoa=i['solution_data_uoa']
+             xmeta={}
+
+          xser=er
+          if i.get('solution_repo_uoa','')!='':
+             xser=i['solution_repo_uoa']
+
+          xsesr=esr
+          if i.get('solution_remote_repo_uoa','')!='':
+             xsesr=i['solution_remote_repo_uoa']
+
           ii={'action':'get',
               'module_uoa':work['self_module_uid'],
-              'repo_uoa':er,
-              'remote_repo_uoa':esr,
-              'scenario_module_uoa':smuoa,
-              'meta':meta}
+              'repo_uoa':xser,
+              'remote_repo_uoa':xsesr,
+              'scenario_module_uoa':xsmuoa,
+              'data_uoa':xsduoa,
+              'meta':xmeta}
           rz=ck.access(ii)
           if rz['return']>0: return rz
 
