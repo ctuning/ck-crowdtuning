@@ -1578,7 +1578,8 @@ def run(i):
 
               (omit_probability)           - probability to omit optimization (for example, compiler flags during exploration/crowdtuning)
               (parametric_flags)           - if 'yes', also tune parametric flags
-              (cpu_flags)                 - if 'yes', also tune cpu-specific flags
+              (cpu_flags)                  - if 'yes', also tune cpu-specific flags
+              (base_flags)                 - if 'yes', also tune base flag
 
               (compiler_env_uoa)           - fix compiler environment
 
@@ -1693,6 +1694,7 @@ def run(i):
 
     pflags=i.get('parametric_flags','')
     aflags=i.get('cpu_flags','')
+    bflags=i.get('base_flags','')
 
     if pflags=='yes':
        if anyftags!='': anyftags+=','
@@ -1709,6 +1711,10 @@ def run(i):
        if cpu_ft!='':
           if anyftags!='': anyftags+=','
           anyftags+=cpu_ft
+
+    if bflags=='yes':
+       if anyftags!='': anyftags+=','
+       anyftags+='base'
 
     oprob=i.get('omit_probability','')
 
@@ -2318,6 +2324,11 @@ def run(i):
 
                 pup1=scfg.get('experiment_1_pipeline_update',{})
                 pup1['frontier_keys']=fk
+
+                if bflags=='yes':
+                   zpu=pup1.get('pipeline_update',{})
+                   zpu['best_base_flag']='no'
+                   pup1['pipeline_update']=zpu
 
                 if len(pup1.get('choices_selection',[]))>0:
                    xpup1=pup1['choices_selection'][0]
