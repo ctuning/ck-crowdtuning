@@ -16,5 +16,5 @@
       "12x"
     ]
   },
-  "data_name": "auto/crowd-tune GCC compiler flags (minimize code size, do not degrade execution time)"
+  "data_name": "auto/crowd-tune GCC compiler flags (minimize total binary size, do not degrade execution time)"
 }
