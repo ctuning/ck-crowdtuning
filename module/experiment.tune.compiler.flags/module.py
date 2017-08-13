@@ -695,8 +695,8 @@ def html_viewer(i):
               if y!='': x+=' '+y
               xtbl['replay']=x
 
-              h+='    <td valign="top" align="center"><input type="button" class="ck_small_button" style="height:60px;" onClick="copyToClipboard(\''+x+'\');" value="Copy CMD\nto clipboard"><br>\n'
-              h+='                                    <input type="button" class="ck_small_button" style="height:60px;" onClick="copyToClipboard(\'--shared_solution_cid='+xreuse_shared_solution+'\');" value="Copy CID\nto clipboard"></td>\n'
+              h+='    <td valign="top" align="center"><input type="button" class="ck_small_button" style="height:40px;" onClick="copyToClipboard(\''+x+'\');" value="Copy CMD\nto clipboard"><br>\n'
+              h+='                                    <input type="button" class="ck_small_button" style="height:40px;" onClick="copyToClipboard(\'--shared_solution_cid='+xreuse_shared_solution+'\');" value="Copy CID\nto clipboard"></td>\n'
 
               h+=' </tr>\n'
 
