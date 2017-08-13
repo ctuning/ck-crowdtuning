@@ -412,6 +412,7 @@ def html_viewer(i):
        while iq1<len(sols): # already sorted by most "interesting" solutions (such as highest speedups)
            xtbl={}
 
+           xreuse_shared_solution=''
            if iq!=iq1:
               num+=1
 
@@ -434,6 +435,8 @@ def html_viewer(i):
               wl_worst=len(cls.get('worst',[]))
 
               dist=cls.get('distance',None)
+
+              xreuse_shared_solution=cfg['module_deps']['program.optimization']+':'+duid+'-'+muid+'-'+suid
 
               url_wl=url0+'action=get_workloads&cid='+cfg['module_deps']['program.optimization']+':'+duid+'&scenario_module_uoa='+muid+'&solution_uid='+suid+'&out=json'
               url_wl_best=url_wl+'&key=best'
@@ -692,7 +695,8 @@ def html_viewer(i):
               if y!='': x+=' '+y
               xtbl['replay']=x
 
-              h+='    <td valign="top" align="center"><input type="button" class="ck_small_button" style="height:60px;" onClick="copyToClipboard(\''+x+'\');" value="Copy \nto \nclipboard"></td>\n'
+              h+='    <td valign="top" align="center"><input type="button" class="ck_small_button" style="height:60px;" onClick="copyToClipboard(\''+x+'\');" value="Copy CMD\nto clipboard"><br>\n'
+              h+='                                    <input type="button" class="ck_small_button" style="height:60px;" onClick="copyToClipboard(\'--shared_solution_cid='+xreuse_shared_solution+'\');" value="Copy CID\nto clipboard"></td>\n'
 
               h+=' </tr>\n'
 
