@@ -442,7 +442,7 @@ def show(i):
            'selected_value':scenario}
        r=ck.access(ii)
        if r['return']>0: return r
-       h+='<b>Select CK-powered common expermental workflow:</b> '+r['html']
+       h+='<b>Select CK-powered unified experimental workflow:</b> '+r['html']
 
        h+='</center>\n'
 
