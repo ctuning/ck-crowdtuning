@@ -1568,6 +1568,14 @@ def run(i):
               (experiment_meta)            - meta when recording experiment
               (experiment_meta_extra)      - extra meta such as platform UIDs
 
+               (record_failed)                    - if 'yes', record even failed experiments
+                                                    (for debugging, buildbots, detecting designed 
+                                                     architecture failures, etc)
+               (record_only_failed)               - if 'yes', record only failed experiments
+                                                    (useful to crowdsource experiments when searching only 
+                                                     for compiler/program/architecture bugs  
+                                                     (for example fuzzing via random compiler flags))...
+
               (record_uoa)                 - use this UOA to recrod experiments instead of randomly generated ones
 
               (solution_conditions)        - list of conditions:
@@ -1673,6 +1681,9 @@ def run(i):
     prune_invert_add_iters=i.get('prune_invert_add_iters','')
     prune_ignore_choices=i.get('prune_ignore_choices',[])
     result_conditions=i.get('result_conditions',[])
+
+    record_failed=i.get('record_failed','')
+    record_only_failed=i.get('record_only_failed','')
 
     replay=i.get('replay','')
 
@@ -2124,6 +2135,9 @@ def run(i):
            "record_permanent":'yes',
 
            "tags":"crowdtuning,tmp",
+
+           "record_failed":record_failed,
+           "record_only_failed":record_only_failed,
 
            "meta":mmeta,
 
