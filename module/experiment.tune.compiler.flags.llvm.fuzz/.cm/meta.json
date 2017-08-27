@@ -8,19 +8,19 @@
       "for_web": "yes"
     },
     "prune": {
-      "desc": "reduce compiler flags to find minimal set of choices"
+      "desc": "prune compiler flags to find minimal set of choices"
     },
     "replay": {
       "desc": "replay optimization"
     }
   },
-  "compiler_name": "GCC",
+  "compiler_name": "LLVM",
   "copyright": "See CK COPYRIGHT.txt for copyright details",
   "deps": {
     "compiler": {
       "local": "yes",
       "sort": 10,
-      "tags": "compiler,lang-c,gcc"
+      "tags": "compiler,lang-c,llvm"
     },
     "xopenme": {
       "local": "yes",
@@ -28,7 +28,7 @@
       "tags": "lib,xopenme"
     }
   },
-  "desc": "fuzz GCC compiler flags (search for bugs)",
+  "desc": "explore LLVM compiler flags",
   "developer": "Grigori Fursin",
   "developer_email": "Grigori.Fursin@cTuning.org",
   "developer_webpage": "http://fursin.net",
@@ -49,7 +49,7 @@
     "choices_selection": [
       {
         "notags": "",
-        "omit_probability": "0.90",
+        "omit_probability": "0.80",
         "tags": "basic,optimization",
         "type": "random"
       }
@@ -200,6 +200,6 @@
     "program optimization",
     "autotuning",
     "fuzzing",
-    "gcc"
+    "llvm"
   ]
 }
