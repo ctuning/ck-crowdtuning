@@ -2136,9 +2136,6 @@ def run(i):
 
            "tags":"crowdtuning,tmp",
 
-           "record_failed":record_failed,
-           "record_only_failed":record_only_failed,
-
            "meta":mmeta,
 
            'quiet':quiet,
@@ -2216,8 +2213,6 @@ def run(i):
           points1=ri.get('points',[])
           ruid=ri['recorded_uid']       # UID of the default one
 
-          puid00=points1[0]
-
           if len(points1)==0:
              unexpected=True
 
@@ -2229,6 +2224,8 @@ def run(i):
              gg={'action':'log', 'module_uoa':cfg['module_deps']['experiment'],'file_name':cfg['log_file_own'], 'skip_header':'yes', 'text':x+'\n'}
              rx=ck.access(gg)
           else:
+             puid00=points1[0]
+
              # Check if need to run extra experiments
              # (for example when crowdsourcing program benchmarking or compiler bug detection,
              #  no need to run extra experiments)
@@ -2416,6 +2413,9 @@ def run(i):
                     "record":"yes",
                     "record_uoa":euoa0,
                     "record_repo":eruoa,
+
+                    "record_failed":record_failed,
+                    "record_only_failed":record_only_failed,
 
                     'out':oo
                    }
@@ -2803,7 +2803,7 @@ def run(i):
                                 pp['misc']=x
 
                                 if 'reaction_raw_flat' in pp: del(pp['reaction_raw_flat'])
-                                
+
                                 x=pp.get('improvements_reaction',{})
                                 pp['improvements']=x
 
