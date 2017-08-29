@@ -1602,8 +1602,10 @@ def run(i):
               (solution_remote_repo_uoa)   - force sub-repo (if above repo is remote)
 
               (prune)                      - prune solution (find minimal choices that give the same result)
+              (reduce)                     - the same as above
+              (reduce_bug)                 - reduce choices to localize bug (pipeline fail)
               (prune_md5)                  - if 'yes', check if MD5 doesn't change
-              (prune_invert)                  - prune all (turn off even swiched off)
+              (prune_invert)               - prune all (turn off even swiched off)
 
               (replay)                     - if 'yes', replay
 
@@ -1676,6 +1678,7 @@ def run(i):
     static=i.get('static','')
 
     xprune=i.get('prune','')
+    reduce_bug=i.get('reduce_bug','')
     prune_md5=i.get('prune_md5','')
     prune_invert=i.get('prune_invert','')
     prune_invert_add_iters=i.get('prune_invert_add_iters','')
@@ -2442,6 +2445,7 @@ def run(i):
                    ii['solutions']=sols
                    if xprune=='yes':
                       ii['prune']=xprune
+                      ii['reduce_bug']=reduce_bug
                       ii['prune_md5']=prune_md5
                       ii['prune_invert']=prune_invert
                       ii['prune_ignore_choices']=prune_ignore_choices

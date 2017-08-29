@@ -37,7 +37,7 @@
       "##choices#*"
     ],
     "pipeline_update": {
-      "speed": "yes"
+      "speed": "no"
     }
   },
   "experiment_1_pipeline_update": {
@@ -66,7 +66,8 @@
     ],
     "record_only_failed":"yes",
     "pipeline_update": {
-      "best_base_flag": "yes"
+      "best_base_flag": "no",
+      "speed":"no"
     },
     "record_params": {
       "search_point_by_features": "yes"
@@ -132,7 +133,6 @@
     "prune_ignore_choices": [
       "##compiler_flags#base_opt"
     ],
-    "prune_md5": "yes",
     "result_conditions": [
       [
         "##characteristics#run#execution_time_kernel_0$#objective#$",
