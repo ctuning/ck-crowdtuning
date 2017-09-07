@@ -24,25 +24,26 @@ ffstat='ck-stat-flat-characteristics.json'
 form_name='wa_web_form'
 onchange='document.'+form_name+'.submit();'
 
-hextra='<i><center>\n'
-hextra+=' [ <a href="http://cKnowledge.org/ai">Community-driven AI R&D powered by CK</a> ], '
-hextra+=' [ <i><a href="http://dividiti.blogspot.fr/2017/02/we-received-test-of-time-award-for-our.html">CGO\'17 test of time award for our interdisiplinary R&D</a></i> ], '
-hextra+=' [ <b><a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=en">Android app to crowd-optimize DNN engines and models</a></b> ], '
-hextra+=' [ <a href="https://github.com/ctuning/ck-caffe2">CK-Caffe2 GitHub</a> / <a href="https://github.com/dividiti/ck-caffe">CK-Caffe GitHub</a> ], '
-hextra+=' [ <a href="https://github.com/ctuning/ck-tensorflow">CK-TensorFlow GitHub</a> ], '
-hextra+=' [ <a href="https://en.wikipedia.org/wiki/Collective_Knowledge_(software)">Wikipedia</a>, \n'
-hextra+='<a href="https://www.researchgate.net/publication/304010295_Collective_Knowledge_Towards_RD_Sustainability">paper 1</a>, \n'
-hextra+='<a href="https://arxiv.org/abs/1506.06256">Paper 2</a>, \n'
-hextra+='<a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube CK intro</a> ] \n'
-hextra+='</center></i>\n'
-hextra+='<br>\n'
+hextra=''
+#hextra+='<i><center>\n'
+#hextra+=' [ <a href="http://cKnowledge.org/ai">Community-driven AI R&D powered by CK</a> ], '
+#hextra+=' [ <i><a href="http://dividiti.blogspot.fr/2017/02/we-received-test-of-time-award-for-our.html">CGO\'17 test of time award for our interdisiplinary R&D</a></i> ], '
+#hextra+=' [ <b><a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=en">Android app to crowd-optimize DNN engines and models</a></b> ], '
+#hextra+=' [ <a href="https://github.com/ctuning/ck-caffe2">CK-Caffe2 GitHub</a> / <a href="https://github.com/dividiti/ck-caffe">CK-Caffe GitHub</a> ], '
+#hextra+=' [ <a href="https://github.com/ctuning/ck-tensorflow">CK-TensorFlow GitHub</a> ], '
+#hextra+=' [ <a href="https://en.wikipedia.org/wiki/Collective_Knowledge_(software)">Wikipedia</a>, \n'
+#hextra+='<a href="https://www.researchgate.net/publication/304010295_Collective_Knowledge_Towards_RD_Sustainability">paper 1</a>, \n'
+#hextra+='<a href="https://arxiv.org/abs/1506.06256">Paper 2</a>, \n'
+#hextra+='<a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube CK intro</a> ] \n'
+#hextra+='</center></i>\n'
+#hextra+='<br>\n'
 
 selector=[{'name':'Scenario', 'key':'crowd_uid', 'module_uoa':'65477d547a49dd2c', 'module_key':'##dict#title'},
           {'name':'DNN engine', 'key':'engine'},
           {'name':'Model', 'key':'model'},
-          {'name':'Platform', 'key':'plat_name','new_line':'yes'},
+          {'name':'Platform', 'key':'plat_name','new_line':'no'},
           {'name':'OS', 'key':'os_name'},
-          {'name':'CPU', 'key':'cpu_name', 'new_line':'yes'},
+          {'name':'CPU', 'key':'cpu_name', 'new_line':'no'},
           {'name':'CPU ABI', 'key':'cpu_abi'},
           {'name':'GPU', 'key':'gpu_name'}]
 
@@ -113,7 +114,8 @@ def show(i):
 
     h+=hextra
 
-    h+='<hr>\n'
+#    h+='<hr>\n'
+    h+='<br>\n'
 
     # Check host URL prefix and default module/action
     rx=ck.access({'action':'form_url_prefix',
@@ -254,11 +256,12 @@ def show(i):
             'name':k,
             'onchange':conc, 
             'skip_sort':'no',
-            'selected_value':v}
+            'selected_value':v,
+            'style':'margin:5px;'}
         r=ck.access(ii)
         if r['return']>0: return r
 
-        h+='<b>'+n+':</b> '+r['html'].strip()+'\n'
+        h+='<span style="white-space: nowrap"><b>'+n.replace(' ','&nbsp;')+':</b>&nbsp;'+r['html'].strip()+'</span>\n'
 
     # Check hidden
     if hi_uid!='':

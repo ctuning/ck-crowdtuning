@@ -352,7 +352,7 @@ def show(i):
     st=''
 
     if not widget:
-       h+='<h2>Public experiments performed and shared using CK workflow framework</h2>\n'
+#       h+='<h2>Public experiments crowdsourced and shared using CK workflow framework</h2>\n'
 
        # Check host URL prefix and default module/action
        rx=ck.access({'action':'form_url_prefix',
@@ -447,7 +447,7 @@ def show(i):
        h+='</center>\n'
 
        if not widget:
-          h+='<hr>\n'
+#          h+='<hr>\n'
 
           rx=links({})
           if rx['return']>0: return rx
@@ -3111,27 +3111,37 @@ def links(i):
 
     """
 
-    h='<center>'
-    h+='[ Participated <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform">Platforms</a>, \n'
+    h='<div style="background-color:#FFCF8F;padding:5px;margin:5px">\n'
+    h+='<center>'
+    h+='[ Participated '
+    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=experiment.user">users</a>, \n'
+    h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform">platforms</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.os">OS</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.cpu">CPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpu">GPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpgpu">GPGPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.nn">NN</a> ] \n'
     h+='[ <a href="https://github.com/ctuning/ck/wiki/Crowdsourcing-optimization">How to participate</a> ] \n'
-    h+='[ <a href="https://github.com/ctuning/ck/wiki/Research-and-development-challenges">Open challenges</a> ] \n'
+    h+='[ <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=en">Android app</a> ] \n'
+    h+='[ <a href="http://cKnowledge.org/ai.html">CK-powered Open AI</a> ] \n'
+    h+='[ <a href="http://cKnowledge.org">CK project website</a> ] \n'
 #    h+='[ <a href="https://github.com/ctuning/ck"><b>open research SDK</b></a> ], \n'
 #    h+='[ <b>Android apps to crowdsource experiments:</b> <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments">small kernels</a>, <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments">apps (DNN)</a>) ], \n'
-    h+='[ <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=experiment.user">Participated users</a> ]\n'
 #    h+='[ A few papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a>, \n'
 #    h+='  <a href="https://www.researchgate.net/publication/304010295_Collective_Knowledge_Towards_RD_Sustainability">DATE\'16</a>, \n'
 #    h+='  <a href="http://arxiv.org/abs/1406.4020">TRUST@PLDI\'14</a>, <a href="http://cknowledge.org/interactive-report">interactive</a>,\n'
 #    h+='  <a href="https://www.youtube.com/watch?v=Q94yWxXUMP0">YouTube</a>\n'
 #    h+='  ], \n'
-    h+='[ <a href="http://cTuning.org/ae">Our reproducible initiative for ACM conferences</a> ], \n'
-    h+='[ <a href="http://dividiti.blogspot.fr/2017/02/we-received-test-of-time-award-for-our.html">CGO\'17 test of time award for our interdisiplinary R&D</a> ], '
-    h+='[ <b><a href="http://cknowledge.org/ai/ck-api-demo">Open and unified CK API for AI</a></b> ] '
+#    h+='[ <a href="http://cTuning.org/ae">Our reproducible initiative for ACM conferences</a> ], \n'
+#    h+='[ <a href="http://dividiti.blogspot.fr/2017/02/we-received-test-of-time-award-for-our.html">CGO\'17 test of time award for our interdisiplinary R&D</a> ], '
+#    h+='[ <b><a href="http://cknowledge.org/ai/ck-api-demo">Open and unified CK API for AI</a></b> ] '
     h+='</center>\n'
+    h+='</div>\n'
+
+#    # Here we close main div and create a dummy one
+#    h+='</div>\n'
+#    h+='<div>\n'
+
 
     return {'return':0, 'html':h}
 

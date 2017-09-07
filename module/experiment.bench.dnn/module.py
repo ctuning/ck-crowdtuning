@@ -1338,7 +1338,8 @@ def html_viewer(i):
 
     # Prepare table
     h=''
-    h+='<hr>\n'
+#    h+='<hr>\n'
+    h+='<br>\n'
     h+='<center>\n'
     h+='<h2>DNN engine and model evaluation statistics per layer (crowd-tuning)</h2><br>\n'
     h+='</center>\n'
