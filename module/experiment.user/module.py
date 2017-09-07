@@ -77,7 +77,7 @@ def show(i):
 
        unique_users=len(uu)
 
-       h+='<br><i>Number of unique users: '+str(unique_users)+'</i><br>\n'
+       h+='<i>Number of unique users: '+str(unique_users)+'</i><br><br>\n'
 
        # Check host URL prefix and default module/action
        rx=ck.access({'action':'form_url_prefix',
