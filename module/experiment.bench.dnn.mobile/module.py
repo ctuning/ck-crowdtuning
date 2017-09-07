@@ -347,6 +347,11 @@ def show(i):
 
                 plst.append(nn)
 
+    # Advertisement
+    h+='<center>\n'
+    h+=' <iframe width="560" height="315" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" allowfullscreen></iframe>\n'
+    h+='</center><br>\n'
+
     # Check if too many
     lplst=len(plst)
     if lplst==0:
