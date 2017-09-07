@@ -53,6 +53,8 @@ def show(i):
     h='<center>'
     h+='<h2>Collective Knowledge Timeline<BR>(non-anonymous participation in collaborative experiments)</h2>\n'
 
+    uu=[]
+
     # Load all
     rx=ck.access({'action':'load',
                   'module_uoa':work['self_module_uid'],
@@ -67,6 +69,15 @@ def show(i):
 
        du=d.get('users',{})
        dt=d.get('timeline',[])
+
+       for q in dt:
+           user=q.get('user','')
+           if user!='' and user not in uu:
+              uu.append(user)
+
+       unique_users=len(uu)
+
+       h+='<br><i>Number of unique users: '+str(unique_users)+'</i><br>\n'
 
        # Check host URL prefix and default module/action
        rx=ck.access({'action':'form_url_prefix',
