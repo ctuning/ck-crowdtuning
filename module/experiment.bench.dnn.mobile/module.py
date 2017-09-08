@@ -349,7 +349,7 @@ def show(i):
 
     # Advertisement
     h+='<center>\n'
-    h+=' <b>Surviving Cambrian AI/SW/HW explosion with Collective Knowledge</b><br>\n'
+    h+=' <b>Adapting to a Cambrian AI/SW/HW explosion with the <a href="http://cKnowledge.org">Collective Knowledge</a></b><br>\n'
     h+=' <img src="http://cKnowledge.org/_resources/ai-cloud.png" height="240" style="padding:3px;">\n'
     h+=' <iframe width="426" height="240" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" style="padding:3px;"></iframe>\n'
     h+='</center><br>\n'
