@@ -368,8 +368,8 @@ def show(i):
 
     # Advertisement
     h+='<center>\n'
-    h+=' <b>Adapting to a Cambrian AI/SW/HW explosion with the <a href="http://cKnowledge.org">Collective Knowledge</a></b><br>\n'
-    h+=' <img src="http://cKnowledge.org/_resources/ai-cloud.png" height="240" style="padding:3px;">\n'
+    h+=' <b>This repository is a successful proof-of-concept of our collaborative approach to adapt to a Cambrian AI/SW/HW explosion. Join the <a href="http://cKnowledge.org/partners.html">growing Collective Knowledge consortium</a> to co-design <a href="http://cKnowledge.org/use_cases.html">highly efficient software and hardware</a> powered by <a href="http://cKnowledge.org">Collective Knowledge</a>!</b><br>\n'
+    h+=' <a href="http://dividiti.com"><img src="http://cKnowledge.org/_resources/ai-cloud.png" height="240" style="padding:3px;"></a>\n'
     h+=' <iframe width="426" height="240" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" style="padding:3px;"></iframe>\n'
     h+='</center><br>\n'
 
@@ -378,14 +378,30 @@ def show(i):
     splst=sorted(plst, key=lambda x: x.get('extra',{}).get('time_min',0))
     if debug: h+='\n<p>Debug time (sorting table): '+str(time.time()-dt)+' sec.<p>\n'
 
+    # Demo graph
+    bgraph={'0':[]} # Just for graph demo
+    if hi_uid!='' or hi_user!='': bgraph['1']=[]
+
+    # execution time vs cost
+    bgraph2={'0':[]}
+    igraph2={'0':[]}
+
+    # execution time vs cost
+    bgraph3={'0':[]}
+    igraph3={'0':[]}
+
     # Check if too many
     lplst=len(plst)
     min_view=False
+
+    view_all=i.get('all','')
+    if view_all!='': h+='<input type="hidden" name="view_all" value="'+view_all+'">\n'
+
     if lplst==0:
         h+='<b>No results found!</b>'
         return {'return':0, 'html':h, 'style':st}
-    elif lplst>100:
-        h+='<b>Too many entries ('+str(lplst)+') - showing top 150 entries with a reduced view. Please, prune list further to see details!</b><br><br>'
+    elif lplst>100 and view_all!='yes':
+        h+='<b>Too many entries ('+str(lplst)+') - see top 150 entries or prune list further!</b><br><br>'
 
 #        min_view=True
 
@@ -459,9 +475,6 @@ def show(i):
     tm={}
 
     ix=0
-    bgraph={'0':[]} # Just for graph demo
-    if hi_uid!='' or hi_user!='':
-        bgraph['1']=[]
 
     dt=time.time()
     for q in splst:
@@ -531,7 +544,7 @@ def show(i):
         xd=cache_meta[kscenario]
 
         xx=xd.get('title','')
-        xy=int(xd.get('model_weights_size',0))+1
+        model_weights_size=int(xd.get('model_weights_size',0))+1
 
         fbsize=xd.get('features',{}).get('fixed_batch_size','')
 
@@ -552,7 +565,7 @@ def show(i):
            h+='   <td '+ha+'>'+ver+'</td>\n'
 
         # Model weight size
-        h+='   <td '+ha+'>'+str(xy)+' MB</td>\n'
+        h+='   <td '+ha+'>'+str(model_weights_size)+' MB</td>\n'
 
         # Check relative time
         xx='<b>'+('%.3f'%tmin)+'</b>&nbsp;/&nbsp;'+('%.3f'%tmax)
@@ -568,6 +581,7 @@ def show(i):
             bgraph['0'].append([ix,tmin])
             if hi_uid!='' or hi_user!='': 
                bgraph['1'].append([ix,None])
+
 
         h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
 
@@ -644,12 +658,15 @@ def show(i):
 
         # Cost (take from platform meta)
         hc='-'
+        last_cost=0
         if len(hd)>0:
            costs=hd.get('features',{}).get('cost',[])
            hc=''
-           for c in costs:
-               if hc!='': hc+='<br>\n'
-               hc+='<b>'+str(c.get('price',''))+' '+c.get('currency','')+ '</b> - '+c.get('desc','')+' ('+c.get('date','')+')'
+           if len(costs)>0:
+              last_cost=int(costs[0].get('price','0'))
+              for c in costs:
+                  if hc!='': hc+='<br>\n'
+                  hc+='<b>'+str(c.get('price',''))+' '+c.get('currency','')+ '</b> - '+c.get('desc','')+' ('+c.get('date','')+')'
 
         h+='   <td '+ha+'>'+hc+'</a></td>\n'
 
@@ -721,6 +738,24 @@ def show(i):
 
            h+='  <tr>\n'
 
+        tdelta=(tmax-tmin)/2
+        if tdelta>1: tdelta=1 # to avoid messy graph - just show that there is an issue with variation ...
+
+        if tmin>0: # to skip bugs
+           # check accuracy
+           xcol='#0000bf'
+           if acc5!='' and acc5>0:
+              top5=(float(acc5)-0.8)*500+100
+              col=hex(int(top5))[2:]
+              xcol='#ff'+col+col
+
+           bgraph2['0'].append([model_weights_size,tmin,tmin+tdelta])
+           igraph2['0'].append({'size':2,'color':xcol})
+
+           if last_cost>0:
+              bgraph3['0'].append([last_cost,tmin,tmin+tdelta])
+              igraph3['0'].append({'size':2,'color':xcol})
+
     h+='</table>\n'
     h+='</center>\n'
 
@@ -770,6 +805,102 @@ def show(i):
              h+='<center>\n'
              h+='<div id="ck_box_with_shadow" style="width:920px;">\n'
              h+=' <div id="ck_interactive" style="text-align:center">\n'
+             h+=x+'\n'
+             h+=' </div>\n'
+             h+='</div>\n'
+             h+='</center>\n'
+
+    # 2nd graph
+    if len(bgraph2['0'])>0:
+       ii={'action':'plot',
+           'module_uoa':cfg['module_deps']['graph'],
+
+           "table":bgraph2,
+           "table_info":igraph2,
+
+           "xmin":-10,
+           "ymin":0,
+
+           "ignore_point_if_none":"yes",
+
+           "plot_type":"d3_2d_scatter",
+
+           "display_y_error_bar2":"no",
+
+           "title":"Powered by Collective Knowledge",
+
+           "x_ticks_period":50,
+
+           "axis_x_desc":"Weigths size (MB)",
+           "axis_y_desc":"DNN image classification time (s)",
+
+           "plot_grid":"yes",
+
+           "d3_div":"ck_interactive2",
+
+           "image_width":"900",
+           "image_height":"400",
+
+           "wfe_url":url0}
+
+       r=ck.access(ii)
+       if r['return']==0:
+          x=r.get('html','')
+          if x!='':
+             st+=r.get('style','')
+
+             h+='<br>\n'
+             h+='<center>\n'
+             h+='<div id="ck_box_with_shadow" style="width:920px;">\n'
+             h+=' <div id="ck_interactive2" style="text-align:center">\n'
+             h+=x+'\n'
+             h+=' </div>\n'
+             h+='</div>\n'
+             h+='</center>\n'
+
+    # 3nd graph
+    if len(bgraph3['0'])>0:
+       ii={'action':'plot',
+           'module_uoa':cfg['module_deps']['graph'],
+
+           "table":bgraph3,
+           "table_info":igraph3,
+
+           "xmin":-10,
+           "ymin":0,
+
+           "ignore_point_if_none":"yes",
+
+           "plot_type":"d3_2d_scatter",
+
+           "display_y_error_bar2":"no",
+
+           "title":"Powered by Collective Knowledge",
+
+           "x_ticks_period":50,
+
+           "axis_x_desc":"Device price (EUR)",
+           "axis_y_desc":"DNN image classification time (s)",
+
+           "plot_grid":"yes",
+
+           "d3_div":"ck_interactive3",
+
+           "image_width":"900",
+           "image_height":"400",
+
+           "wfe_url":url0}
+
+       r=ck.access(ii)
+       if r['return']==0:
+          x=r.get('html','')
+          if x!='':
+             st+=r.get('style','')
+
+             h+='<br>\n'
+             h+='<center>\n'
+             h+='<div id="ck_box_with_shadow" style="width:920px;">\n'
+             h+=' <div id="ck_interactive3" style="text-align:center">\n'
              h+=x+'\n'
              h+=' </div>\n'
              h+='</div>\n'
