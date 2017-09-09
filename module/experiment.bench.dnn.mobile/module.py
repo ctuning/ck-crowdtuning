@@ -95,11 +95,15 @@ def show(i):
 
     import os
     import copy
+    import time
 
     st=''
 
     cmuoa=i.get('crowd_module_uoa','')
     ckey=i.get('crowd_key','')
+
+    debug=(i.get('debug','')=='yes')
+#    debug=True
 
     conc=i.get('crowd_on_change','')
     if conc=='':
@@ -137,6 +141,7 @@ def show(i):
     url1=url
 
     # List entries
+    dt=time.time()
     ii={'action':'search',
         'module_uoa':work['self_module_uid'],
         'add_meta':'yes'}
@@ -147,9 +152,13 @@ def show(i):
     r=ck.access(ii)
     if r['return']>0: return r
 
+    if debug: h+='\n<p>Debug time (CK query): '+str(time.time()-dt)+' sec.<p>\n'
+
     lst=r['lst']
 
-    # Check unique entries
+    # Find unique variables
+    dt=time.time()
+
     choices={}
     mchoices={} # cache of UID -> alias choices
     wchoices={}
@@ -226,7 +235,10 @@ def show(i):
 
                     wchoices[k].append({'name':vv, 'value':v})
 
+    if debug: h+='\n<p>Debug time (CK find unique vars): '+str(time.time()-dt)+' sec.<p>\n'
+
     # Prepare query div ***************************************************************
+    dt=time.time()
     if cmuoa=='':
         # Start form + URL (even when viewing entry)
         r=ck.access({'action':'start_form',
@@ -263,6 +275,8 @@ def show(i):
 
         h+='<span style="white-space: nowrap"><b>'+n.replace(' ','&nbsp;')+':</b>&nbsp;'+r['html'].strip()+'</span>\n'
 
+    if debug: h+='\n<p>Debug time (prepare selector): '+str(time.time()-dt)+' sec.<p>\n'
+
     # Check hidden
     if hi_uid!='':
         h+='<input type="hidden" name="highlight_behavior_uid" value="'+hi_uid+'">\n'
@@ -273,6 +287,8 @@ def show(i):
     h+='<br><br>'
 
     # Prune list ******************************************************************
+    dt=time.time()
+
     plst=[]
 
     for q in lst:
@@ -288,6 +304,7 @@ def show(i):
 
             if v!='' and meta.get(k,'')!=v:
                 skip=True
+                break # FGG added later - should be correct
 
         if not skip:
             # Process raw results
@@ -347,6 +364,8 @@ def show(i):
 
                 plst.append(nn)
 
+    if debug: h+='\n<p>Debug time (prune entries by user selection): '+str(time.time()-dt)+' sec.<p>\n'
+
     # Advertisement
     h+='<center>\n'
     h+=' <b>Adapting to a Cambrian AI/SW/HW explosion with the <a href="http://cKnowledge.org">Collective Knowledge</a></b><br>\n'
@@ -354,17 +373,43 @@ def show(i):
     h+=' <iframe width="426" height="240" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" style="padding:3px;"></iframe>\n'
     h+='</center><br>\n'
 
+    # Sort first before prunning
+    dt=time.time()
+    splst=sorted(plst, key=lambda x: x.get('extra',{}).get('time_min',0))
+    if debug: h+='\n<p>Debug time (sorting table): '+str(time.time()-dt)+' sec.<p>\n'
+
     # Check if too many
     lplst=len(plst)
+    min_view=False
     if lplst==0:
         h+='<b>No results found!</b>'
         return {'return':0, 'html':h, 'style':st}
-    elif lplst>300:
-        h+='<b>Too many entries ('+str(lplst)+'). Please, prune list further! Showing first 300 ...</b><br><br>'
+    elif lplst>100:
+        h+='<b>Too many entries ('+str(lplst)+') - showing top 150 entries with a reduced view. Please, prune list further to see details!</b><br><br>'
 
-        del plst[300:]
+#        min_view=True
+
+        # Removing entries but leave user selection
+        splst1=[]
+        iq=0
+        for q in splst:
+            rres=q['extra'].get('raw_results',{})
+            buid=rres.get('behavior_uid','')
+            user=rres.get('user','')
+
+            if iq<150 or (hi_uid!='' and buid==hi_uid) or (hi_user!='' and hi_user==user):
+               splst1.append(q)
+
+            iq+=1
+
+        splst=splst1
+
+#        del splst[150:]
 
 #        return {'return':0, 'html':h, 'style':st}
+
+    # Long term TBD: here we should move table prepation either to numpy or django or both ...
+    # This is just for a quick proof-of-concept (FGG)
 
     # Prepare table
 #    bgc='afffaf'
@@ -383,26 +428,31 @@ def show(i):
     h+='   <td '+ha+'><b>#</b></td>\n'
     h+='   <td '+ha+'><b>Platform</b></td>\n'
     h+='   <td '+ha+'><b>Crowd scenario</b></td>\n'
-    h+='   <td '+ha+'><b>Versions</b></td>\n'
+    if not min_view:
+       h+='   <td '+ha+'><b>Versions</b></td>\n'
     h+='   <td '+ha+'><b>Model weight size</b></td>\n'
     h+='   <td '+ha+'><b>Total time (min/max sec.)</b></td>\n'
-    h+='   <td '+ha+'><b>Init network time (min/max sec.)</b></td>\n'
-    h+='   <td '+ha+'><b>Image preparation (min/max sec.)</b></td>\n'
-    h+='   <td '+ha+'><b>Classification time (min/max sec.)</b></td>\n'
-    h+='   <td '+ha+'><b>Prediction probability</b></td>\n'
+    if not min_view:
+       h+='   <td '+ha+'><b>Init network time (min/max sec.)</b></td>\n'
+       h+='   <td '+ha+'><b>Image preparation (min/max sec.)</b></td>\n'
+       h+='   <td '+ha+'><b>Classification time (min/max sec.)</b></td>\n'
+       h+='   <td '+ha+'><b>Prediction probability</b></td>\n'
     h+='   <td '+ha+'><b>Power consumption (W)<br>min / max</td>\n'
     h+='   <td '+ha+'><b>Memory usage (MB)</td>\n'
     h+='   <td '+ha+'><b><a href="https://github.com/dividiti/ck-caffe/blob/master/script/explore-accuracy/explore_accuracy.20160808.ipynb">Model accuracy on ImageNet</a></td>\n'
     h+='   <td '+ha+'><b>Model topology and parameters</td>\n'
     h+='   <td '+ha+'><b>HW costs</td>\n'
-    h+='   <td '+ha+'><b>Mispredictions and unexpected behavior</b></td>\n'
-    h+='   <td '+ha+'><b>Image features</b></td>\n'
+    if not min_view:
+       h+='   <td '+ha+'><b>Mispredictions and unexpected behavior</b></td>\n'
+       h+='   <td '+ha+'><b>Image features</b></td>\n'
     h+='   <td '+ha+'><b>CPU</b></td>\n'
-    h+='   <td '+ha+'><b>CPU ABI</b></td>\n'
+    if not min_view:
+       h+='   <td '+ha+'><b>CPU ABI</b></td>\n'
     h+='   <td '+ha+'><b>GPU</b></td>\n'
     h+='   <td '+ha+'><b>OS</b></td>\n'
     h+='   <td '+ha+'><b>Data UID / Behavior UID</b></td>\n'
-    h+='   <td '+ha+'><b>User</b></td>\n'
+    if not min_view:
+       h+='   <td '+ha+'><b>User</b></td>\n'
     h+='  <tr>\n'
 
     # Dictionary to hold target meta
@@ -413,9 +463,7 @@ def show(i):
     if hi_uid!='' or hi_user!='':
         bgraph['1']=[]
 
-    # Sort
-    splst=sorted(plst, key=lambda x: x.get('extra',{}).get('time_min',0))
-
+    dt=time.time()
     for q in splst:
         ix+=1
 
@@ -490,18 +538,20 @@ def show(i):
         h+='   <td '+ha+'><a href="'+url0+'&wcid='+kscenario+'">'+xx+'</a></td>\n'
 
         # Versions
-        ver=''
-        dver=meta.get('engine_meta',{}).get(cpu_abi,{})
-        ver+='main: '+str(dver.get('program_version',''))+'\n'
-        dps=dver.get('deps_versions',{})
-        for dx in dps:
-            ver+=dx+': '+str(dps[dx].get('version',''))+'\n'
+        if not min_view:
+           ver=''
+           dver=meta.get('engine_meta',{}).get(cpu_abi,{})
+           ver+='main: '+str(dver.get('program_version',''))+'\n'
+           dps=dver.get('deps_versions',{})
+           for dx in dps:
+               ver+=dx+': '+str(dps[dx].get('version',''))+'\n'
 
-        ver=ver.replace("\'","'").replace("'","\\'").replace('\"','"').replace('"',"\\'").replace('\n','\\n')
-        if ver!='':
-            ver='<input type="button" class="ck_small_button" onClick="alert(\''+ver+'\');" value="View">'
-        h+='   <td '+ha+'>'+ver+'</td>\n'
+           ver=ver.replace("\'","'").replace("'","\\'").replace('\"','"').replace('"',"\\'").replace('\n','\\n')
+           if ver!='':
+               ver='<input type="button" class="ck_small_button" onClick="alert(\''+ver+'\');" value="View">'
+           h+='   <td '+ha+'>'+ver+'</td>\n'
 
+        # Model weight size
         h+='   <td '+ha+'>'+str(xy)+' MB</td>\n'
 
         # Check relative time
@@ -521,22 +571,24 @@ def show(i):
 
         h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
 
-        for ixo in range(0,3):
-           tmin=extra.get('xopenme_execution_time_kernel_'+str(ixo)+'_min',0)
-           tmax=extra.get('xopenme_execution_time_kernel_'+str(ixo)+'_max',0)
+        # Finer grain timing
+        if not min_view:
+           for ixo in range(0,3):
+              tmin=extra.get('xopenme_execution_time_kernel_'+str(ixo)+'_min',0)
+              tmax=extra.get('xopenme_execution_time_kernel_'+str(ixo)+'_max',0)
 
-           xx='<b>'+('%.3f'%tmin)+'</b>&nbsp;/&nbsp;'+('%.3f'%tmax)
-           if tmin==0 and ixo!=1: 
-              xx+='<br><b><center>bug?</center></b>\n'
+              xx='<b>'+('%.3f'%tmin)+'</b>&nbsp;/&nbsp;'+('%.3f'%tmax)
+              if tmin==0 and ixo!=1: 
+                 xx+='<br><b><center>bug?</center></b>\n'
 
-           h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
+              h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
 
-        # Accuracy
-        x=pred
-        j=x.find('-')
-        if j>0:
-            x=x[:j-1].strip()
-        h+='   <td '+ha+' '+bgx2+'>'+x+'</a></td>\n'
+           # Accuracy
+           x=pred
+           j=x.find('-')
+           if j>0:
+               x=x[:j-1].strip()
+           h+='   <td '+ha+' '+bgx2+'>'+x+'</a></td>\n'
 
         # Get info about platform
         hd={}
@@ -601,39 +653,41 @@ def show(i):
 
         h+='   <td '+ha+'>'+hc+'</a></td>\n'
 
-        x=''
-        for q in mp:
-            ca=q.get('correct_answer','')
-            mi=q.get('mispredicted_image','')
-            mr=q.get('misprediction_results','')
+        # Mispredictions and unexpected behavior
+        if not min_view:
+           x=''
+           for q in mp:
+               ca=q.get('correct_answer','')
+               mi=q.get('mispredicted_image','')
+               mr=q.get('misprediction_results','')
 
-            if mr!='':
-                j1=mr.find('\n')
-                if j1>0:
-                    j2=mr.find('\n',j1+1)
-                    if j2>0:
-                        mr=mr[j1:j2]
+               if mr!='':
+                   j1=mr.find('\n')
+                   if j1>0:
+                       j2=mr.find('\n',j1+1)
+                       if j2>0:
+                           mr=mr[j1:j2]
 
-            xx=ca
-            if mi!='':
-                y=work['self_module_uid']
-                if cmuoa!='': y=cmuoa
-                url=url0+'action=pull&common_action=yes&cid='+y+':'+duid+'&filename='+mi
+               xx=ca
+               if mi!='':
+                   y=work['self_module_uid']
+                   if cmuoa!='': y=cmuoa
+                   url=url0+'action=pull&common_action=yes&cid='+y+':'+duid+'&filename='+mi
 
-                if ca=='': ca='<i>unknown</i>'
-                xx='<a href="'+url+'">'+ca+'</a>'
+                   if ca=='': ca='<i>unknown</i>'
+                   xx='<a href="'+url+'">'+ca+'</a>'
 
-            if x!='':
-                x+='<hr>\n'
+               if x!='':
+                   x+='<hr>\n'
 
-            x+='<strike>'+mr+'</strike><br>'+xx+'<br>\n'
+               x+='<strike>'+mr+'</strike><br>'+xx+'<br>\n'
 
-        if tmin==0: x+='<br><b><center>Bug detected</center></b>\n'
+           if tmin==0: x+='<br><b><center>Bug detected</center></b>\n'
 
-        h+='   <td '+ha+'>'+x+'</td>\n'
+           h+='   <td '+ha+'>'+x+'</td>\n'
 
-        # All images
-        h+='   <td '+ha+'>'+key.replace(' ','&nbsp;')+'</a></td>\n'
+           # All images
+           h+='   <td '+ha+'>'+key.replace(' ','&nbsp;')+'</a></td>\n'
 
         # Extra info about platform
 
@@ -642,7 +696,9 @@ def show(i):
             x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform.cpu']+':'+cpu_uid+'">'+x+'</a>'
         h+='   <td '+ha+'>'+x+'</td>\n'
 
-        h+='   <td '+ha+'>'+cpu_abi+'</td>\n'
+        # CPU ABI
+        if not min_view:
+           h+='   <td '+ha+'>'+cpu_abi+'</td>\n'
 
         x=gpu_name
         if gpu_uid!='':
@@ -654,22 +710,27 @@ def show(i):
             x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform']+':'+os_uid+'">'+x+'</a>'
         h+='   <td '+ha+'>'+x+'</td>\n'
 
-
+        # Data
         x=work['self_module_uid']
         if cmuoa!='': x=cmuoa
         h+='   <td '+ha+'><a href="'+url0+'&wcid='+x+':'+duid+'">'+duid+' '+buid+'</a></td>\n'
 
-        h+='   <td '+ha+'><a href="'+url0+'&action=index&module_uoa=wfe&native_action=show&native_module_uoa=experiment.user">'+user+'</a></td>\n'
+        # User
+        if not min_view:
+           h+='   <td '+ha+'><a href="'+url0+'&action=index&module_uoa=wfe&native_action=show&native_module_uoa=experiment.user">'+user+'</a></td>\n'
 
-        h+='  <tr>\n'
+           h+='  <tr>\n'
 
     h+='</table>\n'
     h+='</center>\n'
+
+    if debug: h+='\n<p>Debug time (preparing html of a table): '+str(time.time()-dt)+' sec.<p>\n'
 
     if cmuoa=='':
         h+='</form>\n'
 
     if len(bgraph['0'])>0:
+       dt=time.time()
        ii={'action':'plot',
            'module_uoa':cfg['module_deps']['graph'],
 
@@ -685,7 +746,7 @@ def show(i):
 
            "title":"Powered by Collective Knowledge",
 
-           "x_ticks_period":10,
+           "x_ticks_period":50,
 
            "axis_x_desc":"Experiment",
            "axis_y_desc":"DNN image classification time (s)",
@@ -713,6 +774,8 @@ def show(i):
              h+=' </div>\n'
              h+='</div>\n'
              h+='</center>\n'
+
+       if debug: h+='\n<p>Debug time (preparing graph): '+str(time.time()-dt)+' sec.<p>\n'
 
     return {'return':0, 'html':h, 'style':st}
 
