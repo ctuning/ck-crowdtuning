@@ -744,17 +744,27 @@ def show(i):
         if tmin>0: # to skip bugs
            # check accuracy
            xcol='#0000bf'
+           size5=2
            if acc5!='' and acc5>0:
-              top5=(float(acc5)-0.8)*500+100
+              top5=(float(acc5)-0.8)*1000+50
+              size5=(float(acc5)-0.75)*40+2
               col=hex(int(top5))[2:]
-              xcol='#ff'+col+col
+              xcol='#'+col+col+'ff'
+
+           # mem usage
+##           xx=(int(model_weights_size/20))*5.35+127
+#           x=hex(int((xx)))[2:]
+#           if len(x)<2: x='0'+x
+#           mcol='#0000'+x
+
+           sizem=int(model_weights_size/20)+3
 
            bgraph2['0'].append([model_weights_size,tmin,tmin+tdelta])
-           igraph2['0'].append({'size':2,'color':xcol})
+           igraph2['0'].append({'size':3,'color':xcol})
 
            if last_cost>0:
               bgraph3['0'].append([last_cost,tmin,tmin+tdelta])
-              igraph3['0'].append({'size':2,'color':xcol})
+              igraph3['0'].append({'size':sizem, 'color':xcol})
 
     h+='</table>\n'
     h+='</center>\n'
