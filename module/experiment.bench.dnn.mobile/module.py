@@ -366,12 +366,6 @@ def show(i):
 
     if debug: h+='\n<p>Debug time (prune entries by user selection): '+str(time.time()-dt)+' sec.<p>\n'
 
-    # Advertisement
-    h+='<center>\n'
-    h+=' <b>This repository is a successful proof-of-concept of our collaborative approach to adapt to a Cambrian AI/SW/HW explosion. Join the <a href="http://cKnowledge.org/partners.html">growing Collective Knowledge consortium</a> to co-design <a href="http://cKnowledge.org/use_cases.html">highly efficient software and hardware</a> powered by <a href="http://cKnowledge.org">Collective Knowledge</a>!</b><br>\n'
-    h+=' <a href="http://dividiti.com"><img src="http://cKnowledge.org/_resources/ai-cloud.png" height="240" style="padding:3px;"></a>\n'
-    h+=' <iframe width="426" height="240" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" style="padding:3px;"></iframe>\n'
-    h+='</center><br>\n'
 
     # Sort first before prunning
     dt=time.time()
@@ -389,6 +383,8 @@ def show(i):
     # execution time vs cost
     bgraph3={'0':[]}
     igraph3={'0':[]}
+    f_bgraph3={}
+    f_igraph3={}
 
     # Check if too many
     lplst=len(plst)
@@ -475,6 +471,10 @@ def show(i):
     tm={}
 
     ix=0
+
+    # Trick - want to put graph first
+    hhh=h
+    h=''
 
     dt=time.time()
     for q in splst:
@@ -707,7 +707,6 @@ def show(i):
            h+='   <td '+ha+'>'+key.replace(' ','&nbsp;')+'</a></td>\n'
 
         # Extra info about platform
-
         x=cpu_name
         if cpu_uid!='':
             x='<a href="'+url0+'&wcid='+cfg['module_deps']['platform.cpu']+':'+cpu_uid+'">'+x+'</a>'
@@ -738,8 +737,8 @@ def show(i):
 
            h+='  <tr>\n'
 
-        tdelta=(tmax-tmin)/2
-        if tdelta>1: tdelta=1 # to avoid messy graph - just show that there is an issue with variation ...
+        tdelta=0#(tmax-tmin) # show best specie!
+        if tdelta>0.1: tdelta=0.1 # to avoid messy graph - just show that there is an issue with variation ...
 
         if tmin>0: # to skip bugs
            # check accuracy
@@ -757,14 +756,25 @@ def show(i):
 #           if len(x)<2: x='0'+x
 #           mcol='#0000'+x
 
-           sizem=int(model_weights_size/20)+3
+           sizem=int(1+(model_weights_size/80))+3
 
            bgraph2['0'].append([model_weights_size,tmin,tmin+tdelta])
            igraph2['0'].append({'size':3,'color':xcol})
 
            if last_cost>0:
+              if debug:
+                 sizem=int(1+(model_weights_size/80))*6
+
               bgraph3['0'].append([last_cost,tmin,tmin+tdelta])
               igraph3['0'].append({'size':sizem, 'color':xcol})
+
+              # For frontier
+              rx=ck.gen_uid({})
+              if rx['return']>0: return rx
+              puid=rx['data_uid']
+
+              f_bgraph3[puid]={"X":last_cost, "Y":tmin}
+              f_igraph3[puid]={'size':sizem, 'tdelta':tdelta}
 
     h+='</table>\n'
     h+='</center>\n'
@@ -774,6 +784,7 @@ def show(i):
     if cmuoa=='':
         h+='</form>\n'
 
+    # 1st graph
     if len(bgraph['0'])>0:
        dt=time.time()
        ii={'action':'plot',
@@ -805,20 +816,20 @@ def show(i):
 
            "wfe_url":url0}
 
-       r=ck.access(ii)
-       if r['return']==0:
-          x=r.get('html','')
-          if x!='':
-             st+=r.get('style','')
-
-             h+='<br>\n'
-             h+='<center>\n'
-             h+='<div id="ck_box_with_shadow" style="width:920px;">\n'
-             h+=' <div id="ck_interactive" style="text-align:center">\n'
-             h+=x+'\n'
-             h+=' </div>\n'
-             h+='</div>\n'
-             h+='</center>\n'
+#       r=ck.access(ii)
+#       if r['return']==0:
+#          x=r.get('html','')
+#          if x!='':
+#             st+=r.get('style','')
+#
+#             h+='<br>\n'
+#             h+='<center>\n'
+#             h+='<div id="ck_box_with_shadow" style="width:920px;">\n'
+#             h+=' <div id="ck_interactive" style="text-align:center">\n'
+#             h+=x+'\n'
+#             h+=' </div>\n'
+#             h+='</div>\n'
+#             h+='</center>\n'
 
     # 2nd graph
     if len(bgraph2['0'])>0:
@@ -841,8 +852,8 @@ def show(i):
 
            "x_ticks_period":50,
 
-           "axis_x_desc":"Weigths size (MB)",
-           "axis_y_desc":"DNN image classification time (s)",
+#           "axis_x_desc":"Weigths size (MB)",
+#           "axis_y_desc":"DNN image classification time (s)",
 
            "plot_grid":"yes",
 
@@ -853,44 +864,63 @@ def show(i):
 
            "wfe_url":url0}
 
-       r=ck.access(ii)
-       if r['return']==0:
-          x=r.get('html','')
-          if x!='':
-             st+=r.get('style','')
-
-             h+='<br>\n'
-             h+='<center>\n'
-             h+='<div id="ck_box_with_shadow" style="width:920px;">\n'
-             h+=' <div id="ck_interactive2" style="text-align:center">\n'
-             h+=x+'\n'
-             h+=' </div>\n'
-             h+='</div>\n'
-             h+='</center>\n'
+#       r=ck.access(ii)
+#       if r['return']==0:
+#          x=r.get('html','')
+#          if x!='':
+#             st+=r.get('style','')
+#
+#             h+='<br>\n'
+#             h+='<center>\n'
+#             h+='<div id="ck_box_with_shadow" style="width:920px;">\n'
+#             h+='\n'
+#             h+=' <div id="ck_interactive2" style="text-align:center">\n'
+#             h+=x+'\n'
+#             h+=' </div>\n'
+#             h+='</div>\n'
+#             h+='</center>\n'
 
     # 3nd graph
     if len(bgraph3['0'])>0:
+       # Fontier
+       r=ck.access({'action':'filter',
+                    'module_uoa':cfg['module_deps']['math.frontier'],
+                    'points':f_bgraph3})
+       if r['return']>0: return r
+
+       points=r['points']
+
+       bgraph3['1']=[]
+       igraph3['1']=[]
+
+       for q in points:
+           q1=f_bgraph3[q]
+           q2=f_igraph3[q]
+
+           bgraph3['1'].append([q1['X'],q1['Y'],q1['Y']+q2['tdelta']])
+           del(q2['tdelta'])
+           igraph3['1'].append(q2)
+
        ii={'action':'plot',
            'module_uoa':cfg['module_deps']['graph'],
 
            "table":bgraph3,
            "table_info":igraph3,
 
-           "xmin":-10,
-           "ymin":0,
-
            "ignore_point_if_none":"yes",
 
            "plot_type":"d3_2d_scatter",
 
-           "display_y_error_bar2":"no",
+           "display_y_error_bar2":"yes",
 
            "title":"Powered by Collective Knowledge",
 
            "x_ticks_period":50,
 
-           "axis_x_desc":"Device price (EUR)",
-           "axis_y_desc":"DNN image classification time (s)",
+#           "axis_x_desc":"Device price (EUR)",
+#           "axis_y_desc":"DNN image classification time (s)",
+
+           "point_style":{"1":{"color":"#dc3912", "connect_lines":"no"}},
 
            "plot_grid":"yes",
 
@@ -901,24 +931,41 @@ def show(i):
 
            "wfe_url":url0}
 
+       # Temporal hack
+       if debug: 
+          ii['out_to_file']='/tmp/dnn-co-design.pdf'
+          ii['customize_dots']='yes'
+          ii['plot_type']='mpl_2d_scatter'
+
+       # Advertisement
+       hhh+='<center>\n'
+       hhh+=' <a href="http://dividiti.com"><img src="http://cKnowledge.org/_resources/ai-cloud.png" height="240" style="padding:3px;"></a>\n'
+       hhh+=' <iframe width="426" height="240" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" style="padding:3px;"></iframe><br>\n'
+       hhh+=' <b>These are preliminary proof-of-concept results for our collaborative approach to help you survive in a Cambrian AI/SW/HW explosion. Join the <a href="http://cKnowledge.org/partners.html">growing Collective Knowledge consortium</a> to co-design <a href="http://cKnowledge.org/use_cases.html">highly efficient software and hardware for AI and other emerging workloads</a> with a power of <a href="http://cKnowledge.org/ai.html">Collective Knowledge and open AI research</a>!</b><br>\n'
+       hhh+='</center>\n'
+
        r=ck.access(ii)
        if r['return']==0:
           x=r.get('html','')
           if x!='':
              st+=r.get('style','')
 
-             h+='<br>\n'
-             h+='<center>\n'
-             h+='<div id="ck_box_with_shadow" style="width:920px;">\n'
-             h+=' <div id="ck_interactive3" style="text-align:center">\n'
-             h+=x+'\n'
-             h+=' </div>\n'
-             h+='</div>\n'
-             h+='</center>\n'
+             hhh+='<center>\n'
+             hhh+='<div id="ck_box_with_shadow" style="width:920px;">\n'
+             hhh+=' <div id="ck_interactive3" style="text-align:center">\n'
+             hhh+='Device cost (X axis, euros) vs image classification time (Y axis, sec) vs weights size (dot size) vs model TOP5 accuracy (darker colors for lower accuracy)<br>\n'
+             hhh+=x+'\n'
+             hhh+=' </div>\n'
+             hhh+='</div>\n'
+             hhh+='</center>\n'
+             hhh+='<br>\n'
 
-       if debug: h+='\n<p>Debug time (preparing graph): '+str(time.time()-dt)+' sec.<p>\n'
+       if debug: hhh+='\n<p>Debug time (preparing graph): '+str(time.time()-dt)+' sec.<p>\n'
 
-    return {'return':0, 'html':h, 'style':st}
+    # Adding table
+    hhh+=h
+
+    return {'return':0, 'html':hhh, 'style':st}
 
 ##############################################################################
 # process raw results from mobile devices
