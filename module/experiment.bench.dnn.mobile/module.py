@@ -397,7 +397,7 @@ def show(i):
         h+='<b>No results found!</b>'
         return {'return':0, 'html':h, 'style':st}
     elif lplst>100 and view_all!='yes':
-        h+='<b>Too many entries ('+str(lplst)+') - see top 150 entries or prune list further!</b><br><br>'
+        h+='<b>Too many <a href="https://arxiv.org/abs/1506.06256">species</a> ('+str(lplst)+') - see 150 top performing species or prune list further!</b><br><br>'
 
 #        min_view=True
 
@@ -910,7 +910,6 @@ def show(i):
            "ignore_point_if_none":"yes",
 
            "plot_type":"d3_2d_scatter",
-
            "display_y_error_bar2":"yes",
 
            "title":"Powered by Collective Knowledge",
@@ -920,7 +919,8 @@ def show(i):
 #           "axis_x_desc":"Device price (EUR)",
 #           "axis_y_desc":"DNN image classification time (s)",
 
-#           "ymin":0,
+            "xmin":0,
+            "ymin":0,
 #           "ymax":25,
 
            "point_style":{"1":{"color":"#dc3912", "connect_lines":"no"}},
@@ -956,7 +956,7 @@ def show(i):
              hhh+='<center>\n'
              hhh+='<div id="ck_box_with_shadow" style="width:920px;">\n'
              hhh+=' <div id="ck_interactive3" style="text-align:center">\n'
-             hhh+='Device cost (X axis, euros) vs image classification time (Y axis, sec) vs weights size (dot size) vs model TOP5 accuracy (darker colors for lower accuracy)<br>\n'
+             hhh+='Device cost (X axis in euros) vs image classification time (Y axis in secs) vs weights size (dot size) vs model TOP5 accuracy (darker colors for lower accuracy). Red dots - surviving species for a given scenario.<br>\n'
              hhh+=x+'\n'
              hhh+=' </div>\n'
              hhh+='</div>\n'
