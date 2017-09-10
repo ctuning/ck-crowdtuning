@@ -920,9 +920,12 @@ def show(i):
 #           "axis_x_desc":"Device price (EUR)",
 #           "axis_y_desc":"DNN image classification time (s)",
 
+#           "ymin":0,
+#           "ymax":25,
+
            "point_style":{"1":{"color":"#dc3912", "connect_lines":"no"}},
 
-           "plot_grid":"yes",
+           "plot_grid":"no",
 
            "d3_div":"ck_interactive3",
 
