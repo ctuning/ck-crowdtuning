@@ -582,7 +582,6 @@ def show(i):
             if hi_uid!='' or hi_user!='': 
                bgraph['1'].append([ix,None])
 
-
         h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
 
         # Finer grain timing
@@ -729,7 +728,8 @@ def show(i):
         # Data
         x=work['self_module_uid']
         if cmuoa!='': x=cmuoa
-        h+='   <td '+ha+'><a href="'+url0+'&wcid='+x+':'+duid+'">'+duid+' '+buid+'</a></td>\n'
+        raw_data_url=url0+'wcid='+x+':'+duid
+        h+='   <td '+ha+'><a href="'+raw_data_url+'">'+duid+' '+buid+'</a></td>\n'
 
         # User
         if not min_view:
@@ -761,12 +761,13 @@ def show(i):
            bgraph2['0'].append([model_weights_size,tmin,tmin+tdelta])
            igraph2['0'].append({'size':3,'color':xcol})
 
+           features={}
            if last_cost>0:
               if debug:
                  sizem=int(1+(model_weights_size/80))*6
 
               bgraph3['0'].append([last_cost,tmin,tmin+tdelta])
-              igraph3['0'].append({'size':sizem, 'color':xcol})
+              igraph3['0'].append({'size':sizem, 'color':xcol, 'features':meta, 'url':'', 'url_ext':raw_data_url})
 
               # For frontier
               rx=ck.gen_uid({})
@@ -774,7 +775,7 @@ def show(i):
               puid=rx['data_uid']
 
               f_bgraph3[puid]={"X":last_cost, "Y":tmin}
-              f_igraph3[puid]={'size':sizem, 'tdelta':tdelta}
+              f_igraph3[puid]={'size':sizem, 'tdelta':tdelta, 'features':meta, 'url':'', 'url_ext':raw_data_url}
 
     h+='</table>\n'
     h+='</center>\n'
@@ -956,7 +957,7 @@ def show(i):
              hhh+='<center>\n'
              hhh+='<div id="ck_box_with_shadow" style="width:920px;">\n'
              hhh+=' <div id="ck_interactive3" style="text-align:center">\n'
-             hhh+='Device cost (X axis in euros) vs image classification time (Y axis in secs) vs weights size (dot size) vs model TOP5 accuracy (darker colors for lower accuracy). Red dots - surviving species for a given scenario.<br>\n'
+             hhh+='Device cost (X axis, euros) vs image classification time (Y axis, secs) vs model size (dot size, MB) vs model TOP5 accuracy (darker colors for lower accuracy). Red dots - surviving species for a given scenario.<br>\n'
              hhh+=x+'\n'
              hhh+=' </div>\n'
              hhh+='</div>\n'
