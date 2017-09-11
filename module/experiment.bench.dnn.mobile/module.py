@@ -590,9 +590,11 @@ def show(i):
               tmin=extra.get('xopenme_execution_time_kernel_'+str(ixo)+'_min',0)
               tmax=extra.get('xopenme_execution_time_kernel_'+str(ixo)+'_max',0)
 
+              if tmin<0: tmin=0 # detected bug
+
               xx='<b>'+('%.3f'%tmin)+'</b>&nbsp;/&nbsp;'+('%.3f'%tmax)
-              if tmin==0 and ixo!=1: 
-                 xx+='<br><b><center>bug?</center></b>\n'
+              if tmin==0: # and ixo!=1: 
+                 xx+='<br><b><center>bug detected - check further</center></b>\n'
 
               h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
 
@@ -945,7 +947,7 @@ def show(i):
        hhh+='<center>\n'
        hhh+=' <a href="http://dividiti.com"><img src="http://cKnowledge.org/_resources/ai-cloud.png" height="240" style="padding:3px;"></a>\n'
        hhh+=' <iframe width="426" height="240" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" style="padding:3px;"></iframe><br>\n'
-       hhh+=' <b>These are preliminary proof-of-concept results for our collaborative approach to help you survive in a Cambrian AI/SW/HW explosion. Join the <a href="http://cKnowledge.org/partners.html">growing Collective Knowledge consortium</a> to co-design <a href="http://cKnowledge.org/use_cases.html">highly efficient software and hardware for AI and other emerging workloads</a> with a power of <a href="http://cKnowledge.org/ai.html">Collective Knowledge and open AI research</a>!</b><br>\n'
+       hhh+=' <b>These results are shared by the community and used only for a proof-of-concept of our collaborative approach to help you survive in a Cambrian AI/SW/HW explosion. Join the <a href="http://cKnowledge.org/partners.html">growing Collective Knowledge consortium</a> to co-design <a href="http://cKnowledge.org/use_cases.html">efficient software and hardware stack for AI and other emerging workloads</a> via <a href="http://cKnowledge.org/ai.html">CK powered open AI research and open competitions</a>!</b><br>\n'
        hhh+='</center>\n'
 
        r=ck.access(ii)
@@ -957,7 +959,8 @@ def show(i):
              hhh+='<center>\n'
              hhh+='<div id="ck_box_with_shadow" style="width:920px;">\n'
              hhh+=' <div id="ck_interactive3" style="text-align:center">\n'
-             hhh+='Device cost (X axis, euros) vs image classification time (Y axis, secs) vs model size (dot size, MB) vs model TOP5 accuracy (darker colors for lower accuracy). Red dots - surviving species for a given scenario.<br>\n'
+             hhh+='Device cost (X axis, &euro;) vs image classification time (Y axis, s.) vs model size (dot size) vs model TOP5 ImageNet accuracy (darker colors for lower accuracy).\n'
+             hhh+='<b><span style="color:#9f0000">Red dots - surviving species for a given realistic AI scenario</span></b>.<br>\n'
              hhh+=x+'\n'
              hhh+=' </div>\n'
              hhh+='</div>\n'
