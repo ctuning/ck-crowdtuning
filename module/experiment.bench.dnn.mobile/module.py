@@ -571,8 +571,9 @@ def show(i):
         xx='<b>'+('%.3f'%tmin)+'</b>&nbsp;/&nbsp;'+('%.3f'%tmax)
 
         if tmin==0: xx+='<br><b><center>bug?</center></b>\n'
-        elif fbsize!='':
-           xx+='<br><br><i>batch size='+str(fbsize)+'</i>'
+#        TBD: need to check how time is normalized ...
+#        elif fbsize!='':
+#           xx+='<br><br><i>batch size='+str(fbsize)+'</i>'
 
         if (hi_uid!='' and buid==hi_uid) or (hi_user!='' and hi_user==user):
             bgraph['0'].append([ix,None])
@@ -947,7 +948,7 @@ def show(i):
        hhh+='<center>\n'
        hhh+=' <a href="http://dividiti.com"><img src="http://cKnowledge.org/_resources/ai-cloud.png" height="240" style="padding:3px;"></a>\n'
        hhh+=' <iframe width="426" height="240" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" style="padding:3px;"></iframe><br>\n'
-       hhh+=' <b>These results are shared by the community and used only for a proof-of-concept of our collaborative approach to help you survive in a Cambrian AI/SW/HW explosion. Join the <a href="http://cKnowledge.org/partners.html">growing Collective Knowledge consortium</a> to co-design <a href="http://cKnowledge.org/use_cases.html">efficient software and hardware stack for AI and other emerging workloads</a> via <a href="http://cKnowledge.org/ai.html">CK powered open AI research and open competitions</a>!</b><br>\n'
+       hhh+=' <b>These are raw results from the community used only for a proof-of-concept of our collaborative approach to help you survive in a Cambrian AI/SW/HW explosion. Join the <a href="http://cKnowledge.org/partners.html">growing Collective Knowledge consortium</a> to co-design <a href="http://cKnowledge.org/use_cases.html">efficient software and hardware stack for AI and other emerging workloads</a> via <a href="http://cKnowledge.org/ai.html">CK powered open AI research and open competitions</a>!</b><br>\n'
        hhh+='</center>\n'
 
        r=ck.access(ii)
