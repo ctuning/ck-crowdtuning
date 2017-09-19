@@ -1433,11 +1433,11 @@ def initialize(i):
 
     if o=='con':
        ck.out(line)
-       ck.out('Your crowsourcing ID : '+user)
+       ck.out('Your user ID : '+user)
 
     #**************************************************************************************************************
     # Testing remote platform
-    if se!='yes':
+    if se!='yes' and er!='local':
        ck.out(line)
        ck.out('Testing experiment crowdsourcing server ...')
        ck.out('')
@@ -1456,8 +1456,12 @@ def initialize(i):
     #**************************************************************************************************************
     # Detecting platforms and exchanging info with public Server
     if o=='con':
+       x='Detecting your platform info'
+       if er!='local':
+          x+=' and query public CK server to check shared info'
+
        ck.out(line)
-       ck.out('Detecting your platform info and query public CK server and get latest optimization points ...')
+       ck.out(x+' ...')
        ck.out('')
 
     ii={'action':'detect',
