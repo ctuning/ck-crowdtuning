@@ -1409,7 +1409,7 @@ def initialize(i):
     if (user=='' and o=='con' and quiet!='yes') or (cu!='' and cu!='-'):
        if cu=='':
           ck.out(line)
-          r=ck.inp({'text':'If you would like to identify your contributions as well as participate in monthly prize draws, please enter your email: '})
+          r=ck.inp({'text':'Enter your email if you would like to identify your local or global contributions or press Enter to generate random UID: '})
           xuser=r['string'].strip()
        else:
           xuser=cu.strip()
