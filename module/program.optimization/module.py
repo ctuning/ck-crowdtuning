@@ -1313,6 +1313,8 @@ def initialize(i):
               (skip_info_collection)       - if 'yes', skip info collection - useful when running scenarios remotly for mobile devices
 
               (crowdtuning_type)           - (by default = random-crowdtuning)
+
+              (update_platform_init)       - update platform.init scripts (ask user)
             }
 
     Output: {
@@ -1479,6 +1481,7 @@ def initialize(i):
         'quiet':quiet,
         'skip_gpu_info':sgi,
         'platform_init_uoa':piuoa,
+        'update_platform_init':i.get('update_platform_init',''),
         'force_platform_name':fpn}
     rpp=ck.access(ii)
     if rpp['return']>0: return rpp
