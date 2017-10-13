@@ -948,7 +948,7 @@ def show(i):
        hhh+='<center>\n'
        hhh+=' <a href="http://dividiti.com"><img src="http://cKnowledge.org/_resources/ai-cloud.png" height="240" style="padding:3px;"></a>\n'
        hhh+=' <iframe width="426" height="240" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" style="padding:3px;"></iframe><br>\n'
-       hhh+=' <b>These are raw results from the community used only for a proof-of-concept of our collaborative approach to help you survive in a Cambrian AI/SW/HW explosion. Join the <a href="http://cKnowledge.org/partners.html">growing Collective Knowledge consortium</a> to co-design <a href="http://cKnowledge.org/use_cases.html">efficient software and hardware stack for AI and other emerging workloads</a> via <a href="http://cKnowledge.org/ai.html">CK powered open AI research and open competitions</a>!</b><br>\n'
+       hhh+=' <b>These are raw results from the community used only for a proof-of-concept of our collaborative approach to help you survive in a Cambrian AI/SW/HW explosion by crowdsourcing deep learning, optimization and co-design across billion of devices. Join the <a href="http://cKnowledge.org/partners.html">growing Collective Knowledge consortium</a> to co-design <a href="http://cKnowledge.org/use_cases.html">efficient software and hardware stack for AI and other emerging workloads</a> via <a href="http://cKnowledge.org/ai.html">CK powered open AI research and open competitions</a>!</b><br>\n'
        hhh+='</center>\n'
 
        r=ck.access(ii)
