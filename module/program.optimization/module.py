@@ -3130,6 +3130,7 @@ def links(i):
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.nn">NN</a> ] \n'
     h+='[ <a href="https://github.com/ctuning/ck/wiki/Crowdsourcing-optimization">How to participate</a> ] \n'
     h+='[ <a href="https://www.slideshare.net/GrigoriFursin/adapting-to-a-cambrian-aiswhw-explosion-with-open-codesign-competitions-and-collective-knowledge">Slides</a> ] \n'
+    h+='[ <a href="https://arxiv.org/abs/1506.06256">Paper</a> ] \n'
     h+='[ <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=en"><b>Android app</b></a> ] \n'
     h+='[ <b><a href="http://cKnowledge.org/ai">Unified AI</a></b> ] \n'
     h+='[ <b><a href="http://dividiti.com">dividiti startup</a></b> ] \n'
