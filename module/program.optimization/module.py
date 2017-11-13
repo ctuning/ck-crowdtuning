@@ -3133,6 +3133,7 @@ def links(i):
     h+='[ <a href="https://arxiv.org/abs/1506.06256">Paper</a> ] \n'
     h+='[ <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=en"><b>Android app</b></a> ] \n'
     h+='[ <a href="http://dividiti.com">dividiti</a> ] \n'
+    h+='[ <b><a href="http://cknowledge.org/repo/web.php?wcid=42b9a1221eb50259:collective_training_set">Collective training set</a></b> ] \n'
     h+='[ <b><a href="http://cKnowledge.org/ai">Unified AI</a></b> ] \n'
 #    h+='[ <a href="https://github.com/ctuning/ck"><b>open research SDK</b></a> ], \n'
 #    h+='[ <b>Android apps to crowdsource experiments:</b> <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments">small kernels</a>, <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments">apps (DNN)</a>) ], \n'
