@@ -784,6 +784,7 @@ def show(i):
     h+='   <td '+ha+'><b>BW</b></td>\n'
     h+='   <td '+ha+'><b>Per layer</b></td>\n'
     h+='   <td '+ha+'><b>HW costs</td>\n'
+    h+='   <td '+ha+'><b>All usage costs (preparation, training, inference, errors, etc)</td>\n'
     h+='   <td '+ha+'><b>Model size</b></td>\n'
     h+='   <td '+ha+'><b><a href="https://github.com/dividiti/ck-caffe/blob/master/script/explore-accuracy/explore_accuracy.20160808.ipynb">Model accuracy on ImageNet</a></td>\n'
     h+='   <td '+ha+'><b>Model topology and parameters</td>\n'
@@ -1134,6 +1135,9 @@ def show(i):
                hc+='<b>'+str(c.get('price',''))+' '+c.get('currency','')+ '</b> - '+c.get('desc','')+' ('+c.get('date','')+')'
 
         h+='   <td '+ha+'>'+hc+'</a></td>\n'
+
+        # TBD: all other costs
+        h+='   <td '+ha+'></a></td>\n'
 
         # Model size
         h+='   <td '+ha+'>'+msize+'</td>\n'

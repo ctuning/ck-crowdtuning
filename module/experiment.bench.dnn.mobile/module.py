@@ -454,6 +454,7 @@ def show(i):
     h+='   <td '+ha+'><b><a href="https://github.com/dividiti/ck-caffe/blob/master/script/explore-accuracy/explore_accuracy.20160808.ipynb">Model accuracy on ImageNet</a></td>\n'
     h+='   <td '+ha+'><b>Model topology and parameters</td>\n'
     h+='   <td '+ha+'><b>HW costs</td>\n'
+    h+='   <td '+ha+'><b>All usage costs (preparation, training, inference, errors, etc)</td>\n'
     if not min_view:
        h+='   <td '+ha+'><b>Mispredictions and unexpected behavior</b></td>\n'
        h+='   <td '+ha+'><b>Image features</b></td>\n'
@@ -671,6 +672,9 @@ def show(i):
                   hc+='<b>'+str(c.get('price',''))+' '+c.get('currency','')+ '</b> - '+c.get('desc','')+' ('+c.get('date','')+')'
 
         h+='   <td '+ha+'>'+hc+'</a></td>\n'
+
+        # TBD: all other costs
+        h+='   <td '+ha+'></a></td>\n'
 
         # Mispredictions and unexpected behavior
         if not min_view:
