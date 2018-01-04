@@ -83,6 +83,10 @@ def show(i):
 
                (highlight_behavior_uid) - highlight specific result (behavior)!
                (highlight_by_user)      - highlight all results from a given user
+
+               (all)     - if 'yes', view all results
+
+               (minimal) - if 'yes', use in interactive papers
             }
 
     Output: {
@@ -98,6 +102,8 @@ def show(i):
     import time
 
     st=''
+
+    minimal=i.get('minimal','')=='yes'
 
     cmuoa=i.get('crowd_module_uoa','')
     ckey=i.get('crowd_key','')
@@ -889,6 +895,9 @@ def show(i):
 #             h+='</center>\n'
 
     # 3nd graph
+    graph_html=''
+    graph_style=''
+
     if len(bgraph3['0'])>0:
        # Fontier
        r=ck.access({'action':'filter',
@@ -957,16 +966,17 @@ def show(i):
 
        r=ck.access(ii)
        if r['return']==0:
-          x=r.get('html','')
-          if x!='':
-             st+=r.get('style','')
+          graph_html=r.get('html','')
+          if graph_html!='':
+             graph_style=r.get('style','')
+             st+=graph_style
 
              hhh+='<center>\n'
              hhh+='<div id="ck_box_with_shadow" style="width:920px;">\n'
              hhh+=' <div id="ck_interactive3" style="text-align:center">\n'
              hhh+='Device cost (X axis, &euro;) vs image classification time (Y axis, s.) vs model size (dot size) vs model TOP5 ImageNet accuracy (darker colors for lower accuracy).\n'
              hhh+='<b><span style="color:#9f0000">Red dots - surviving species for a given realistic AI scenario</span></b>.<br>\n'
-             hhh+=x+'\n'
+             hhh+=graph_html+'\n'
              hhh+=' </div>\n'
              hhh+='</div>\n'
              hhh+='</center>\n'
@@ -977,7 +987,17 @@ def show(i):
     # Adding table
     hhh+=h
 
-    return {'return':0, 'html':hhh, 'style':st}
+    rr={'return':0, 'style':st}
+
+    if minimal:
+       rr['graph_html']=graph_html
+       rr['style']=graph_style
+       rr['table']=bgraph3
+       rr['table_info']=igraph3
+    else:
+       rr['html']=hhh
+
+    return rr
 
 ##############################################################################
 # process raw results from mobile devices
