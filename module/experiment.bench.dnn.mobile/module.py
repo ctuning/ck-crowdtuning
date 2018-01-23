@@ -399,6 +399,18 @@ def show(i):
     view_all=i.get('all','')
     if view_all!='': h+='<input type="hidden" name="view_all" value="'+view_all+'">\n'
 
+    # Advertisement
+    h+='<center>\n'
+#    hhh+=' <a href="http://dividiti.com"><img src="http://cKnowledge.org/_resources/ai-cloud.png" height="240" style="padding:3px;"></a>\n'
+#    hhh+=' <iframe width="426" height="240" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" style="padding:3px;"></iframe><br>\n'
+    h+=' These are raw results from the community used mainly for a proof-of-concept\n'
+    h+=' of our collaborative approach to adapt to a <a href="https://www.slideshare.net/GrigoriFursin/adapting-to-a-cambrian-aiswhw-explosion-with-open-codesign-competitions-and-collective-knowledge">Cambrian AI/SW/HW chaos</a>\n'
+    h+=' by crowdsourcing learning, optimization and co-design across diverse devices, models and data sets.\n'
+    h+=' Join <a href="http://cKnowledge.org/partners.html">Collective Knowledge consortium</a> and/or\n'
+    h+=' participate in <a href="http://cKnowledge.org/request.html">open ReQuEST tournaments</a> to co-design Pareto-efficient\n'
+    h+=' SW/HW/model stack for deep learning and other emerging workloads!<br>\n'
+    h+='</center>\n'
+
     if lplst==0:
         h+='<b>No results found!</b>'
         return {'return':0, 'html':h, 'style':st}
@@ -956,17 +968,6 @@ def show(i):
           ii['out_to_file']='/tmp/dnn-co-design.pdf'
           ii['customize_dots']='yes'
           ii['plot_type']='mpl_2d_scatter'
-
-       # Advertisement
-       hhh+='<center>\n'
-#       hhh+=' <a href="http://dividiti.com"><img src="http://cKnowledge.org/_resources/ai-cloud.png" height="240" style="padding:3px;"></a>\n'
-#       hhh+=' <iframe width="426" height="240" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" style="padding:3px;"></iframe><br>\n'
-       hhh+=' These are raw results from the community used mainly for a proof-of-concept of our collaborative approach to adapt to a <a href="">Cambrian AI/SW/HW chaos</a>\n'
-       hhh+=' by crowdsourcing learning, optimization and co-design across diverse devices, models and data sets.\n'
-       hhh+=' Join <a href="http://cKnowledge.org/partners.html">Collective Knowledge consortium</a> and/or\n'
-       hhh+=' participate in <a href="http://cKnowledge.org/request.html">open ReQuEST tournaments</a> to co-design Pareto-efficient\n'
-       hhh+=' SW/HW/model stack for deep learning and other emerging workloads!<br>\n'
-       hhh+='</center>\n'
 
        r=ck.access(ii)
        if r['return']==0:
