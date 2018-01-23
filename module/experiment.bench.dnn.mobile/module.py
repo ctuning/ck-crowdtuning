@@ -410,6 +410,7 @@ def show(i):
     h+=' participate in <a href="http://cKnowledge.org/request.html">open ReQuEST tournaments</a> to co-design Pareto-efficient\n'
     h+=' SW/HW/model stack for deep learning and other emerging workloads!<br>\n'
     h+='</center>\n'
+    h+='<br>\n'
 
     if lplst==0:
         h+='<b>No results found!</b>'
