@@ -958,11 +958,15 @@ def show(i):
           ii['plot_type']='mpl_2d_scatter'
 
        # Advertisement
-#       hhh+='<center>\n'
+       hhh+='<center>\n'
 #       hhh+=' <a href="http://dividiti.com"><img src="http://cKnowledge.org/_resources/ai-cloud.png" height="240" style="padding:3px;"></a>\n'
 #       hhh+=' <iframe width="426" height="240" src="https://www.youtube.com/embed/f4CfMrGPJPY" frameborder="0" style="padding:3px;"></iframe><br>\n'
-#       hhh+=' These are raw results from the community used mainly for a proof-of-concept of our collaborative approach to adapt to a Cambrian AI/SW/HW chaos by crowdsourcing learning, optimization and co-design across diverse devices, models and data sets. Join <a href="http://cKnowledge.org/partners.html">Collective Knowledge consortium</a> and <a href="http://cKnowledge.org/request.html">open ReQuEST tournaments</a> to participate in collaborative co-design of efficient software and hardware stack for AI and other emerging workloads!<br>\n'
-#       hhh+='</center>\n'
+       hhh+=' These are raw results from the community used mainly for a proof-of-concept of our collaborative approach to adapt to a <a href="">Cambrian AI/SW/HW chaos</a>\n'
+       hhh+=' by crowdsourcing learning, optimization and co-design across diverse devices, models and data sets.\n'
+       hhh+=' Join <a href="http://cKnowledge.org/partners.html">Collective Knowledge consortium</a> and/or\n'
+       hhh+=' participate in <a href="http://cKnowledge.org/request.html">open ReQuEST tournaments</a> to co-design Pareto-efficient\n'
+       hhh+=' SW/HW/model stack for deep learning and other emerging workloads!<br>\n'
+       hhh+='</center>\n'
 
        r=ck.access(ii)
        if r['return']==0:
