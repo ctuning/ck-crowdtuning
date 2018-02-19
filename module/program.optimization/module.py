@@ -3129,12 +3129,12 @@ def links(i):
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.gpgpu">GPGPU</a>, \n'
     h+='  <a href="http://cknowledge.org/repo/web.php?action=index&module_uoa=wfe&native_action=show&native_module_uoa=platform.nn">NN</a> ] \n'
     h+='[ <a href="https://github.com/ctuning/ck/wiki/Crowdsourcing-optimization">How to participate</a> ] \n'
-    h+='[ <a href="https://www.slideshare.net/GrigoriFursin/adapting-to-a-cambrian-aiswhw-explosion-with-open-codesign-competitions-and-collective-knowledge">Slides</a> ] \n'
+    h+='[ <a href="https://www.slideshare.net/GrigoriFursin/adapting-to-a-cambrian-aiswhw-explosion-with-open-codesign-competitions-and-collective-knowledge">Motivation</a> ] \n'
     h+='[ Papers <a href="https://arxiv.org/abs/1801.08024">1</a> , <a href="https://arxiv.org/abs/1506.06256">2</a> , <a href="https://www.researchgate.net/publication/304010295_Collective_Knowledge_Towards_RD_Sustainability">3</a>] \n'
     h+='[ <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=en"><b>Android app</b></a> ] \n'
-    h+='[ <a href="http://dividiti.com">dividiti</a> ] \n'
     h+='[ <b><a href="http://cknowledge.org/repo/web.php?wcid=42b9a1221eb50259:collective_training_set">Collective training set</a></b> ] \n'
     h+='[ <b><a href="http://cKnowledge.org/ai">Unified AI</a></b> ] \n'
+
 #    h+='[ <a href="https://github.com/ctuning/ck"><b>open research SDK</b></a> ], \n'
 #    h+='[ <b>Android apps to crowdsource experiments:</b> <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments">small kernels</a>, <a href="https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments">apps (DNN)</a>) ], \n'
 #    h+='[ A few papers: <a href="http://arxiv.org/abs/1506.06256">CPC\'15</a>, \n'
@@ -3145,6 +3145,7 @@ def links(i):
 #    h+='[ <a href="http://cTuning.org/ae">Our reproducible initiative for ACM conferences</a> ], \n'
 #    h+='[ <a href="http://dividiti.blogspot.fr/2017/02/we-received-test-of-time-award-for-our.html">CGO\'17 test of time award for our interdisiplinary R&D</a> ], '
 #    h+='[ <b><a href="http://cknowledge.org/ai/ck-api-demo">Open and unified CK API for AI</a></b> ] '
+
     h+='</center>\n'
     h+='</div>\n'
 
