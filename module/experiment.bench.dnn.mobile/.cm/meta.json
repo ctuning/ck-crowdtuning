@@ -65,6 +65,12 @@
       "program_uoa": "1c1cc5d6a4944be7",
       "engine-deps-key": "lib-tensorflow",
       "engine-lib":""
+    },
+    {
+      "engine": "TFLite CPU",
+      "program_uoa": "1c1cc5d6a4944be7",
+      "engine-deps-key": "library",
+      "engine-lib":""
     }
   ],
   "program_tags": "crowd-benchmarking,dnn-mobile",
