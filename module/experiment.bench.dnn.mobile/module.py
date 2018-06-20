@@ -1359,6 +1359,7 @@ def generate(i):
 
         abi=b['abi']
         os_uoa=b['os_uoa']
+        if i.get('target_os','')!='': os_uoa=i['target_os']
 
         engine=prog['engine']
         prog_uoa=prog['program_uoa']

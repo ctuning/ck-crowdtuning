@@ -68,7 +68,7 @@
     },
     {
       "engine": "TFLite CPU",
-      "program_uoa": "1c1cc5d6a4944be7",
+      "program_uoa": "1a1ae632cabc15f4",
       "engine-deps-key": "library",
       "engine-lib":""
     }
