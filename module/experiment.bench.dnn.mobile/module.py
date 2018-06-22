@@ -372,10 +372,68 @@ def show(i):
 
     if debug: h+='\n<p>Debug time (prune entries by user selection): '+str(time.time()-dt)+' sec.<p>\n'
 
+    # Add extra selectors
+    h+='<center>\n'
+
+    wchoices9a=[{'name':'throughput', 'value':'throughput'}, {'name':'latency', 'value':'latency'}]
+    key9a='sort_by'
+
+    k=ckey+key9a
+
+    v9a=''
+    if i.get(k,'')!='':
+        v9a=i[k]
+
+    # Prepare selector
+    ii={'action':'create_selector',
+        'module_uoa':cfg['module_deps']['wfe'],
+        'data':wchoices9a,
+        'name':k,
+        'onchange':conc, 
+        'skip_sort':'yes',
+        'selected_value':v9a}
+    r=ck.access(ii)
+    if r['return']>0: return r
+
+    h+='<b>Sort by:</b> '+r['html'].strip()+'\n'
+
+    wchoices9b=[{'name':'throughput vs top 1 accuracy', 'value':'throughput_top1'},
+                {'name':'throughput vs top 5 accuracy', 'value':'throughput_top5'}, 
+                {'name':'latency vs top 1 accuracy', 'value':'latency_top1'},
+                {'name':'latency vs top 5 accuracy', 'value':'latency_top5'}, 
+                {'name':'recognition time vs device cost vs model size', 'value':'time_cost'}]
+    key9b='which_graph'
+
+    k=ckey+key9b
+
+    v9b=''
+    if i.get(k,'')!='':
+        v9b=i[k]
+
+    # Prepare selector
+    ii={'action':'create_selector',
+        'module_uoa':cfg['module_deps']['wfe'],
+        'data':wchoices9b,
+        'name':k,
+        'onchange':conc,
+        'skip_sort':'yes',
+        'selected_value':v9b}
+    r=ck.access(ii)
+    if r['return']>0: return r
+
+    h+='&nbsp;&nbsp;<b>Plot:</b> '+r['html'].strip()+'\n'
+
+    h+='</center>\n'
+    h+='<p>\n'
 
     # Sort first before prunning
     dt=time.time()
-    splst=sorted(plst, key=lambda x: x.get('extra',{}).get('time_min',0))
+
+    if v9a=='throughput':
+       splst=sorted(plst, key=lambda x: x.get('extra',{}).get('xopenme_execution_time_kernel_2_min',0))
+    else:
+       splst=sorted(plst, key=lambda x: x.get('extra',{}).get('time_min',0))
+
     if debug: h+='\n<p>Debug time (sorting table): '+str(time.time()-dt)+' sec.<p>\n'
 
     # Demo graph
@@ -448,6 +506,7 @@ def show(i):
     bg=' style="background-color:#'+bgc+';"'
     bg1=' style="background-color:#bfffbf;"'
     bg2=' style="background-color:#afffaf;"'
+    bg9=' style="background-color:#afffaf;color:#7f0000;"'
 
     h+='<table border="1" cellpadding="7" cellspacing="0">\n'
 
@@ -462,11 +521,17 @@ def show(i):
     if not min_view:
        h+='   <td '+ha+'><b>Versions</b></td>\n'
     h+='   <td '+ha+'><b>Model weight size</b></td>\n'
-    h+='   <td '+ha+'><b>Total time (min/max sec.)</b></td>\n'
+    x=''
+    if v9a=='latency':
+       x=' style="color:#7f0000"'
+    h+='   <td '+ha+x+'><b>Total time (min/max sec.)<p>*&nbsp;LATENCY&nbsp;*</b></td>\n'
     if not min_view:
        h+='   <td '+ha+'><b>Init network time (min/max sec.)</b></td>\n'
        h+='   <td '+ha+'><b>Image preparation (min/max sec.)</b></td>\n'
-       h+='   <td '+ha+'><b>Classification time (min/max sec.)</b></td>\n'
+       x=''
+       if v9a=='throughput':
+          x=' style="color:#7f0000"'
+       h+='   <td '+ha+x+'><b>Classification time (min/max sec.)<p>*&nbsp;THROUGHPUT&nbsp;*</b></td>\n'
        h+='   <td '+ha+'><b>Prediction probability</b></td>\n'
     h+='   <td '+ha+'><b>Power consumption (W)<br>min / max</td>\n'
     h+='   <td '+ha+'><b>Memory usage (MB)</td>\n'
@@ -542,15 +607,18 @@ def show(i):
         bgx=bg
         bgx1=bg1
         bgx2=bg2
+        bgx9=bg9
+
         if (hi_uid!='' and buid==hi_uid) or (hi_user!='' and hi_user==user):
            bgx=' style="background-color:#ffcf7f"'
            bgx1=' style="background-color:#ffbf5f"'
            bgx2=' style="background-color:#ffaf2f"'
+           bgx9=' style="background-color:#ffaf2f;color:#7f0000;"'
 
         # Starting raw
         h+='  <tr'+bgx+'>\n'
 
-        h+='   <td '+ha+'><a name="'+buid+'">'+str(ix)+'</a></td>\n'
+        h+='   <td '+ha+'><a name="'+buid+'" id="'+buid+'">'+str(ix)+'</a></td>\n'
 
         x=plat_name
         if plat_uid!='':
@@ -603,9 +671,14 @@ def show(i):
             if hi_uid!='' or hi_user!='': 
                bgraph['1'].append([ix,None])
 
-        h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
+        x=bgx9 if v9a=='latency' else bgx1
+
+        h+='   <td '+ha+' '+x+'>'+xx+'</a></td>\n'
 
         # Finer grain timing
+        ttmin=tmin
+        ttdelta=tmax-tmin
+
         if not min_view:
            for ixo in range(0,3):
               tmin=extra.get('xopenme_execution_time_kernel_'+str(ixo)+'_min',0)
@@ -614,10 +687,16 @@ def show(i):
               if tmin<0: tmin=0 # detected bug
 
               xx='<b>'+('%.3f'%tmin)+'</b>&nbsp;/&nbsp;'+('%.3f'%tmax)
-              if tmin==0: # and ixo!=1: 
-                 xx+='<br><b><center>bug detected - check further</center></b>\n'
+              if tmin==0 and ixo!=1: 
+                 xx+='<br><b><center>possible bug detected - check further</center></b>\n'
 
-              h+='   <td '+ha+' '+bgx1+'>'+xx+'</a></td>\n'
+              x=bgx9 if (v9a=='throughput' and ixo==2) else bgx1
+
+              if v9b.startswith('throughput') and ixo==2:
+                 ttmin=tmin
+                 ttdelta=tmax-tmin
+
+              h+='   <td '+ha+' '+x+'>'+xx+'</a></td>\n'
 
            # Accuracy
            x=pred
@@ -763,8 +842,8 @@ def show(i):
 
            h+='  <tr>\n'
 
-        tdelta=0#(tmax-tmin) # show best specie!
-        if tdelta>0.1: tdelta=0.1 # to avoid messy graph - just show that there is an issue with variation ...
+        tdelta=tmax-tmin # show best specie!
+#        if tdelta>0.1: tdelta=0.1 # to avoid messy graph - just show that there is an issue with variation ...
 
         if tmin>0: # to skip bugs
            # check accuracy
@@ -782,26 +861,68 @@ def show(i):
 #           if len(x)<2: x='0'+x
 #           mcol='#0000'+x
 
-           sizem=int(1+(model_weights_size/80))+3
+           divide=80
+           if i.get(ckey+'engine')=='TFLite CPU':
+              divide=3
+           sizem=int(1+(model_weights_size/divide))+3
 
            bgraph2['0'].append([model_weights_size,tmin,tmin+tdelta])
            igraph2['0'].append({'size':3,'color':xcol})
 
            features={}
-           if last_cost>0:
-              if debug:
-                 sizem=int(1+(model_weights_size/80))*6
 
-              bgraph3['0'].append([last_cost,tmin,tmin+tdelta])
-              igraph3['0'].append({'size':sizem, 'color':xcol, 'features':meta, 'url':'', 'url_ext':raw_data_url})
+           X=0
+           Y=0
+           YD=0
+           YS=0
+           to_add=False
+
+           if v9b=='time_cost':
+              if last_cost>0:
+                 to_add=True
+
+                 if debug:
+                    sizem=int(1+(model_weights_size/80))*6
+
+                 X=last_cost
+                 Y=tmin
+                 YD=tdelta
+                 YS=sizem
+           else:
+              if acc>0 and ttmin>0:
+                 to_add=True
+
+                 if debug:
+                    sizem=int(1+(model_weights_size/80))*6
+
+                 X=ttmin
+                 if v9b.endswith('top1'):
+                    Y=acc
+                 else:
+                    Y=acc5
+                 YD=ttdelta
+                 YS=sizem
+
+                 if Y=='': 
+                    Y=0
+                    YD=0
+
+           if to_add:
+              # FGG: must improve to make a constant threshold afterwards (after knowing Ymin and Ymax)
+              if (type(Y)==float or type(Y)==int) and Y>0 and YD>0 and YD>float(Y)*0.05: YD=float(Y)*0.05
+
+              bgraph3['0'].append([X,Y,Y+YD])
+#              igraph3['0'].append({'size':YS, 'color':xcol, 'features':meta, 'url':'', 'url_ext':raw_data_url})
+              igraph3['0'].append({'size':YS, 'color':xcol, 'features':meta, 'anchor':buid})
 
               # For frontier
-              rx=ck.gen_uid({})
-              if rx['return']>0: return rx
-              puid=rx['data_uid']
+#              rx=ck.gen_uid({})
+#              if rx['return']>0: return rx
+#              puid=rx['data_uid']
 
-              f_bgraph3[puid]={"X":last_cost, "Y":tmin}
-              f_igraph3[puid]={'size':sizem, 'tdelta':tdelta, 'features':meta, 'url':'', 'url_ext':raw_data_url}
+#              f_bgraph3[puid]={"X":X, "Y":Y}
+#              f_igraph3[puid]={'size':YS, 'tdelta':YD, 'features':meta, 'url':'', 'url_ext':raw_data_url}
+
 
     h+='</table>\n'
     h+='</center>\n'
@@ -923,6 +1044,22 @@ def show(i):
        bgraph3['1']=[]
        igraph3['1']=[]
 
+       if v9b=='time_cost':
+          xdesc='Device price, $'
+          ydesc='image classification time, sec.'
+       elif v9b=='throughput_top1':
+          xdesc='latency, sec.'
+          ydesc='throughput (image classification), sec.'
+       elif v9b=='throughput_top5':
+          xdesc='throughput (image classification), sec.'
+          ydesc='Top5 accuracy'
+       elif v9b=='latency_top1':
+          xdesc='latency (image classification), sec.'
+          ydesc='Top1 accuracy'
+       elif v9b=='latency_top5':
+          xdesc='latency (image classification), sec.'
+          ydesc='Top5 accuracy'
+
        for q in points:
            q1=f_bgraph3[q]
            q2=f_igraph3[q]
@@ -946,10 +1083,10 @@ def show(i):
 
            "x_ticks_period":50,
 
-#           "axis_x_desc":"Device price (EUR)",
-#           "axis_y_desc":"DNN image classification time (s)",
+           "axis_x_desc":xdesc,
+           "axis_y_desc":ydesc,
 
-            "xmin":0,
+            "xmin":-0.01,
             "ymin":0,
 #           "ymax":25,
 
@@ -980,8 +1117,9 @@ def show(i):
              hhh+='<center>\n'
              hhh+='<div id="ck_box_with_shadow" style="width:920px;">\n'
              hhh+=' <div id="ck_interactive3" style="text-align:center">\n'
-             hhh+='Device cost (X axis, &euro;) vs image classification time (Y axis, s.) vs model size (dot size) vs model TOP5 ImageNet accuracy (darker colors for lower accuracy).\n'
-             hhh+='<b><span style="color:#9f0000">Red dots - surviving species for a given realistic AI scenario</span></b>.<br>\n'
+#             hhh+='Device cost (X axis, &euro;) vs image classification time (Y axis, s.) vs model size (dot size) vs model TOP5 ImageNet accuracy (darker colors for lower accuracy).\n'
+             hhh+='Dot size ~ model size ; dot color ~ model TOP5 ImageNet accuracy (darker colors for lower accuracy).\n'
+#             hhh+='<b><span style="color:#9f0000">Red dots - surviving species for a given realistic AI scenario</span></b>.<br>\n'
              hhh+=graph_html+'\n'
              hhh+=' </div>\n'
              hhh+='</div>\n'
