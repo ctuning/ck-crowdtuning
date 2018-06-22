@@ -383,6 +383,8 @@ def show(i):
     v9a=''
     if i.get(k,'')!='':
         v9a=i[k]
+    else:
+       v9a=wchoices9a[0]['value']
 
     # Prepare selector
     ii={'action':'create_selector',
@@ -409,6 +411,8 @@ def show(i):
     v9b=''
     if i.get(k,'')!='':
         v9b=i[k]
+    else:
+       v9b=wchoices9b[0]['value']
 
     # Prepare selector
     ii={'action':'create_selector',
@@ -1047,7 +1051,7 @@ def show(i):
        if v9b=='time_cost':
           xdesc='Device price, $'
           ydesc='image classification time, sec.'
-       elif v9b=='throughput_top1':
+       elif v9b=='throughput_top1' or v9b=='':
           xdesc='latency, sec.'
           ydesc='throughput (image classification), sec.'
        elif v9b=='throughput_top5':
