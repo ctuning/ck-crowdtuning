@@ -1052,8 +1052,8 @@ def show(i):
           xdesc='Device price, $'
           ydesc='image classification time, sec.'
        elif v9b=='throughput_top1' or v9b=='':
-          xdesc='latency, sec.'
-          ydesc='throughput (image classification), sec.'
+          xdesc='throughput (image classification), sec.'
+          ydesc='Top1 accuracy'
        elif v9b=='throughput_top5':
           xdesc='throughput (image classification), sec.'
           ydesc='Top5 accuracy'
