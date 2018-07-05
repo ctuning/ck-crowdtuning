@@ -71,6 +71,12 @@
       "program_uoa": "1a1ae632cabc15f4",
       "engine-deps-key": "library",
       "engine-lib":""
+    },
+    {
+      "engine": "ArmCL OpenCL",
+      "program_uoa": "848509ef849f2f39",
+      "engine-deps-key": "library",
+      "engine-lib":""
     }
   ],
   "program_tags": "crowd-benchmarking,dnn-mobile",
