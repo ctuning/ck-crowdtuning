@@ -1387,7 +1387,7 @@ def initialize(i):
 
     if o=='con':
        ck.out(line)
-       ck.out('Experimental results will be appeneded to a local log file: '+p)
+       ck.out('Experimental results will be appended to a local log file: '+p)
 
        if quiet!='yes' and i.get('skip_log_wait','')!='yes':
           ck.out('')
