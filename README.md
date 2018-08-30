@@ -19,8 +19,8 @@ unexpected behavior in the [CK live repository](http://cKnowledge.org/repo)!
 
 Also check out our related Android apps to let you participate in our experiment crowdsourcing using
 spare Android mobile phones, tables and other devices:
-* [collaborative deep learning optimization app](https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments&hl=en)
-* [compiler tuning using small kernels](https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments)
+* [collaborative deep learning optimization app](http://cKnowledge.org/android-apps.html)
+* [compiler tuning using small kernels](http://cKnowledge.org/android-apps.html)
 * [CK crowd-scenarios](https://github.com/ctuning/ck-crowd-scenarios)
 
 Further details are available at [CK wiki](https://github.com/ctuning/ck/wiki),
@@ -62,8 +62,8 @@ and the section on [Experiment Crowdsourcing](https://github.com/ctuning/ck/wiki
 
 You can also participate in crowd-benchmarking and crowd-tuning 
 using your Android mobile device using the following apps:
-* [small workloads](https://play.google.com/store/apps/details?id=openscience.crowdsource.experiments)
-* [large workloads including DNN libs such as Caffe](https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments)
+* [small workloads](http://cKnowledge.org/android-apps.html)
+* [large workloads including DNN libs such as Caffe](http://cKnowledge.org/android-apps.html)
 
 
 Notes
