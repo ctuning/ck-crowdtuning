@@ -1771,6 +1771,7 @@ def run(i):
     if cat=='': cat=10.0
 
     objective=i.get('objective','')
+    if objective=='': objective=scfg.get('objective', '')
     if objective=='': objective='min'
 
     xobjective=''
