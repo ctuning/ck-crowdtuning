@@ -55,3 +55,9 @@ E:
 O: ARM
 C: reporting a few bugs when intergrating ARM's workload automation to CK crowd-tuning
 W: 2016
+
+N: Wen Yang
+E: GitHub: @w-simon
+O: 
+C: added custom tuning scenario and improve "objective" function check
+W:
