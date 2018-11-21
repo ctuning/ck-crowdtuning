@@ -3715,16 +3715,7 @@ def classify(i):
 
 def prune(i):
     """
-    Input:  {
-              See "replay" in this module
-            }
-
-    Output: {
-              return       - return code =  0, if successful
-                                         >  0, if error
-              (error)      - error text if return > 0
-            }
-
+    See "replay" API
     """
 
     import os
