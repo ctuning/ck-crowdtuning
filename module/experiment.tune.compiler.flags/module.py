@@ -1084,7 +1084,7 @@ def rebuild_cmd(i):
 
 def replay(i):
     """
-    See in module "program.optimization"
+    See 'replay program.optimization'
     """
 
     i['module_uoa']=cfg['module_deps']['program.optimization']
@@ -1098,7 +1098,7 @@ def replay(i):
 
 def prune(i):
     """
-    See in module "program.optimization"
+    See 'replay program.optimization'
     """
 
     i['module_uoa']=cfg['module_deps']['program.optimization']
