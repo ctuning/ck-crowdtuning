@@ -26,15 +26,15 @@
     "module_uoa": "4dcf435bb0d92fa6"
   },
   "license": "See CK LICENSE.txt for licensing details",
-  "min_kernel_dep":"1.8.2",
+  "min_kernel_dep": "1.8.2",
   "module_deps": {
     "choice": "e4564d6f984400d7",
     "env": "9b9b3208ac44b891",
     "experiment.scenario.mobile": "65477d547a49dd2c",
     "graph": "2d41f89bcf32d4d4",
     "machine": "84be34883a81b2a9",
-    "module": "032630d041b4fd8a",
     "math.frontier": "99d08d331cdc5478",
+    "module": "032630d041b4fd8a",
     "pipeline": "db25414b48b4ffb3",
     "platform": "707ccdfe444cafac",
     "platform.cpu": "aa6b542a420b8db9",
@@ -50,33 +50,33 @@
   "prog_uoa": [
     {
       "engine": "Caffe CPU",
-      "program_uoa": "473c67d70ebe45a9",
       "engine-deps-key": "lib-caffe",
-      "engine-lib":"libcaffe.so"
+      "engine-lib": "libcaffe.so",
+      "program_uoa": "473c67d70ebe45a9"
     },
     {
       "engine": "Caffe OpenCL",
-      "program_uoa": "a04a64811e45d288",
       "engine-deps-key": "lib-caffe",
-      "engine-lib":"libcaffe.so"
+      "engine-lib": "libcaffe.so",
+      "program_uoa": "a04a64811e45d288"
     },
     {
       "engine": "TensorFlow CPU",
-      "program_uoa": "1c1cc5d6a4944be7",
       "engine-deps-key": "lib-tensorflow",
-      "engine-lib":""
+      "engine-lib": "",
+      "program_uoa": "1c1cc5d6a4944be7"
     },
     {
       "engine": "TFLite CPU",
-      "program_uoa": "1a1ae632cabc15f4",
       "engine-deps-key": "library",
-      "engine-lib":""
+      "engine-lib": "",
+      "program_uoa": "1a1ae632cabc15f4"
     },
     {
       "engine": "ArmCL OpenCL",
-      "program_uoa": "848509ef849f2f39",
       "engine-deps-key": "library",
-      "engine-lib":""
+      "engine-lib": "",
+      "program_uoa": "848509ef849f2f39"
     }
   ],
   "program_tags": "crowd-benchmarking,dnn-mobile",
@@ -87,5 +87,7 @@
     "program benchmarking",
     "program optimization",
     "dnn-mobile"
-  ]
+  ],
+  "workflow": "yes",
+  "workflow_type": "crowd-benchmarking deep learning via mobile devices"
 }

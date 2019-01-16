@@ -64,11 +64,11 @@
     "frontier_margins": [
       1.0
     ],
-    "record_only_failed":"yes",
     "pipeline_update": {
       "best_base_flag": "no",
       "speed": "no"
     },
+    "record_only_failed": "yes",
     "record_params": {
       "search_point_by_features": "yes"
     }
@@ -202,5 +202,6 @@
     "autotuning",
     "fuzzing",
     "llvm"
-  ]
+  ],
+  "workflow": "yes"
 }

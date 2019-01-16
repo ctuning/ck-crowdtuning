@@ -1,20 +1,20 @@
 {
-  "backup_data_uid": "f519226eb5740c8b", 
-  "backup_module_uid": "032630d041b4fd8a", 
-  "backup_module_uoa": "module", 
+  "backup_data_uid": "f519226eb5740c8b",
+  "backup_module_uid": "032630d041b4fd8a",
+  "backup_module_uoa": "module",
   "control": {
-    "author": "Grigori Fursin", 
-    "author_email": "Grigori.Fursin@cTuning.org", 
-    "author_webpage": "http://fursin.net", 
-    "copyright": "See CK COPYRIGHT.txt for copyright details", 
-    "engine": "CK", 
-    "iso_datetime": "2016-02-17T14:52:22.502000", 
-    "license": "See CK LICENSE.txt for licensing details", 
+    "author": "Grigori Fursin",
+    "author_email": "Grigori.Fursin@cTuning.org",
+    "author_webpage": "http://fursin.net",
+    "copyright": "See CK COPYRIGHT.txt for copyright details",
+    "engine": "CK",
+    "iso_datetime": "2016-02-17T14:52:22.502000",
+    "license": "See CK LICENSE.txt for licensing details",
     "version": [
-      "1", 
-      "6", 
+      "1",
+      "6",
       "12x"
     ]
-  }, 
+  },
   "data_name": "(under development) auto/crowd-tune OpenCL local work size (execution time/FPS vs energy)"
 }

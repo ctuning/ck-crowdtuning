@@ -16,5 +16,7 @@
   "module_deps": {
     "experiment.tune.opencl.clblast": "6c5af99f945739bd",
     "program": "b0ac08fe1d3c2615"
-  }
+  },
+  "workflow": "yes",
+  "workflow_type": "CLBlast autotuning pipeline"
 }

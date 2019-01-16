@@ -6,15 +6,15 @@
     "crowdsource": {
       "desc": "crowdsource these experiments"
     },
+    "html_viewer": {
+      "desc": "show info for all layers",
+      "for_web": "yes"
+    },
     "replay": {
       "desc": "replay experiment (TBD)"
     },
     "show": {
       "desc": "show results"
-    },
-    "html_viewer": {
-      "desc": "show info for all layers",
-      "for_web": "yes"
     }
   },
   "copyright": "See CK COPYRIGHT.txt for copyright details",
@@ -54,5 +54,7 @@
     "program benchmarking",
     "program optimization",
     "dnn"
-  ]
+  ],
+  "workflow": "yes",
+  "workflow_type": "crowd-benchmarking deep learning via desktop/server/cloud computers"
 }

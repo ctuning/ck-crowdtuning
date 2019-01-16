@@ -45,8 +45,7 @@
   "priority": 1000,
   "program_tags": "crowd-tuning,small",
   "prune_autotune_pipeline": {
-    "result_conditions": [
-    ]
+    "result_conditions": []
   },
   "prune_results": [
     {
@@ -71,13 +70,13 @@
     "##characteristics#run#execution_time_kernel_0#exp",
     "##characteristics#run#execution_time_kernel_0#max"
   ],
-  "solution_conditions": [
-  ],
+  "solution_conditions": [],
   "subview_uoa": "fac96683718b0ba1",
   "tags": [
     "program optimization",
     "explore",
     "autotuning",
     "custom"
-  ]
+  ],
+  "workflow": "yes"
 }
