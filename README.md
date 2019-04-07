@@ -44,9 +44,13 @@ training of a machine-learning based compiler across
 any shared computational resource such as mobile phones
 (supported by the non-profit cTuning foundation since 2008).
 
+Maintainers
+===========
+* [dividiti](http://dividiti.com)
+
 Authors
 =======
-* [Grigori Fursin](http://fursin.net/research.html), dividiti/cTuning foundation
+* [Grigori Fursin](http://fursin.net/research.html)
 
 License
 =======
