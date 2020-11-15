@@ -5,6 +5,8 @@
 [![DOI](https://zenodo.org/badge/36606204.svg)](https://zenodo.org/badge/latestdoi/36606204)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
+**All CK components for AI and ML are now collected in [one repository](https://github.com/ctuning/ai)!**
+
 This is a stable Collective Knowledge repository to enable
 customizable experiment crowdsourcing across diverse Linux, Windows,
 MacOS and Android-based platforms provided by volunteers
