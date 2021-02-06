@@ -1,9 +1,10 @@
 {
-  "data_name": "CK crowdtuning (crowdsourcing autotuning)", 
-  "data_alias": "ck-crowdtuning", 
-  "data_uid": "c7e5332641d8922a", 
-  "data_uoa": "ck-crowdtuning", 
+  "data_alias": "ck-crowdtuning",
+  "data_name": "CK crowdtuning (crowdsourcing autotuning)",
+  "data_uid": "c7e5332641d8922a",
+  "data_uoa": "ck-crowdtuning",
   "dict": {
+    "desc": "Portable and customizable CK workflow to crowdsource diverse experiments across diverse platforms (cloud, mobile phones, tablets, laptops, data centers, etc) such as multi-objective autotuning (see the <a href=\"http://cKnowledge.org/rpi-crowd-tuning\">real use case</a> and <a href=\"http://cKnowledge.org/repo\">open CK repository</a>).",
     "repo_deps": [
       {
         "repo_uoa": "ctuning-programs"
@@ -14,8 +15,8 @@
       {
         "repo_uoa": "ck-crowdtuning-platforms"
       }
-    ], 
-    "url": "https://github.com/ctuning/ck-crowdtuning", 
-    "shared": "git"
+    ],
+    "shared": "git",
+    "url": "https://github.com/ctuning/ck-crowdtuning"
   }
 }
