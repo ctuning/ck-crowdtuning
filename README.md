@@ -5,7 +5,7 @@
 [![DOI](https://zenodo.org/badge/36606204.svg)](https://zenodo.org/badge/latestdoi/36606204)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-**All CK components can be found at [cKnowledge.io](https://cKnowledge.io) and in [one GitHub repository](https://github.com/ctuning/ai)!**
+**All CK components can be found at [cKnowledge.io](https://cKnowledge.io) and in [one GitHub repository](https://github.com/ctuning/ck-mlops)!**
 
 *This project is hosted by the [cTuning foundation](https://cTuning.org).*
 
@@ -18,7 +18,7 @@ MacOS and Android-based platforms provided by volunteers
 
 We have several public experimental scenarios include universal,
 customizable, multi-dimensional, multi-objective 
-[DNN crowd-benchmarking](http://cKnowledge.org/ai) 
+[DNN crowd-benchmarking](http://cKnowledge.io) 
 and [compiler crowd-tuning](http://github.com/ctuning/ck-autotuning).
 
 See continuously aggregated public results results and
